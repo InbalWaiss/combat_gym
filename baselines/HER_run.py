@@ -1,6 +1,6 @@
-from stable_baselines import HER, DQN, SAC, DDPG, TD3
-from stable_baselines.her import GoalSelectionStrategy, HERGoalEnvWrapper
-from stable_baselines.common.bit_flipping_env import BitFlippingEnv
+from stable_baselines3 import HER, DQN, SAC, DDPG, TD3
+from stable_baselines3.her import GoalSelectionStrategy, HERGoalEnvWrapper
+from stable_baselines3.common.bit_flipping_env import BitFlippingEnv
 from gym_combat.envs.gym_combat import GymCombatEnv
 
 model_class = DQN  # works also with SAC, DDPG and TD3

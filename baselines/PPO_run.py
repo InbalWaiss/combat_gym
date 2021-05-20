@@ -1,10 +1,9 @@
 import gym
 import gym_combat
 from gym_combat.envs.gym_combat import GymCombatEnv
-from stable_baselines.common.env_checker import check_env
-from stable_baselines.common.policies import MlpPolicy
-from stable_baselines.common import make_vec_env
-from stable_baselines import PPO2
+from stable_baselines3.common.env_checker import check_env
+#from stable_baselines3 import make_vec_env
+from stable_baselines3 import PPO
 
 def chcek_my_env():
     env = GymCombatEnv()
@@ -14,7 +13,7 @@ def chcek_my_env():
 # Instantiate the env
 env = GymCombatEnv()
 
-model = PPO2(MlpPolicy, env, verbose=1)
+model = PPO("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=100000)
 model.save("ppo2_GymCombatEnv_MlpPolicy")
 
