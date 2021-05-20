@@ -239,7 +239,7 @@ class Greedy_player(AbsDecisionMaker):
                 path_to_closest_target_reversed = self.all_pairs_shortest_path[closest_target][my_pos]
                 return list(path_to_closest_target_reversed.__reversed__())
 
-        print("first time calc:    my_pos: ", my_pos, ", closest_target: ", closest_target)
+        #print("first time calc:    my_pos: ", my_pos, ", closest_target: ", closest_target)
         if not (my_pos in self.all_pairs_shortest_path.keys()):
             self.all_pairs_shortest_path[my_pos] = {}
 
