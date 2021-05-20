@@ -76,5 +76,7 @@ class GymCombatEnv(gym.Env):
 
         self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
 
-        self.current_episode.number_of_steps+=1
+        if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
+            # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
+            current_episode.is_terminal = True
         return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
