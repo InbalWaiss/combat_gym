@@ -2,10 +2,10 @@
 
 import numpy as np
 from PIL import Image
-import gym_combat.envs.Arena
+import gym_combat.envs.Arena as Arena
 from gym_combat.envs.Common.constants import SIZE_X, SIZE_Y, IMG_STATE_MODE, SIZE_X_BB, SIZE_Y_BB, BB_STATE
 
-from DQN.deeprl_prj.core import Preprocessor
+from gym_combat.envs.DQN.deeprl_prj.core import Preprocessor
 
 if BB_STATE:
     SIZE_X = SIZE_X_BB

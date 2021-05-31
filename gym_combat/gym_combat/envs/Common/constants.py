@@ -23,7 +23,7 @@ TAKE_WINNING_STEP_BLUE = True
 
 FIRE_RANGE_FLAG = True
 
-NONEDETERMINISTIC_TERMINAL_STATE = False
+NONEDETERMINISTIC_TERMINAL_STATE = True
 
 
 #image state mode
@@ -36,7 +36,7 @@ STR_FOLDER_NAME = "Berlin_NONEDETERMINISTIC_TERMINAL_STATE"#"Berlin_right_action
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name =   "100X100_Berlin" #"15X15"
+DSM_name =  "15X15"#"100X100_Berlin"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))

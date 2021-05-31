@@ -6,7 +6,6 @@ from gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
 from gym_combat.envs.Common.constants import *
 import numpy as np
 import os
-
 PRINT_FLAG = False
 
 
@@ -58,16 +57,13 @@ class Greedy_player(AbsDecisionMaker):
         self.all_pairs_distances = all_pairs_distances
 
         #all_pairs_shortest_path_path = './Greedy/all_pairs_shortest_path_' + DSM_name + '___' + '.pkl'
-
-        all_pairs_shortest_path_path = '../gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path_' + DSM_name + '___filtered_long_paths_50_no_double' + '.pkl'
-        # all_pairs_shortest_path_path = './Greedy/all_pairs_shortest_path_' + DSM_name + '___filtered_long_paths_50_no_double' + '.pkl'
+        all_pairs_shortest_path_path = './Greedy/all_pairs_shortest_path_' + DSM_name + '___filtered_long_paths_50_no_double' + '.pkl'
         if os.path.exists(all_pairs_shortest_path_path):
             with open(all_pairs_shortest_path_path, 'rb') as f:
                 self.all_pairs_shortest_path = pickle.load(f)
                 print("Greedy: all_pairs_shortest_path loaded")
 
-        # closest_target_dict_path = './Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl'
-        closest_target_dict_path = '../gym_combat/gym_combat/envs/Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl'
+        closest_target_dict_path = './Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl'
         if os.path.exists(closest_target_dict_path):
             with open(closest_target_dict_path, 'rb') as f:
                 self.closest_target_dict = pickle.load(f)
@@ -185,6 +181,10 @@ class Greedy_player(AbsDecisionMaker):
 
     def find_closest_point_in_enemy_LOS(self, my_pos, enemy_pos):
         # all potential targets
+        dist_pos_enemy = np.linalg.norm(np.array(my_pos) - np.array(enemy_pos))
+        if dist_pos_enemy<=FIRE_RANGE:
+            return enemy_pos
+
         points_in_enemy_los = DICT_POS_FIRE_RANGE[enemy_pos]
 
         # find closest point in enemy line of sight
@@ -239,7 +239,7 @@ class Greedy_player(AbsDecisionMaker):
                 path_to_closest_target_reversed = self.all_pairs_shortest_path[closest_target][my_pos]
                 return list(path_to_closest_target_reversed.__reversed__())
 
-        #print("first time calc:    my_pos: ", my_pos, ", closest_target: ", closest_target)
+        print("first time calc:    my_pos: ", my_pos, ", closest_target: ", closest_target)
         if not (my_pos in self.all_pairs_shortest_path.keys()):
             self.all_pairs_shortest_path[my_pos] = {}
 
@@ -296,18 +296,19 @@ class Greedy_player(AbsDecisionMaker):
         return self._epsilon
 
     def save_model(self, episodes_rewards, save_folder_path, color):
-        if self.add_to_all_pairs_distances:
-            with open('./Greedy/all_pairs_distances_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
-                pickle.dump(self.all_pairs_distances, f,  protocol=2)
-                self.add_to_all_pairs_distances = False
-        if self.add_to_all_pairs_shortest_path:
-            with open('./Greedy/all_pairs_shortest_path_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
-                pickle.dump(self.all_pairs_shortest_path, f,  protocol=2)
-                self.add_to_all_pairs_shortest_path = False
-        if self.add_to_closest_target_dict:
-            with open('./Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
-                pickle.dump(self.closest_target_dict, f,  protocol=2)
-                self.add_to_closest_target_dict = False
+        pass
+        # if self.add_to_all_pairs_distances:
+        #     with open('./Greedy/all_pairs_distances_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
+        #         pickle.dump(self.all_pairs_distances, f,  protocol=2)
+        #         self.add_to_all_pairs_distances = False
+        # if self.add_to_all_pairs_shortest_path:
+        #     with open('./Greedy/all_pairs_shortest_path_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
+        #         pickle.dump(self.all_pairs_shortest_path, f,  protocol=2)
+        #         self.add_to_all_pairs_shortest_path = False
+        # if self.add_to_closest_target_dict:
+        #     with open('./Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
+        #         pickle.dump(self.closest_target_dict, f,  protocol=2)
+        #         self.add_to_closest_target_dict = False
 
     def calc_all_pairs_data(self, DSM):
         SIZE_X = 100
