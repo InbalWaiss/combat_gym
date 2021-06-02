@@ -5,6 +5,8 @@ from stable_baselines.common.env_checker import check_env
 from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common import make_vec_env
 from stable_baselines import DQN
+from stable_baselines.common.callbacks import CheckpointCallback
+from gym_combat.envs.Common.constants import *
 import tensorflow as tf
 
 def chcek_my_env():
@@ -13,23 +15,24 @@ def chcek_my_env():
 
 
 # Instantiate the env
-# env = GymCombatEnv()
-# Define and Train the agent
-#model = DQN('MlpPolicy', env).learn(total_timesteps=5000)
-
-
-
-# model = DQN('MlpPolicy', env, verbose=1)
-# model.learn(total_timesteps=300000)
-# model.save("deepq_GymCombatEnv_MlpPolicy")
-
-
 env = GymCombatEnv()
-#policy_kwargs = dict(act_fun=tf.nn.elu, net_arch=[256, 128, 128])
-model = DQN('CnnPolicy', env, verbose=1)
-model.learn(total_timesteps=1000000)
-model.save("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
-model = DQN.load("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
+# Define and Train the agent
+
+checkpoint_callback = CheckpointCallback(save_freq=100000, save_path='./logs/',
+                                         name_prefix='rl_model')
+
+
+model = DQN('MlpPolicy', env, verbose=1)
+model.learn(total_timesteps=3000000, callback=checkpoint_callback)
+model.save("deepq_GymCombatEnv_MlpPolicy_15X15_3000000")
+model = DQN.load("deepq_GymCombatEnv_MlpPolicy_15X15_3000000")
+
+# env = GymCombatEnv()
+# #policy_kwargs = dict(act_fun=tf.nn.elu, net_arch=[256, 128, 128])
+# model = DQN('CnnPolicy', env, verbose=1)
+# model.learn(total_timesteps=1000000)
+# model.save("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
+# model = DQN.load("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
 
 
 # env = GymCombatEnv()

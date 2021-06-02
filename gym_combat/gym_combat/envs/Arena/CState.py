@@ -26,7 +26,7 @@ class State(object):
             if DANGER_ZONE_IN_STATE:
                 points_in_enemy_los = DICT_POS_FIRE_RANGE[(self.enemy_pos._x, self.enemy_pos._y)]
                 for point in points_in_enemy_los:
-                    color = dict_of_colors_for_state[DARK_RED_N]
+                    color = dict_of_colors_for_state[RED_N]
                     if NONEDETERMINISTIC_TERMINAL_STATE:
                         dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
                         dist_floor = np.floor(dist)

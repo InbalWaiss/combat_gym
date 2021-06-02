@@ -193,6 +193,7 @@ class Environment(object):
         return reward_step_blue, reward_step_red
 
 
+
     def compute_terminal(self, whos_turn=None)-> WinEnum:
         first_player = self.blue_player
         second_player = self.red_player
@@ -212,18 +213,33 @@ class Environment(object):
             dist = np.linalg.norm(
                 np.array([first_player.x, first_player.y]) - np.array([second_player.x, second_player.y]))
 
+
             if NONEDETERMINISTIC_TERMINAL_STATE:
                 dist = np.max([dist, 1])
                 p = 1/dist
                 r = np.random.rand()
-                if r > p:
-                    # No kill
-                    win_status = WinEnum.NoWin
-                    self.win_status = win_status
-                    return win_status
-                #else: kill
+                if r<=p: # blue takes a shoot
+                    # Blue won!
+                    self.end_game_flag = True
+                    self.win_status = WinEnum.Blue
+                    return self.win_status
 
-            else:
+                else: # red takes a shoot
+                    p = 0.5
+                    r = np.random.rand()
+                    if r<=p:
+                        # Red won!
+                        self.end_game_flag = True
+                        self.win_status = WinEnum.Red
+                        return self.win_status
+
+                    else:
+                        # No kill
+                        win_status = WinEnum.NoWin
+                        self.win_status = win_status
+                        return win_status
+
+            else: #DETERMINISTIC_TERMINAL_STATE
                 if dist>FIRE_RANGE:
                     win_status = WinEnum.NoWin
                     self.win_status = win_status
@@ -429,15 +445,11 @@ class Environment(object):
         return
 
 
-
-
-
-
     def end_run(self):
         STATS_RESULTS_RELATIVE_PATH_THIS_RUN = os.path.join(self.path_for_run, STATS_RESULTS_RELATIVE_PATH)
         self.save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH_THIS_RUN,
                                      format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
-                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}_{Agent_type_str[self.blue_player._decision_maker.type()]}_{Agent_type_str[self.red_player._decision_maker.type()]}_{str(STR_FOLDER_NAME)}"))
+                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}_{str(STR_FOLDER_NAME)}"))
 
         # save info on run
         self.save_stats(self.save_folder_path)
@@ -469,25 +481,6 @@ class Environment(object):
         if not os.path.exists(save_folder_path):
             os.makedirs(save_folder_path)
 
-        chcek_unvisited_states = False
-        counter_ones = 0
-        num_of_states = 15 * 15 * 15 * 15
-        if self.red_player._decision_maker.type() == AgentType.Q_table:
-            Q_matrix = self.red_player._decision_maker._Q_matrix
-            chcek_unvisited_states = True
-        elif self.blue_player._decision_maker.type() == AgentType.Q_table:
-            Q_matrix = self.blue_player._decision_maker._Q_matrix
-            chcek_unvisited_states = True
-        if chcek_unvisited_states:
-            num_of_states = 15 * 15 * 15 * 15
-            block_states = np.sum(DSM)
-            for x1 in range(SIZE_Y):
-                for y1 in range(SIZE_Y):
-                    for x2 in range(SIZE_Y):
-                        for y2 in range(SIZE_Y):
-                            if list(Q_matrix[(x1, y1), (x2, y2)]) == list(np.ones(NUMBER_OF_ACTIONS)):
-                                counter_ones += 1
-
 
         info = {f"NUM_OF_EPISODES": [NUM_OF_EPISODES],
                 f"MOVE_PENALTY": [MOVE_PENALTY],
@@ -510,10 +503,7 @@ class Environment(object):
                 f"%WINS_BLUE": [self.wins_for_blue/self.NUMBER_OF_EPISODES*100],
                 f"%WINS_RED": [self.wins_for_red/self.NUMBER_OF_EPISODES*100],
                 f"%TIES": [self.tie_count/self.NUMBER_OF_EPISODES*100],
-                f"%Blue_agent_type" : [Agent_type_str[self.blue_player._decision_maker.type()]],
-                f"%Blue_agent_model_loded": [self.blue_player._decision_maker.path_model_to_load],
-                f"%Red_agent_type" : [Agent_type_str[self.red_player._decision_maker.type()]],
-                f"%Red_agent_model_loded": [self.red_player._decision_maker.path_model_to_load]}
+                }
 
 
         df = pd.DataFrame(info)
@@ -521,7 +511,7 @@ class Environment(object):
 
         # save models
         self.red_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
-        self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Blue)
+        #self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Blue)
 
 
 class Episode():
@@ -529,8 +519,8 @@ class Episode():
         self.episode_number = episode_number
         self.episode_reward_blue = 0
         self.episode_reward_red = 0
-        self.is_terminal = False
         self.number_of_steps = 0
+        self.is_terminal = False
 
         if EVALUATE or episode_number == 1 or show_always:
             self.show = True
@@ -569,7 +559,7 @@ class Episode():
             print(f"reward for blue player is: , {self.episode_reward_blue}")
             print(f"epsilon (blue player) is {blue_epsilon}")
             print(f"number of steps: {steps_current_game}")
-
+            # print(f"mean number of steps of last {number_of_episodes} episodes: , {np.mean(env.steps_per_episode[-env.SHOW_EVERY:])}")
 
             self.print_episode(env, steps_current_game)
 

@@ -8,7 +8,6 @@ from gym_combat.envs.Arena.helper_funcs import *
 from time import sleep
 
 
-
 def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True, steps=False, player=Color.Blue):
     moving_avg = np.convolve(array_of_results, np.ones((plot_every,)) / plot_every, mode='valid')
     plt.figure()
@@ -249,7 +248,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
         if DANGER_ZONE_IN_STATE:
             points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
             for point in points_in_enemy_los:
-                color = dict_of_colors_for_graphics[DARK_RED_N]
+                color = dict_of_colors_for_graphics[RED_N]
                 if NONEDETERMINISTIC_TERMINAL_STATE:
                     dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
                     dist_floor = np.floor(dist)
@@ -357,7 +356,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                 if DANGER_ZONE_IN_STATE:
                     points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
                     for point in points_in_enemy_los:
-                        color = dict_of_colors_for_graphics[DARK_RED_N]
+                        color = dict_of_colors_for_graphics[RED_N]
                         if NONEDETERMINISTIC_TERMINAL_STATE:
                             dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
                             dist_floor = np.floor(dist)
@@ -389,8 +388,9 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
             cv2.circle(informative_env, (center_cord_blue_y, center_cord_blue_x), radius, blue_color, thickness)
 
     cv2.imshow("informative_env", np.array(informative_env))  # show it!
+
     cv2.waitKey(2)
     if is_terminal:
         sleep(1.2)
     else:
-        sleep(0.2)
+        sleep(0.4)

@@ -5,7 +5,6 @@ from os import path
 import pickle
 from gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
-PRINT_TILES_IN_LOS = False
 USE_BRESENHAM_LINE = False
 
 DANGER_ZONE_IN_STATE = True
@@ -25,7 +24,6 @@ FIRE_RANGE_FLAG = True
 
 NONEDETERMINISTIC_TERMINAL_STATE = True
 
-
 #image state mode
 IMG_STATE_MODE = 'L' #'P'
 CLOSE_START_POSITION = True
@@ -36,7 +34,7 @@ STR_FOLDER_NAME = "Berlin_NONEDETERMINISTIC_TERMINAL_STATE"#"Berlin_right_action
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name =  "15X15"#"100X100_Berlin"
+DSM_name =  "15X15"#"100X100_Berlin" #
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
@@ -292,7 +290,7 @@ EVALUATE_BATCH_SIZE=20
 USE_DISPLAY = True
 SHOW_EVERY =50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
-SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
+SAVE_STATS_EVERY = 1000+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True
