@@ -40,7 +40,7 @@ DSM_name =  "15X15"#"100X100_Berlin" #
 COMMON_PATH = path.dirname(path.realpath(__file__))
 MAIN_PATH = path.dirname(COMMON_PATH)
 OUTPUT_DIR = path.join(MAIN_PATH, 'Arena')
-STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, '../gym_combat/gym_combat/envs/Arena/statistics')
+STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
 RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, '../gym_combat/gym_combat/envsQtable/trained_agents')
 
 

@@ -92,22 +92,20 @@ class GymCombatEnv(gym.Env):
             self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
             self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
 
-            if self.current_episode.is_terminal:  # Blue won the game!
+            if not self.current_episode.is_terminal:
+                ##### Red's turn! #####
+                observation_for_red_s0: State = self.env.get_observation_for_red()
+                action_red: AgentAction = self.red_decision_maker.get_action(observation_for_red_s0)
+                self.env.take_action(Color.Red, action_red)  # take the action!
+
+                # check if red won
+                self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
                 reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
-                self.env.update_win_counters(self.current_episode.number_of_steps)
-                observation_for_blue_s1: State = self.env.get_observation_for_blue()
-                return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
 
-            ##### Red's turn! #####
-            observation_for_red_s0: State = self.env.get_observation_for_red()
-            action_red: AgentAction = self.red_decision_maker.get_action(observation_for_red_s0)
-            self.env.take_action(Color.Red, action_red)  # take the action!
 
-            # check if red won
-            self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
-            reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
             if self.current_episode.is_terminal:
                 self.env.update_win_counters(self.current_episode.number_of_steps)
+
             observation_for_blue_s1: State = self.env.get_observation_for_blue()
 
             self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
@@ -115,6 +113,7 @@ class GymCombatEnv(gym.Env):
             if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
                 # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
                 current_episode.is_terminal = True
+
             return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
 
     def end_of_episode(self):
