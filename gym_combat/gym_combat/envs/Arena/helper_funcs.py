@@ -7,6 +7,7 @@ from gym_combat.envs.Arena.geometry import LOS, bresenham
 def check_if_LOS(x1, y1, x2, y2):
     """returns True is there are no obstacles between (x1,y1) and (x2,y2)
     otherwise return False"""
+    USE_BRESENHAM_LINE = False
     if USE_BRESENHAM_LINE:
         list_of_points = bresenham(x1, y1, x2, y2)
     else:

@@ -5,9 +5,7 @@ from os import path
 import pickle
 from gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
-USE_BRESENHAM_LINE = False
 
-DANGER_ZONE_IN_STATE = True
 LOS_PENALTY_FLAG = True
 
 ACTION_SPACE_9 = True
@@ -20,12 +18,9 @@ FIXED_START_POINT_RED = False
 FIXED_START_POINT_BLUE = False
 TAKE_WINNING_STEP_BLUE = True
 
-FIRE_RANGE_FLAG = True
-
 NONEDETERMINISTIC_TERMINAL_STATE = True
 
 #image state mode
-IMG_STATE_MODE = 'L' #'P'
 CLOSE_START_POSITION = True
 
 FULLY_CONNECTED = True
@@ -174,7 +169,6 @@ ENEMY_LOS_PENALTY = MOVE_PENALTY*2
 TIE = 0
 
 
-
 NUMBER_OF_ACTIONS = 9
 
 BLUE_N = 1 #blue player key in dict
@@ -196,7 +190,6 @@ class WinEnum(IntEnum):
     Red = 1
     Tie = 2
     NoWin = 3
-    #Done = 4
 
 USE_OLD_COLORS = False
 # for better separation of colors

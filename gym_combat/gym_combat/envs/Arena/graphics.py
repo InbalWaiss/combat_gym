@@ -245,17 +245,17 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                 (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = dict_of_colors_for_graphics[DARK_DARK_RED_N]
 
 
-        if DANGER_ZONE_IN_STATE:
-            points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
-            for point in points_in_enemy_los:
-                color = dict_of_colors_for_graphics[RED_N]
-                if NONEDETERMINISTIC_TERMINAL_STATE:
-                    dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
-                    dist_floor = np.floor(dist)
-                    enemy_color = dict_of_colors_for_graphics[RED_N]
-                    color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, 15 * dist_floor)))
-                informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-                (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
+        # set danger zone in state
+        points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
+        for point in points_in_enemy_los:
+            color = dict_of_colors_for_graphics[RED_N]
+            if NONEDETERMINISTIC_TERMINAL_STATE:
+                dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
+                dist_floor = np.floor(dist)
+                enemy_color = dict_of_colors_for_graphics[RED_N]
+                color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, 15 * dist_floor)))
+            informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
+            (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
 
 
 
@@ -353,17 +353,17 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                         informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
                         (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = dict_of_colors_for_graphics[DARK_DARK_RED_N]
 
-                if DANGER_ZONE_IN_STATE:
-                    points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
-                    for point in points_in_enemy_los:
-                        color = dict_of_colors_for_graphics[RED_N]
-                        if NONEDETERMINISTIC_TERMINAL_STATE:
-                            dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
-                            dist_floor = np.floor(dist)
-                            enemy_color = dict_of_colors_for_graphics[RED_N]
-                            color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, 15 * dist_floor)))
-                        informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-                        (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
+                # set danger zone in state
+                points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
+                for point in points_in_enemy_los:
+                    color = dict_of_colors_for_graphics[RED_N]
+                    if NONEDETERMINISTIC_TERMINAL_STATE:
+                        dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
+                        dist_floor = np.floor(dist)
+                        enemy_color = dict_of_colors_for_graphics[RED_N]
+                        color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, 15 * dist_floor)))
+                    informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
+                    (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
 
             center_cord_red_x = (red.x + margin_x) * const + radius
             center_cord_red_y = (red.y + margin_y) * const + radius

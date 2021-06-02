@@ -209,41 +209,41 @@ class Environment(object):
             self.win_status = win_status
             return win_status
 
-        if FIRE_RANGE_FLAG:
-            dist = np.linalg.norm(
-                np.array([first_player.x, first_player.y]) - np.array([second_player.x, second_player.y]))
+
+        dist = np.linalg.norm(
+            np.array([first_player.x, first_player.y]) - np.array([second_player.x, second_player.y]))
 
 
-            if NONEDETERMINISTIC_TERMINAL_STATE:
-                dist = np.max([dist, 1])
-                p = 1/dist
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            dist = np.max([dist, 1])
+            p = 1/dist
+            r = np.random.rand()
+            if r<=p: # blue takes a shoot
+                # Blue won!
+                self.end_game_flag = True
+                self.win_status = WinEnum.Blue
+                return self.win_status
+
+            else: # red takes a shoot
+                p = 0.5
                 r = np.random.rand()
-                if r<=p: # blue takes a shoot
-                    # Blue won!
+                if r<=p:
+                    # Red won!
                     self.end_game_flag = True
-                    self.win_status = WinEnum.Blue
+                    self.win_status = WinEnum.Red
                     return self.win_status
 
-                else: # red takes a shoot
-                    p = 0.5
-                    r = np.random.rand()
-                    if r<=p:
-                        # Red won!
-                        self.end_game_flag = True
-                        self.win_status = WinEnum.Red
-                        return self.win_status
-
-                    else:
-                        # No kill
-                        win_status = WinEnum.NoWin
-                        self.win_status = win_status
-                        return win_status
-
-            else: #DETERMINISTIC_TERMINAL_STATE
-                if dist>FIRE_RANGE:
+                else:
+                    # No kill
                     win_status = WinEnum.NoWin
                     self.win_status = win_status
                     return win_status
+
+        else: #DETERMINISTIC_TERMINAL_STATE
+            if dist>FIRE_RANGE:
+                win_status = WinEnum.NoWin
+                self.win_status = win_status
+                return win_status
 
         if whos_turn == Color.Blue:
             win_status = WinEnum.Blue
@@ -322,11 +322,8 @@ class Environment(object):
 
 
             if is_los:
-                if FIRE_RANGE_FLAG:
-                    dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
-                else:
-                    dist = -np.inf
-                if not FIRE_RANGE_FLAG or dist<=FIRE_RANGE:
+
+                if dist<=FIRE_RANGE:
 
                     ret_val = True
 
@@ -379,11 +376,8 @@ class Environment(object):
 
 
             if is_los:
-                if FIRE_RANGE_FLAG:
-                    dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
-                else:
-                    dist = -np.inf
-                if not FIRE_RANGE_FLAG or dist<=FIRE_RANGE:
+
+                if dist<=FIRE_RANGE:
 
                     ret_val = True
 
@@ -491,9 +485,7 @@ class Environment(object):
                 f"epsilon": [START_EPSILON],
                 f"EPSILONE_DECAY": [EPSILONE_DECAY],
                 f"ACTION_SPACE_9": [ACTION_SPACE_9],
-                f"DANGER_ZONE_IN_STATE": [DANGER_ZONE_IN_STATE],
                 f"LOS_PENALTY_FLAG": [LOS_PENALTY_FLAG],
-                f"FIRE_RANGE_FLAG": [FIRE_RANGE_FLAG],
                 f"FIRE_RANGE": [FIRE_RANGE],
                 f"DSM_NAME": [DSM_name],
                 f"RED_PLAYER_MOVES": [RED_PLAYER_MOVES],
