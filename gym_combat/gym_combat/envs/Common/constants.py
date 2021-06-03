@@ -5,10 +5,7 @@ from os import path
 import pickle
 from gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
-PRINT_TILES_IN_LOS = False
-USE_BRESENHAM_LINE = False
 
-DANGER_ZONE_IN_STATE = True
 LOS_PENALTY_FLAG = True
 
 ACTION_SPACE_9 = True
@@ -21,13 +18,9 @@ FIXED_START_POINT_RED = False
 FIXED_START_POINT_BLUE = False
 TAKE_WINNING_STEP_BLUE = True
 
-FIRE_RANGE_FLAG = True
-
 NONEDETERMINISTIC_TERMINAL_STATE = False
 
-
 #image state mode
-IMG_STATE_MODE = 'L' #'P'
 CLOSE_START_POSITION = True
 
 FULLY_CONNECTED = True
@@ -36,13 +29,13 @@ STR_FOLDER_NAME = "Berlin_NONEDETERMINISTIC_TERMINAL_STATE"#"Berlin_right_action
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name =   "100X100_Berlin" #"15X15"
+DSM_name =  "15X15"#"100X100_Berlin" #
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
 MAIN_PATH = path.dirname(COMMON_PATH)
 OUTPUT_DIR = path.join(MAIN_PATH, 'Arena')
-STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, '../gym_combat/gym_combat/envs/Arena/statistics')
+STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
 RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, '../gym_combat/gym_combat/envsQtable/trained_agents')
 
 
@@ -176,7 +169,6 @@ ENEMY_LOS_PENALTY = MOVE_PENALTY*2
 TIE = 0
 
 
-
 NUMBER_OF_ACTIONS = 9
 
 BLUE_N = 1 #blue player key in dict
@@ -198,7 +190,6 @@ class WinEnum(IntEnum):
     Red = 1
     Tie = 2
     NoWin = 3
-    #Done = 4
 
 USE_OLD_COLORS = False
 # for better separation of colors
@@ -285,14 +276,14 @@ EVALUATE_SHOW_EVERY = 1
 EVALUATE_NUM_OF_EPISODES = 100
 EVALUATE_SAVE_STATS_EVERY = 100
 
-EVALUATE_PLAYERS_EVERY = 1000
-EVALUATE_BATCH_SIZE=0
+EVALUATE_PLAYERS_EVERY = 100
+EVALUATE_BATCH_SIZE=20
 
 #save information
-USE_DISPLAY = False
+USE_DISPLAY = True
 SHOW_EVERY =50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
-SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
+SAVE_STATS_EVERY = 200+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True

@@ -2,10 +2,10 @@
 
 import numpy as np
 from PIL import Image
-import gym_combat.envs.Arena
-from gym_combat.envs.Common.constants import SIZE_X, SIZE_Y, IMG_STATE_MODE, SIZE_X_BB, SIZE_Y_BB, BB_STATE
+import gym_combat.envs.Arena as Arena
+from gym_combat.envs.Common.constants import SIZE_X, SIZE_Y, SIZE_X_BB, SIZE_Y_BB, BB_STATE
 
-from DQN.deeprl_prj.core import Preprocessor
+from gym_combat.envs.DQN.deeprl_prj.core import Preprocessor
 
 if BB_STATE:
     SIZE_X = SIZE_X_BB
@@ -127,13 +127,9 @@ class AtariPreprocessor(Preprocessor):
         if type(state) == Arena.CState.State:
             org_state = state.img
 
-        if IMG_STATE_MODE=='L':
-            # 'L': 8-bit pixels, black and white
-            state_for_network = np.array(Image.fromarray(org_state).convert('L').resize((SIZE_X, SIZE_Y)))
 
-        else: #IMG_STATE_MODE=='P'
-            # 'P': 8-bit pixels, mapped to any other mode using a color palette
-            state_for_network = np.array(Image.fromarray(org_state).convert('P').resize((SIZE_X, SIZE_Y)))
+        # 'L': 8-bit pixels, black and white
+        state_for_network = np.array(Image.fromarray(org_state).convert('L').resize((SIZE_X, SIZE_Y)))
 
 
 

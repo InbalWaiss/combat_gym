@@ -16,18 +16,12 @@ from keras.backend.tensorflow_backend import set_session
 import argparse
 import matplotlib.pyplot as plt
 
-from DQN.deeprl_prj.policy import *
-from DQN.deeprl_prj.objectives import *
-from DQN.deeprl_prj.preprocessors import *
-from DQN.deeprl_prj.utils import *
-from DQN.deeprl_prj.core import  *
-from DQN.fixed_state_berlin import fixed_state_berlin
-
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.allow_soft_placement = True
-set_session(tf.Session(config=config))
-
+from gym_combat.envs.DQN.deeprl_prj.policy import *
+from gym_combat.envs.DQN.deeprl_prj.objectives import *
+from gym_combat.envs.DQN.deeprl_prj.preprocessors import *
+from gym_combat.envs.DQN.deeprl_prj.utils import *
+from gym_combat.envs.DQN.deeprl_prj.core import  *
+from gym_combat.envs.DQN.fixed_state_berlin import fixed_state_berlin
 
 def save_scalar(step, name, value, writer):
     """Save a scalar value to tensorboard.
