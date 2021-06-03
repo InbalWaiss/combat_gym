@@ -393,4 +393,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
     if is_terminal:
         sleep(1.2)
     else:
-        sleep(0.4)
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            sleep(0.4)
+        else:
+            sleep(0.2)

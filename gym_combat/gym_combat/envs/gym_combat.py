@@ -100,8 +100,8 @@ class GymCombatEnv(gym.Env):
 
                 # check if red won
                 self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
-                reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
 
+            reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
 
             if self.current_episode.is_terminal:
                 self.env.update_win_counters(self.current_episode.number_of_steps)

@@ -376,7 +376,7 @@ class Environment(object):
 
 
             if is_los:
-
+                dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
                 if dist<=FIRE_RANGE:
 
                     ret_val = True
