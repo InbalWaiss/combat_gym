@@ -1,11 +1,11 @@
 import gym
 import gym_combat
 from gym_combat.envs.gym_combat import GymCombatEnv
-from stable_baselines.common.env_checker import check_env
-from stable_baselines.common.policies import MlpPolicy
-from stable_baselines.common import make_vec_env
-from stable_baselines import DQN
-from stable_baselines.common.callbacks import CheckpointCallback
+from stable_baselines3.common.env_checker import check_env
+from stable_baselines3.common.policies import MlpPolicy
+from stable_baselines3.common import make_vec_env
+from stable_baselines3 import DQN
+from stable_baselines3.common.callbacks import CheckpointCallback
 from gym_combat.envs.Common.constants import *
 import tensorflow as tf
 
