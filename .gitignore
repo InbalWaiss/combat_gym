@@ -22,7 +22,7 @@ keys/
 .idea
 
 logs/
-
+/tensorboard_log/*
 .ipynb_checkpoints
 ghostdriver.log
 

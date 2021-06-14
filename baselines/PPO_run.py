@@ -1,6 +1,7 @@
 import gym
 import gym_combat
 from gym_combat.envs.gym_combat import GymCombatEnv
+import os
 
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3 import PPO
@@ -14,8 +15,9 @@ def chcek_my_env():
 
 
 env = make_vec_env('gym-combat-v0', n_envs=4)
-model = PPO('MlpPolicy', env, verbose=1,gamma=0.99,learning_rate=0.00001,tensorboard_log=r'.\gym_combat\gym_combat\envs\Arena\statistics\tensorboard',n_steps=32, n_epochs=4, clip_range=0.2, ent_coef=0.025, vf_coef=0.005, clip_range_vf=None)
-model.learn(total_timesteps=8000000)
+tensorboard_path = os.path.join("..", "tensorboard_log")
+model = PPO('MlpPolicy', env, verbose=1,gamma=0.99,learning_rate=0.0001,tensorboard_log=tensorboard_path,n_steps=32, n_epochs=4, clip_range=0.2, ent_coef=0, vf_coef=0.0005, clip_range_vf=None)
+model.learn(total_timesteps=8000000, log_interval = 100)
 model.save("ppo2_GymCombatEnv_MlpPolicy_10000000")
 
 model = PPO.load("ppo2_GymCombatEnv_MlpPolicy_10000000")

@@ -21,7 +21,8 @@ def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True
         if save_figure:
             plt.savefig(save_folder_path + os.path.sep + '#steps_' + str(len(array_of_results) - 1))
     else:
-        plt.axis([0, len(array_of_results), LOST_PENALTY - 50, WIN_REWARD + 50])
+        plt.axis([0, len(array_of_results), LOST_PENALTY - 1, WIN_REWARD + 1])
+        #plt.axis([0, len(array_of_results), LOST_PENALTY - 50, WIN_REWARD + 50])
         if player == Color.Blue:
             plt.suptitle(f"Rewards per episode for BLUE player")
         if player == Color.Red:
@@ -147,17 +148,14 @@ def save_evaluation_data(evaluation__number_of_steps, evaluation__win_array_blue
     moving_avg = np.convolve(evaluation__number_of_steps, np.ones((plot_every,)) / plot_every, mode='valid')
     axs[0, 2].plot([i for i in range(len(moving_avg))], moving_avg)
     axs[0, 2].set_title(f"Avg number of steps", fontsize=10, fontweight='bold', color='black')
-    axs[0, 2].axis([0, len(evaluation__number_of_steps), 0, MAX_STEPS_PER_EPISODE])
+    axs[0, 2].axis([0, len(evaluation__number_of_steps), 0, np.max(evaluation__number_of_steps)+1])
     # blue reward
 
     moving_avg_blue = np.convolve(evaluation__rewards_for_blue, np.ones((plot_every,)) / plot_every, mode='valid')
-    reward_upper_bound = np.max(moving_avg_blue)
-    reward_lower_bound = np.min(moving_avg_blue)
     # Blue reward:
     axs[1, 2].plot([i for i in range(len(moving_avg_blue))], moving_avg_blue)
     axs[1, 2].set_title(f"rewards BLUE player", fontsize=10, fontweight='bold', color='blue')
-    axs[1, 2].axis([0, len(win_array_blue), (reward_lower_bound - 10 / np.max([reward_lower_bound,1])),
-                    (reward_upper_bound + 10 / np.max([reward_upper_bound,1]))])
+    axs[1, 2].axis([0, len(win_array_blue), np.min(evaluation__rewards_for_blue)-1, np.max(evaluation__rewards_for_blue)+1 ])
 
 
     plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics' + str(len(evaluation__number_of_steps*EVALUATE_PLAYERS_EVERY)))

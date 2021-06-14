@@ -102,6 +102,8 @@ class GymCombatEnv(gym.Env):
                 self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
 
             reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
+            self.current_episode.episode_reward_red += reward_step_red
+            self.current_episode.episode_reward_blue += reward_step_blue
 
             if self.current_episode.is_terminal:
                 self.env.update_win_counters(self.current_episode.number_of_steps)
@@ -112,7 +114,10 @@ class GymCombatEnv(gym.Env):
 
             if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
                 # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
-                current_episode.is_terminal = True
+                self.current_episode.is_terminal = True
+
+            if self.current_episode.is_terminal:
+                self.end_of_episode()
 
             return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
 
@@ -127,7 +132,7 @@ class GymCombatEnv(gym.Env):
             self.env.end_run()
 
         # print info of episode:
-        self.current_episode.print_info_of_episode(self.env, self.current_episode.number_of_steps, 0, self.current_episode.episode_number)
+        #self.current_episode.print_info_of_episode(self.env, self.current_episode.number_of_steps, 0, self.current_episode.episode_number)
 
     def evaluate(self):
         episode_number = self.current_episode.episode_number
