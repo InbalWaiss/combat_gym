@@ -214,7 +214,7 @@ class Environment(object):
         if NONEDETERMINISTIC_TERMINAL_STATE:
             if whos_turn == Color.Blue or SIMULTANEOUS_STEPS:
                 dist = np.max([dist, 1])
-                p = np.min([(1/dist)*3, 1])
+                p = np.min([(1/dist)*2, 1])
                 r = np.random.rand()
                 if r<=p: # blue takes a shoot
                     # Blue won!
@@ -279,7 +279,7 @@ class Environment(object):
                 self.red_player.action(action)
 
         else: #player_color==Color.Blue
-            if TAKE_WINNING_STEP_BLUE:
+            if TAKE_WINNING_STEP_BLUE and not NONEDETERMINISTIC_TERMINAL_STATE:
                 ret_val, winning_action = self.can_blue_win()
                 if ret_val:
                     action = winning_action
