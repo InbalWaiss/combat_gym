@@ -18,7 +18,8 @@ FIXED_START_POINT_RED = False
 FIXED_START_POINT_BLUE = False
 TAKE_WINNING_STEP_BLUE = True
 
-NONEDETERMINISTIC_TERMINAL_STATE = False
+SIMULTANEOUS_STEPS = False
+NONEDETERMINISTIC_TERMINAL_STATE = True
 
 #image state mode
 CLOSE_START_POSITION = True
@@ -29,7 +30,7 @@ STR_FOLDER_NAME = "Berlin_NONEDETERMINISTIC_TERMINAL_STATE"#"Berlin_right_action
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name =  "15X15"#"100X100_Berlin" #
+DSM_name = "15X15" #"100X100_Berlin"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
@@ -88,7 +89,7 @@ elif DSM_name=="100X100_Berlin":
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
     MAX_STEPS_PER_EPISODE = 250
     MIN_PATH_DIST_FOR_START_POINTS = 2
-    BB_STATE = False#True
+    BB_STATE = True
     BB_MARGIN = 3
     SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
@@ -207,14 +208,15 @@ dict_of_colors_for_state = {1: (0, 0, 255),  #blue
                   12: (50, 0, 0), #dark dark red
                   }
 
-dict_of_colors_for_graphics = {1: (255, 0, 0),  #blue
+
+dict_of_colors_for_graphics = {1: (239, 0, 0),  #blue
                                2: (175, 0, 0),  #darker blue
-                               3: (0, 0, 255),  # red
+                               3: (0, 0, 239),  # red
                                4: (0, 20, 175),  #dark red
                                5: (230, 100, 150),  #purple
                                6: (60, 255, 255),  #yellow
                                7: (100, 100, 100),  #grey
-                               8: (0, 255, 0),  #green
+                               8: (0, 239, 0),  #green
                                9: (0, 0, 0),  #black
                                10: (0, 0, 100),  #bright red
                                11: (0, 0, 25),  #bright bright red
@@ -287,9 +289,4 @@ SAVE_STATS_EVERY = 200+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True
-UPDATE_RED_CONTEXT = True
-UPDATE_BLUE_CONTEXT = True
 
-if not IS_TRAINING:
-    UPDATE_RED_CONTEXT=False
-    UPDATE_BLUE_CONTEXT=False
