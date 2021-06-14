@@ -83,8 +83,8 @@ policy_kwargs = dict(
 env = GymCombatEnv()
 model = DQN('LnMlpPolicy', env, verbose=1)
 model.learn(total_timesteps=1000000)
-model.save("deepq_GymCombatEnv_LnMlpPolicy_1000000_Berlin")
-model = DQN.load("deepq_GymCombatEnv_LnMlpPolicy_1000000_Berlin")
+model.save("deepq_GymCombatEnv_LnMlpPolicy_1000000_15X15")
+model = DQN.load("deepq_GymCombatEnv_LnMlpPolicy_1000000_15X15")
 
 env = GymCombatEnv()
 obs = env.reset()

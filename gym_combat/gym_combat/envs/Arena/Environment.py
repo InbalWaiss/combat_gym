@@ -212,9 +212,9 @@ class Environment(object):
 
 
         if NONEDETERMINISTIC_TERMINAL_STATE:
-            if whos_turn == Color.Blue:
+            if whos_turn == Color.Blue or SIMULTANEOUS_STEPS:
                 dist = np.max([dist, 1])
-                p = 1/dist
+                p = np.min([(1/dist)*3, 1])
                 r = np.random.rand()
                 if r<=p: # blue takes a shoot
                     # Blue won!
@@ -222,7 +222,7 @@ class Environment(object):
                     self.win_status = WinEnum.Blue
                     return self.win_status
 
-            elif whos_turn == Color.Red:
+            if whos_turn == Color.Red or SIMULTANEOUS_STEPS:
                 p = 0.5
                 r = np.random.rand()
                 if r<=p:
@@ -285,6 +285,12 @@ class Environment(object):
                     action = winning_action
             self.blue_player.action(action)
             return action
+
+    def check_if_blue_and_red_same_pos(self):
+        if self.blue_player.x == self.red_player.x:
+            if self.blue_player.y == self.red_player.y:
+                return True
+        return False
 
     def can_red_win(self):
         blue_player = self.blue_player

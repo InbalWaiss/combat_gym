@@ -7,6 +7,7 @@ from gym_combat.envs.Arena import Environment
 from gym_combat.envs.Arena.helper_funcs import *
 from time import sleep
 
+buffer_for_win_reward = 5
 
 def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True, steps=False, player=Color.Blue):
     moving_avg = np.convolve(array_of_results, np.ones((plot_every,)) / plot_every, mode='valid')
@@ -48,14 +49,14 @@ def save_reward_stats(save_folder_path, plot_every,  win_array_blue, win_array_r
     # Blue reward:
     axs[0, 0].plot([i for i in range(len(moving_avg_blue))], moving_avg_blue)
     axs[0, 0].set_title(f"Episode rewards BLUE player", fontsize=12, fontweight='bold', color='blue')
-    axs[0, 0].axis([0, len(win_array_blue), (reward_lower_bound - 10 / np.max([reward_lower_bound,1])),
-                    (reward_upper_bound + 10 / np.max([reward_upper_bound,1]))])
+    axs[0, 0].axis([0, len(win_array_blue), (reward_lower_bound - buffer_for_win_reward / np.max([reward_lower_bound,1])),
+                    (reward_upper_bound + buffer_for_win_reward / np.max([reward_upper_bound,1]))])
     axs[0, 0].set(xlabel="episode #", ylabel=f"Reward {SHOW_EVERY}ma")
     # # Red reward:
     # axs[0, 1].plot([i for i in range(len(moving_avg_red))], moving_avg_red)
     # axs[0, 1].set_title(f"Episode rewards Red player", fontsize=12, fontweight='bold', color='red')
-    # axs[0, 1].axis([0, len(win_array_red), (reward_lower_bound - 10 / np.max([reward_lower_bound,1])),
-    #                 int(reward_upper_bound + 10 / np.max([reward_upper_bound,1]))])
+    # axs[0, 1].axis([0, len(win_array_red), (reward_lower_bound - buffer_for_win_reward / np.max([reward_lower_bound,1])),
+    #                 int(reward_upper_bound + buffer_for_win_reward / np.max([reward_upper_bound,1]))])
     # axs[0, 1].set(xlabel="episode #", ylabel=f"Reward {SHOW_EVERY}ma")
     # Steps:
     moving_avg = np.convolve(steps_per_episode, np.ones((plot_every,)) / plot_every, mode='valid')
@@ -156,8 +157,8 @@ def save_evaluation_data(evaluation__number_of_steps, evaluation__win_array_blue
     # Blue reward:
     axs[1, 2].plot([i for i in range(len(moving_avg_blue))], moving_avg_blue)
     axs[1, 2].set_title(f"rewards BLUE player", fontsize=10, fontweight='bold', color='blue')
-    axs[1, 2].axis([0, len(win_array_blue), (reward_lower_bound - 10 / np.max([reward_lower_bound,1])),
-                    (reward_upper_bound + 10 / np.max([reward_upper_bound,1]))])
+    axs[1, 2].axis([0, len(win_array_blue), (reward_lower_bound - buffer_for_win_reward / np.max([reward_lower_bound,1])),
+                    (reward_upper_bound + buffer_for_win_reward / np.max([reward_upper_bound,1]))])
 
 
     plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics' + str(len(evaluation__number_of_steps*EVALUATE_PLAYERS_EVERY)))
@@ -247,7 +248,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
 
         points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
         for point in points_in_enemy_los:
-            color = dict_of_colors_for_graphics[RED_N]
+            color = dict_of_colors_for_graphics[DARK_RED_N]
             if NONEDETERMINISTIC_TERMINAL_STATE:
                 dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
                 dist_floor = np.floor(dist)

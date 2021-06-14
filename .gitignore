@@ -34,7 +34,7 @@ src
 .cache
 
 MUJOCO_LOG.TXT
-/gym_combat/gym_combat/envs/Arena/statistics/
+/gym_combat/gym_combat/envs/Arena/statistics/*
 /gym_combat/gym_combat/envs/Arena/statistics/02_06_10_18/
 /gym_combat/gym_combat/envs/Arena/statistics/02_06_10_26_Berlin_NONEDETERMINISTIC_TERMINAL_STATE/
 /gym_combat/gym_combat/envs/Arena/statistics/02_06_10_30_Berlin_NONEDETERMINISTIC_TERMINAL_STATE/

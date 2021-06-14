@@ -59,36 +59,72 @@ class GymCombatEnv(gym.Env):
 
     def step(self, action_blue):
 
-        self.current_episode.update_number_of_steps()
+        if SIMULTANEOUS_STEPS:
+            self.current_episode.update_number_of_steps()
 
-        ##### Blue takes the action #####
-        self.env.take_action(Color.Blue, AgentAction(action_blue))
-
-        self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
-        self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
-
-        if not self.current_episode.is_terminal:
-            ##### Red's turn! #####
             observation_for_red_s0: State = self.env.get_observation_for_red()
-            action_red: AgentAction = self.red_decision_maker.get_action(observation_for_red_s0)
-            self.env.take_action(Color.Red, action_red)  # take the action!
+            ##### Blue takes the action #####
+            self.env.take_action(Color.Blue, AgentAction(action_blue))  # take the action!
 
-            # check if red won
+            if not env.check_if_blue_and_red_same_pos():
+                ##### Red takes the action #####
+                action_red: AgentAction = self.red_decision_maker.get_action(observation_for_red_s0)
+                self.env.take_action(Color.Red, action_red)  # take the action!
+
             self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
 
-        reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
+            if self.current_episode.is_terminal:
+                self.env.update_win_counters(self.current_episode.number_of_steps)
 
-        if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
-            # end episode if MAX_STEPS_PER_EPISODE is reached
-            self.current_episode.is_terminal = True
+            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
 
-        if self.current_episode.is_terminal:
-            self.end_of_episode()
+            observation_for_blue_s1: State = self.env.get_observation_for_blue()
 
-        observation_for_blue_s1: State = self.env.get_observation_for_blue()
-        self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
+            reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
+            self.current_episode.episode_reward_red += reward_step_red
+            self.current_episode.episode_reward_blue += reward_step_blue
 
-        return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
+            if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
+                # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
+                self.current_episode.is_terminal = True
+
+            if self.current_episode.is_terminal:
+                self.end_of_episode()
+
+            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
+
+        else: # STEP BY STEP
+
+            ##### Blue takes the action #####
+            self.env.take_action(Color.Blue, AgentAction(action_blue))
+
+            self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
+            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
+
+            if not self.current_episode.is_terminal:
+                ##### Red's turn! #####
+                observation_for_red_s0: State = self.env.get_observation_for_red()
+                action_red: AgentAction = self.red_decision_maker.get_action(observation_for_red_s0)
+                self.env.take_action(Color.Red, action_red)  # take the action!
+
+                # check if red won
+                self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
+
+            reward_step_blue, reward_step_red = self.env.handle_reward(self.current_episode.number_of_steps)
+            self.current_episode.episode_reward_red += reward_step_red
+            self.current_episode.episode_reward_blue += reward_step_blue
+
+            if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
+                # end episode if MAX_STEPS_PER_EPISODE is reached
+                self.current_episode.is_terminal = True
+
+            if self.current_episode.is_terminal:
+                self.end_of_episode()
+
+            observation_for_blue_s1: State = self.env.get_observation_for_blue()
+            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
+
+            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
 
 
     def end_of_episode(self):

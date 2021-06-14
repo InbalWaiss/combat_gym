@@ -1,3 +1,5 @@
+
+
 from matplotlib import style
 from tqdm import tqdm
 
@@ -31,8 +33,6 @@ def print_start_of_game_info(blue_decision_maker, red_decision_maker):
 
 
 def evaluate(episode_number):
-    if not IS_TRAINING:
-        return True
     #if episode_number % EVALUATE_PLAYERS_EVERY == 0:
     a = episode_number % EVALUATE_PLAYERS_EVERY
     if a>=0 and a<EVALUATE_BATCH_SIZE:
@@ -58,6 +58,9 @@ if __name__ == '__main__':
     print("Starting Blue player")
 
     blue_decision_maker = DQNAgent_keras.DQNAgent_keras()
+    #deterministic terminal state
+    #blue_decision_maker = DQNAgent_keras.DQNAgent_keras(UPDATE_CONTEXT=True, path_model_to_load='conv1(6_6_1_256)_conv2(4_4_256_128)_conv3(3_3_128_128)_flatten_fc__blue_646401_   0.90max_  -0.05avg_  -2.85min__1620911579.model')
+
     #blue_decision_maker = DQNAgent_keras.DQNAgent_keras(UPDATE_CONTEXT=True, path_model_to_load='conv1(6_6_1_256)_conv2(4_4_256_128)_conv3(3_3_128_128)_flatten_fc__blue_202001_   0.95max_  -0.04avg_  -3.10min__1620558885.model')
 
     print("Starting red player")
@@ -91,27 +94,46 @@ if __name__ == '__main__':
         red_won_the_game = False
 
         for steps_current_game in range(1, MAX_STEPS_PER_EPISODE + 1):
-            ##### Blue's turn! #####
-            observation_for_blue_s0: State = env.get_observation_for_blue()
-            current_episode.print_episode(env, steps_current_game)
-
-            action_blue: AgentAction = blue_decision_maker.get_action(observation_for_blue_s0, EVALUATE)
-            env.take_action(Color.Blue, action_blue)  # take the action!
-            current_episode.print_episode(env, steps_current_game)
-
-            current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Blue, ) is not WinEnum.NoWin)
-
-            if current_episode.is_terminal:# Blue won the game!
-                blue_won_the_game=True
-            else:
-                ##### Red's turn! #####
+            if NONEDETERMINISTIC_TERMINAL_STATE:
+                observation_for_blue_s0: State = env.get_observation_for_blue()
                 observation_for_red_s0: State = env.get_observation_for_red()
-                action_red: AgentAction = red_decision_maker.get_action(observation_for_red_s0, EVALUATE)
-                env.take_action(Color.Red, action_red)  # take the action!
-                current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
-                if current_episode.is_terminal:  # Blue won the game!
-                    red_won_the_game = True
                 current_episode.print_episode(env, steps_current_game)
+
+                action_blue: AgentAction = blue_decision_maker.get_action(observation_for_blue_s0, EVALUATE)
+                env.take_action(Color.Blue, action_blue)  # take the action!
+
+                if not env.check_if_blue_and_red_same_pos():
+                    action_red: AgentAction = red_decision_maker.get_action(observation_for_red_s0, EVALUATE)
+                    env.take_action(Color.Red, action_red)  # take the action!
+
+                current_episode.print_episode(env, steps_current_game)
+                current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
+
+                if current_episode.is_terminal:# Blue won the game!
+                    blue_won_the_game=True
+
+            else: #DETERMINISTIC_TERMINAL_STATE
+                ##### Blue's turn! #####
+                observation_for_blue_s0: State = env.get_observation_for_blue()
+                current_episode.print_episode(env, steps_current_game)
+
+                action_blue: AgentAction = blue_decision_maker.get_action(observation_for_blue_s0, EVALUATE)
+                env.take_action(Color.Blue, action_blue)  # take the action!
+                current_episode.print_episode(env, steps_current_game)
+
+                current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
+
+                if current_episode.is_terminal:# Blue won the game!
+                    blue_won_the_game=True
+                else:
+                    ##### Red's turn! #####
+                    observation_for_red_s0: State = env.get_observation_for_red()
+                    action_red: AgentAction = red_decision_maker.get_action(observation_for_red_s0, EVALUATE)
+                    env.take_action(Color.Red, action_red)  # take the action!
+                    current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
+                    if current_episode.is_terminal:  # Blue won the game!
+                        red_won_the_game = True
+                    current_episode.print_episode(env, steps_current_game)
 
 
             reward_step_blue, reward_step_red = env.handle_reward(steps_current_game)
