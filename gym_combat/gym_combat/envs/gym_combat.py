@@ -81,7 +81,7 @@ class GymCombatEnv(gym.Env):
             if self.current_episode.is_terminal:
                 self.end_of_episode()
 
-            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
+            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {'win':self.env.win_status}
 
 
         else: #DETERMINISTIC_TERMINAL_STATE
@@ -119,7 +119,7 @@ class GymCombatEnv(gym.Env):
             if self.current_episode.is_terminal:
                 self.end_of_episode()
 
-            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
+            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {'win':self.env.win_status}
 
     def end_of_episode(self):
         # for statistics
