@@ -29,11 +29,11 @@ CLOSE_START_POSITION = True
 
 FULLY_CONNECTED = True
 NUM_FRAMES = 1
-STR_FOLDER_NAME = "15X15_main" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
+STR_FOLDER_NAME = "baselines_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name = "15X15" #"100X100_Berlin"
+DSM_name = "100X100_Berlin"#"15X15"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
@@ -93,7 +93,7 @@ elif DSM_name=="100X100_Berlin":
     MAX_STEPS_PER_EPISODE = 250
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
-    BB_MARGIN = 3
+    BB_MARGIN = 5#3
     SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     all_pairs_distances_path = '../gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
@@ -288,7 +288,7 @@ EVALUATE_BATCH_SIZE=50
 USE_DISPLAY = True
 SHOW_EVERY =50
 NUM_OF_EPISODES = 300_000+EVALUATE_BATCH_SIZE
-SAVE_STATS_EVERY = 1000+EVALUATE_BATCH_SIZE
+SAVE_STATS_EVERY = 5000+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True

@@ -597,7 +597,7 @@ class DQNAgent_keras:
         self._decision_maker.update_replay_memory(previous_state_for_network, action, reward, new_state_for_network,
                                                   is_terminal)
         if self.UPDATE_CONTEXT and not EVALUATE:
-            self._decision_maker.train(state, action, reward, new_state, is_terminal)
+            self._decision_maker.train(state.img, action, reward, new_state.img, is_terminal)
 
 
 

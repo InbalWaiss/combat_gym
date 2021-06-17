@@ -99,7 +99,7 @@ if __name__ == '__main__':
             env.take_action(Color.Blue, action_blue)  # take the action!
             current_episode.print_episode(env, steps_current_game)
 
-            current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Blue, ) is not WinEnum.NoWin)
+            current_episode.is_terminal = (env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
 
             if current_episode.is_terminal:# Blue won the game!
                 blue_won_the_game=True

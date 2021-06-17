@@ -94,6 +94,7 @@ class GymCombatEnv(gym.Env):
             return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
 
         else: # STEP BY STEP
+            self.current_episode.update_number_of_steps()
 
             ##### Blue takes the action #####
             self.env.take_action(Color.Blue, AgentAction(action_blue))

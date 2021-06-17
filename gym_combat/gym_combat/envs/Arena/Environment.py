@@ -194,16 +194,10 @@ class Environment(object):
         second_player = self.red_player
         win_status = WinEnum.NoWin
 
-        dist = np.linalg.norm(
-            np.array([first_player.x, first_player.y]) - np.array([second_player.x, second_player.y]))
+        is_los_first_second = (second_player.x, second_player.y) in DICT_POS_FIRE_RANGE[(first_player.x, first_player.y)]
+        is_los_second_first = (first_player.x, first_player.y) in DICT_POS_FIRE_RANGE[(second_player.x, second_player.y)]
+        assert is_los_first_second==is_los_second_first
 
-        # check if in FIRE_RANGE
-        if dist > FIRE_RANGE:
-            win_status = WinEnum.NoWin
-            self.win_status = win_status
-            return win_status
-
-        # check if in LOS
         is_los = (second_player.x, second_player.y) in DICT_POS_FIRE_RANGE[(first_player.x, first_player.y)]
         if not is_los:  # no LOS
             win_status = WinEnum.NoWin
@@ -211,45 +205,56 @@ class Environment(object):
             return win_status
 
 
+        if whos_turn == Color.Blue or SIMULTANEOUS_STEPS:
+            blue_hits = self.blue_player_shoots_and_hits()
+            if blue_hits:
+                self.end_game_flag = True
+                self.win_status = WinEnum.Blue
+                return self.win_status
+
+        if whos_turn== Color.Red or SIMULTANEOUS_STEPS:
+            red_hits = self.red_player_shoots_and_hits()
+            if red_hits:
+                self.end_game_flag = True
+                self.win_status = WinEnum.Red
+                return self.win_status
+
+
+        self.win_status = win_status
+        return win_status
+
+    def blue_player_shoots_and_hits(self):
+        dist = np.linalg.norm(
+            np.array([self.blue_player.x, self.blue_player.y]) - np.array([self.red_player.x, self.red_player.y]))
+
         if NONEDETERMINISTIC_TERMINAL_STATE:
-            if whos_turn == Color.Blue or SIMULTANEOUS_STEPS:
-                dist = np.max([dist, 1])
-                p = np.min([(1/dist)*2, 1])
-                r = np.random.rand()
-                if r<=p: # blue takes a shoot
-                    # Blue won!
-                    self.end_game_flag = True
-                    self.win_status = WinEnum.Blue
-                    return self.win_status
+            dist = np.max([dist, 1])
+            # p = 1/dist
+            p = np.min([(1 / dist) * 3, 1])
+            r = np.random.rand()
+            if r <= p:  # blue takes a shoot
+                return True
+        else:
+            if dist<=FIRE_RANGE:
+                return True
 
-            if whos_turn == Color.Red or SIMULTANEOUS_STEPS:
-                p = 0.5
-                r = np.random.rand()
-                if r<=p:
-                    # Red won!
-                    self.end_game_flag = True
-                    self.win_status = WinEnum.Red
-                    return self.win_status
+        return False
 
-            # No kill
-            win_status = WinEnum.NoWin
-            self.win_status = win_status
-            return win_status
+    def red_player_shoots_and_hits(self):
+        dist = np.linalg.norm(
+            np.array([self.blue_player.x, self.blue_player.y]) - np.array([self.red_player.x, self.red_player.y]))
 
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            p = 0.5
+            r = np.random.rand()
+            if r <= p:
+                # Red won!
+                return True
+        else:
+            if dist<=FIRE_RANGE:
+                return True
 
-        else: #DETERMINISTIC_TERMINAL_STATE
-            if whos_turn == Color.Blue:
-                win_status = WinEnum.Blue
-                self.end_game_flag = True
-            elif whos_turn == Color.Red:
-                win_status = WinEnum.Red
-                self.end_game_flag = True
-            else:
-                print("Bug in compute_terminal- whos turn???")
-            self.win_status = win_status
-            return win_status
-
-
+        return False
 
     def get_observation_for_blue(self)-> State:
         blue_pos = Position(self.blue_player.x, self.blue_player.y)
@@ -320,9 +325,14 @@ class Environment(object):
 
 
             if is_los:
+                dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
 
-                if dist<=FIRE_RANGE:
-
+                number_of_wins = 0
+                for i in range(3):
+                    red_won = self.red_player_shoots_and_hits()
+                    if red_won:
+                        number_of_wins+=1
+                if number_of_wins==3:
                     ret_val = True
 
                     winning_point_for_red = (red_player.x, red_player.y)
@@ -374,9 +384,12 @@ class Environment(object):
 
 
             if is_los:
-                dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
-                if dist<=FIRE_RANGE:
-
+                number_of_wins = 0
+                for i in range(3):
+                    blue_won = self.blue_player_shoots_and_hits()
+                    if blue_won:
+                        number_of_wins+=1
+                if number_of_wins==3:
                     ret_val = True
 
                     #winning_point_for_blue = (blue_player.x, blue_player.y)

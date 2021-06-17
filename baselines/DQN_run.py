@@ -71,20 +71,20 @@ policy_kwargs = dict(
 # model.save("deepq_GymCombatEnv_MlpPolicy_15X15_3000000")
 # model = DQN.load("deepq_GymCombatEnv_MlpPolicy_15X15_3000000")
 
-# env = GymCombatEnv()
-# #policy_kwargs = dict(act_fun=tf.nn.elu, net_arch=[256, 128, 128])
-#model = DQN('CnnPolicy', env, policy_kwargs=policy_kwargs, verbose=1)
-# model = DQN('CnnPolicy', env, verbose=1)
-# model.learn(total_timesteps=1000000)
-# model.save("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
-# model = DQN.load("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
-
-
 env = GymCombatEnv()
-model = DQN('LnMlpPolicy', env, verbose=1)
+#policy_kwargs = dict(act_fun=tf.nn.elu, net_arch=[256, 128, 128])
+#model = DQN('CnnPolicy', env, policy_kwargs=policy_kwargs, verbose=1)
+model = DQN('CnnPolicy', env, verbose=1)
 model.learn(total_timesteps=1000000)
-model.save("deepq_GymCombatEnv_LnMlpPolicy_1000000_15X15")
-model = DQN.load("deepq_GymCombatEnv_LnMlpPolicy_1000000_15X15")
+model.save("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
+model = DQN.load("deepq_GymCombatEnv_CnnPolicy_1000000_Berlin")
+
+
+# env = GymCombatEnv()
+# model = DQN('LnMlpPolicy', env, verbose=1)
+# model.learn(total_timesteps=1000000)
+# model.save("deepq_GymCombatEnv_LnMlpPolicy_1000000_15X15")
+#model = DQN.load("deepq_GymCombatEnv_LnMlpPolicy_1000000_15X15")
 
 env = GymCombatEnv()
 obs = env.reset()
