@@ -487,7 +487,7 @@ class decision_maker_DQN_keras:
 
 
     def save_fixed_berlin_state(self, SAVE=False, save_folder_path=None):
-        if DSM_name is not "100X100_Berlin":
+        if DSM_name is not "100X100_Berlin" or not SAVE_BERLIN_FIXED_STATE:
             return
         s_a_s = np.stack([self.Berlin_fixed_state.fixed_state])
 

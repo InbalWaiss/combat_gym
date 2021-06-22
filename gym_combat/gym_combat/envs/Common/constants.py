@@ -7,6 +7,7 @@ from gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_ber
 
 
 LOS_PENALTY_FLAG = True
+SAVE_BERLIN_FIXED_STATE = False
 
 ACTION_SPACE_9 = True
 ACTION_SPACE_4 = False
@@ -27,9 +28,9 @@ if SIMULTANEOUS_STEPS:
 #image state mode
 CLOSE_START_POSITION = True
 
-FULLY_CONNECTED = True
+FULLY_CONNECTED = False
 NUM_FRAMES = 1
-STR_FOLDER_NAME = "baselines_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
+STR_FOLDER_NAME = "main_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
@@ -101,6 +102,7 @@ elif DSM_name=="100X100_Berlin":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
+    SAVE_BERLIN_FIXED_STATE = False
 
 elif DSM_name=="100X100_Paris":
     DSM = get_DSM_Paris()
@@ -282,12 +284,12 @@ EVALUATE_NUM_OF_EPISODES = 100
 EVALUATE_SAVE_STATS_EVERY = 1000
 
 EVALUATE_PLAYERS_EVERY = 1000
-EVALUATE_BATCH_SIZE=50
+EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = True
+USE_DISPLAY = False
 SHOW_EVERY =50
-NUM_OF_EPISODES = 300_000+EVALUATE_BATCH_SIZE
+NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 5000+EVALUATE_BATCH_SIZE
 
 # training mode
