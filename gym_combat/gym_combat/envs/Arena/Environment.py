@@ -16,7 +16,7 @@ import pandas as pd
 
 
 class Environment(object):
-    def __init__(self, TRAIN=True):
+    def __init__(self, TRAIN=True, run_name="", combat_env_num = None):
 
         self.blue_player = Entity()
         self.red_player = None
@@ -28,6 +28,7 @@ class Environment(object):
         self.starts_at_win = 0
         self.starts_at_win_in_last_SHOW_EVERY_games = 0
         self.win_status: WinEnum = WinEnum.NoWin
+        self.combat_env_num = combat_env_num
 
 
         if TRAIN:
@@ -37,9 +38,11 @@ class Environment(object):
         else:
             self.SHOW_EVERY = EVALUATE_SHOW_EVERY
             self.NUMBER_OF_EPISODES = EVALUATE_NUM_OF_EPISODES
-
-        self.create_path_for_statistics()
-
+        if run_name != "":
+            self.collect_stats = True
+            self.create_path_for_statistics(run_name)
+        else:
+            self.collect_stats = False
         self.end_game_flag = False
 
         # data for statistics
@@ -67,10 +70,14 @@ class Environment(object):
         self.evaluation__rewards_for_blue = []
         self.evaluation__epsilon_value = []
 
-    def create_path_for_statistics(self):
+    def create_path_for_statistics(self, run_name):
+
         save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH,
                                      format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
-                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}"))
+                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}")
+                                     + "_" + run_name + "_" + DSM_name)
+        if self.combat_env_num:
+            save_folder_path = path.join(save_folder_path, str(self.combat_env_num))
         if not os.path.exists(save_folder_path):
             os.makedirs(save_folder_path)
         self.path_for_run = save_folder_path
@@ -408,6 +415,12 @@ class Environment(object):
 
     def evaluate_info(self, EVALUATE_FLAG, episode_number, steps_current_game, blue_epsilon):
 
+        if EVALUATE_FLAG:
+            self.evaluation__number_of_steps_batch.append(steps_current_game)
+            self.evaluation__win_array_batch.append(self.win_status)
+            self.evaluation__rewards_for_blue_batch.append(self.episodes_rewards_blue[-1])
+            self.evaluation__epsilon_value_batch.append(blue_epsilon)
+
         if episode_number % EVALUATE_PLAYERS_EVERY==EVALUATE_BATCH_SIZE:
             self.evaluation__number_of_steps.append(np.mean(self.evaluation__number_of_steps_batch))
             self.evaluation__rewards_for_blue.append(np.mean(self.evaluation__rewards_for_blue_batch))
@@ -420,7 +433,8 @@ class Environment(object):
             win_array_Tie = (win_array == WinEnum.Tie) * 100
             self.evaluation__win_array_tie.append(np.mean(win_array_Tie))
 
-            print("\nEvaluation summury: num_episodes: ", episode_number, ", epsilon is: ", np.mean(self.evaluation__epsilon_value_batch))
+            print("\nEvaluation summary - env " + str(self.combat_env_num)+":", len(self.evaluation__number_of_steps_batch)
+                  ,"episodes ends in episode number", episode_number, ", epsilon is: ", np.mean(self.evaluation__epsilon_value_batch))
             print("Avg number of steps: ",  np.mean(self.evaluation__number_of_steps_batch))
             print("Avg reward for Blue: ", np.mean(self.evaluation__rewards_for_blue_batch))
             print("Win % for Blue: ", np.mean(win_array_blue))
@@ -430,21 +444,17 @@ class Environment(object):
             self.evaluation__rewards_for_blue_batch = []
             self.evaluation__epsilon_value_batch = []
 
-        elif EVALUATE_FLAG:
-            self.evaluation__number_of_steps_batch.append(steps_current_game)
-            self.evaluation__win_array_batch.append(self.win_status)
-            self.evaluation__rewards_for_blue_batch.append(self.episodes_rewards_blue[-1])
-            self.evaluation__epsilon_value_batch.append(blue_epsilon)
-
         return
 
 
     def end_run(self):
-        STATS_RESULTS_RELATIVE_PATH_THIS_RUN = os.path.join(self.path_for_run, STATS_RESULTS_RELATIVE_PATH)
-        self.save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH_THIS_RUN,
-                                     format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
-                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}_{str(STR_FOLDER_NAME)}"))
-
+        if self.collect_stats == False:
+            return
+        #STATS_RESULTS_RELATIVE_PATH_THIS_RUN = os.path.join(self.path_for_run, STATS_RESULTS_RELATIVE_PATH)
+        # self.save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH_THIS_RUN,
+        #                              format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
+        #                                    f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}_{str(STR_FOLDER_NAME)}"))
+        self.save_folder_path = self.path_for_run
         # save info on run
         self.save_stats(self.save_folder_path)
 

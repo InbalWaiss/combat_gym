@@ -19,7 +19,8 @@ def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True
         plt.suptitle(f"Avg number of steps per episode")
         plt.ylabel(f"steps per episode {SHOW_EVERY}ma")
         if save_figure:
-            plt.savefig(save_folder_path + os.path.sep + '#steps_' + str(len(array_of_results) - 1))
+            plt.savefig(save_folder_path + os.path.sep + '#steps_')
+            #plt.savefig(save_folder_path + os.path.sep + '#steps_' + str(len(array_of_results) - 1))
     else:
         plt.axis([0, len(array_of_results), LOST_PENALTY - 1, WIN_REWARD + 1])
         #plt.axis([0, len(array_of_results), LOST_PENALTY - 50, WIN_REWARD + 50])
@@ -30,9 +31,11 @@ def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True
         plt.ylabel(f"Reward {SHOW_EVERY}ma")
         if save_figure:
             if player == Color.Blue:
-                plt.savefig(save_folder_path + os.path.sep + 'rewards_BLUE' + str(len(array_of_results) - 1))
+                plt.savefig(save_folder_path + os.path.sep + 'rewards_BLUE')
+                # plt.savefig(save_folder_path + os.path.sep + 'rewards_BLUE' + str(len(array_of_results) - 1))
             else:
-                plt.savefig(save_folder_path + os.path.sep + 'rewards_RED' + str(len(array_of_results) - 1))
+                plt.savefig(save_folder_path + os.path.sep + 'rewards_RED')
+                #plt.savefig(save_folder_path + os.path.sep + 'rewards_RED' + str(len(array_of_results) - 1))
     plt.close()
     # plt.show()
 
@@ -71,7 +74,8 @@ def save_reward_stats(save_folder_path, plot_every,  win_array_blue, win_array_r
     axs[1, 1].axis([0, len(steps_per_episode), -0.1, 1.1])
     axs[1, 1].set(xlabel="episode", ylabel="epsilon")
 
-    plt.savefig(save_folder_path + os.path.sep + 'reward_statistics' + str(len(blue_epsilon_values)))
+    plt.savefig(save_folder_path + os.path.sep + 'reward_statistics')
+    #plt.savefig(save_folder_path + os.path.sep + 'reward_statistics' + str(len(blue_epsilon_values)))
     plt.close()
     #plt.show()
 
@@ -110,7 +114,8 @@ def save_win_statistics(win_array, blue_epsilon_values, save_folder_path, plot_e
     axs[1, 1].set_title('%Tie_max_num_steps', fontsize=12, fontweight='bold')
     axs[1, 1].axis([0, len(moving_avg_win_blue), -5, 105])
     axs[1, 1].set(xlabel="episode")
-    plt.savefig(save_folder_path + os.path.sep + 'win_statistics' + str(len(win_array)))
+    plt.savefig(save_folder_path + os.path.sep + 'win_statistics')
+    #plt.savefig(save_folder_path + os.path.sep + 'win_statistics' + str(len(win_array)))
     plt.close()
     # plt.show()
 
@@ -158,7 +163,8 @@ def save_evaluation_data(evaluation__number_of_steps, evaluation__win_array_blue
     axs[1, 2].axis([0, len(win_array_blue), np.min(evaluation__rewards_for_blue)-1, np.max(evaluation__rewards_for_blue)+1 ])
 
 
-    plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics' + str(len(evaluation__number_of_steps*EVALUATE_PLAYERS_EVERY)))
+    plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics')
+    #plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics' + str(len(evaluation__number_of_steps*EVALUATE_PLAYERS_EVERY)))
     plt.close()
     # plt.show()
 

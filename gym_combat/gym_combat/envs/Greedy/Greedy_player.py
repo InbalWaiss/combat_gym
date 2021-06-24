@@ -54,6 +54,7 @@ class Greedy_player(AbsDecisionMaker):
         #     with open(all_pairs_distances_path, 'rb') as f:
         #         # self.all_pairs_distances = pickle.load(f)
         #         # print("Greedy: all_pairs_distances loaded")
+
         self.all_pairs_distances = all_pairs_distances
 
         #all_pairs_shortest_path_path = './Greedy/all_pairs_shortest_path_' + DSM_name + '___' + '.pkl'
@@ -297,15 +298,15 @@ class Greedy_player(AbsDecisionMaker):
 
     def save_model(self, episodes_rewards, save_folder_path, color):
         if self.add_to_all_pairs_distances:
-            with open('../gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
+            with open('gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
                 pickle.dump(self.all_pairs_distances, f,  protocol=2)
                 self.add_to_all_pairs_distances = False
         if self.add_to_all_pairs_shortest_path:
-            with open('../gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
+            with open('gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
                 pickle.dump(self.all_pairs_shortest_path, f,  protocol=2)
                 self.add_to_all_pairs_shortest_path = False
         if self.add_to_closest_target_dict:
-            with open('../gym_combat/gym_combat/envs/Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
+            with open('gym_combat/gym_combat/envs/Greedy/closest_target_dict_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl', 'wb') as f:
                 pickle.dump(self.closest_target_dict, f,  protocol=2)
                 self.add_to_closest_target_dict = False
 

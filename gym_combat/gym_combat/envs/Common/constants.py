@@ -35,7 +35,8 @@ DSM_name =  "15X15"#"100X100_Berlin" #
 COMMON_PATH = path.dirname(path.realpath(__file__))
 MAIN_PATH = path.dirname(COMMON_PATH)
 OUTPUT_DIR = path.join(MAIN_PATH, 'Arena')
-STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
+#STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
+STATS_RESULTS_RELATIVE_PATH = "statistics"
 RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, '../gym_combat/gym_combat/envsQtable/trained_agents')
 
 
@@ -69,7 +70,7 @@ if DSM_name=="15X15":
     SIZE_X_BB = SIZE_X
     SIZE_Y_BB = SIZE_Y
     MIN_PATH_DIST_FOR_START_POINTS = 2
-    all_pairs_distances_path = '../gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
@@ -92,7 +93,7 @@ elif DSM_name=="100X100_Berlin":
     BB_MARGIN = 3
     SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    all_pairs_distances_path = '../gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
@@ -126,7 +127,7 @@ if False:
 
 
 try:
-    with open('../gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl', 'rb') as f:
+    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl', 'rb') as f:
         DICT_POS_FIRE_RANGE = pickle.load(f)
 except:
     try:
@@ -140,7 +141,7 @@ except:
             pass
 
 try:
-    with open('../gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
+    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
         DICT_POS_LOS = pickle.load(f)
 except:
     try:

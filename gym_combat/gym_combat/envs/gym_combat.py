@@ -22,17 +22,19 @@ def evaluate(episode_number):
 class GymCombatEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, run_name="", env_num = None):
         self.action_space = spaces.Discrete(NUMBER_OF_ACTIONS)
         # Example for using image as input:
         self.observation_space = spaces.Box(low=0, high=255,
                                             shape=(SIZE_X, SIZE_Y, 3), dtype=np.uint8)
-
-        self.env = Environment(IS_TRAINING)
+        self.env_num = env_num.get() if env_num else None
+        self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num)
 
         self.red_decision_maker = Greedy_player.Greedy_player()
         self.env.red_player = Entity(self.red_decision_maker)
         self.episode_number = 0
+
+
 
 
     def reset(self):
@@ -137,7 +139,7 @@ class GymCombatEnv(gym.Env):
     def evaluate(self):
         episode_number = self.current_episode.episode_number
         a = episode_number % EVALUATE_PLAYERS_EVERY
-        if a>=0 and a<EVALUATE_BATCH_SIZE:
+        if a>0 and a<=EVALUATE_BATCH_SIZE:
             EVALUATE = True
         else:
             EVALUATE = False

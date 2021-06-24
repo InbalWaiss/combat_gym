@@ -23,6 +23,11 @@ keys/
 
 logs/
 /tensorboard_log/*
+/trained_models/*
+/checkpoints/*
+/res/*
+/statistics/*
+
 .ipynb_checkpoints
 ghostdriver.log
 
