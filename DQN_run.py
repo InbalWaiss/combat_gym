@@ -3,6 +3,7 @@ import gym_combat
 from gym_combat.envs.gym_combat import GymCombatEnv
 from gym_combat.envs.Common.constants import WinEnum
 import os
+import time
 
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import CheckpointCallback
@@ -30,7 +31,7 @@ def dqn_train(gamma, lr):
 
 def ppo_check_model(model_path, n_games):
     model = DQN.load(model_path)
-    env = GymCombatEnv()
+    env = GymCombatEnv(train_mode=False)
     obs = env.reset()
     counter, blue_win_counter = 0,0
     while counter < n_games:
@@ -48,13 +49,18 @@ gamma = 0.99
 lr = 0.0003
 for lr in [0.0003]:
     res = {}
+    t0 = time.time()
     trained_model_name = dqn_train(gamma, lr)
+    t1 = time.time()
+    print("starting tests:")
     for x in range(checkpoint_freq, total_timesteps+1000, checkpoint_freq):
         model_path = os.path.join(checkpoint_path, "dqn_{}_steps".format(x))
         success_ratio = ppo_check_model(model_path, n_games)
         res[x] = success_ratio
     print(res)
+    t2 = time.time()
     with open(os.path.join(res_path, trained_model_name+'.txt'), 'w') as f:
         for k in res:
             f.write("{:7d}, {}\n".format(k,res[k]))
-
+    print("train time: %f minutes"% ((t1 - t0) / 60))
+    print("test time: %f minutes"% ((t2 - t1) / 60))

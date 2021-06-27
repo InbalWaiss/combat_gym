@@ -3,6 +3,7 @@ import gym_combat
 from gym_combat.envs.gym_combat import GymCombatEnv
 from gym_combat.envs.Common.constants import WinEnum
 import os
+import time
 
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3 import PPO
@@ -42,7 +43,7 @@ def ppo_train(gamma, lr, vf_coef):
 
 def ppo_check_model(model_path, n_games):
     model = PPO.load(model_path)
-    env = GymCombatEnv()
+    env = GymCombatEnv(train_mode=False)
     obs = env.reset()
     counter, blue_win_counter = 0,0
     while counter < n_games:
@@ -61,7 +62,10 @@ lr = 0.0003
 vf_coef = 0.1
 for vf_coef in [0.1]:
     res = {}
+    t0 = time.time()
     trained_model_name = ppo_train(gamma, lr, vf_coef)
+    t1 = time.time()
+    print("starting tests:")
     for x in range(checkpoint_freq, total_timesteps+1000, checkpoint_freq):
         model_path = os.path.join(checkpoint_path, "ppo_{}_steps".format(x))
         success_ratio = ppo_check_model(model_path, n_games)
@@ -70,6 +74,8 @@ for vf_coef in [0.1]:
     with open(os.path.join(res_path, trained_model_name+'.txt'), 'w') as f:
         for k in res:
             f.write("{:7d}, {}\n".format(k,res[k]))
-
+    t2 = time.time()
+    print("train time: %f minutes" % ((t1 - t0) / 60))
+    print("test time: %f minutes" % ((t2 - t1) / 60))
 
 
