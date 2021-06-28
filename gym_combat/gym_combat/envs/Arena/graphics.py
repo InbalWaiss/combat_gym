@@ -360,7 +360,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                 # set danger zone in state
                 points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
                 for point in points_in_enemy_los:
-                    color = dict_of_colors_for_graphics[RED_N]
+                    color = dict_of_colors_for_graphics[DARK_RED_N]
                     if NONEDETERMINISTIC_TERMINAL_STATE:
                         dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
                         dist_floor = np.floor(dist)
