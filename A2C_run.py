@@ -1,8 +1,8 @@
 import gym
 import gym_combat
 from gym_combat.envs.gym_combat import GymCombatEnv
-from stable_baselines3.common.env_checker import check_env
-from stable_baselines3 import A2C
+from stable_baselines33.common.env_checker import check_env
+from stable_baselines33 import A2C
 
 def chcek_my_env():
     env = GymCombatEnv()

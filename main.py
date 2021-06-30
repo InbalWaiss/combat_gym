@@ -2,13 +2,13 @@ from matplotlib import style
 from tqdm import tqdm
 
 style.use("ggplot")
-from gym_combat.envs.Arena.CState import State
-from gym_combat.envs.Arena.Entity import Entity
-from gym_combat.envs.Arena.Environment import Environment, Episode
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Qtable import Qtable_DecisionMaker
-from gym_combat.envs.DQN import DQNAgent_keras
-from gym_combat.envs.Greedy import Greedy_player
+from gym_combat.gym_combat.envs.Arena.CState import State
+from gym_combat.gym_combat.envs.Arena.Entity import Entity
+from gym_combat.gym_combat.envs.Arena.Environment import Environment, Episode
+from gym_combat.gym_combat.envs.Common.constants import *
+#from gym_combat.gym_combat.envs.Qtable import Qtable_DecisionMaker
+from gym_combat.gym_combat.envs.DQN import DQNAgent_keras
+from gym_combat.gym_combat.envs.Greedy import Greedy_player
 import matplotlib.pyplot as plt
 
 def print_start_of_game_info(blue_decision_maker, red_decision_maker):
