@@ -1,6 +1,6 @@
 
-from gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
-from gym_combat.envs.Common.constants import np, SIZE_X, SIZE_Y, DSM, AgentAction, NUMBER_OF_ACTIONS, FIRE_RANGE, BB_MARGIN
+from gym_combat.gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
+from gym_combat.gym_combat.envs.Common.constants import np, SIZE_X, SIZE_Y, DSM, AgentAction, NUMBER_OF_ACTIONS, FIRE_RANGE, BB_MARGIN
 
 
 

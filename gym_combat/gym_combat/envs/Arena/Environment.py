@@ -1,19 +1,19 @@
 
 import time
 
-from gym_combat.envs.Qtable.Qtable_DecisionMaker import *
-from gym_combat.envs.Qtable.QPlayer_constants import START_EPSILON, EPSILONE_DECAY, LEARNING_RATE, DISCOUNT
-from gym_combat.envs.Arena.CState import *
-from gym_combat.envs.Arena.Position import Position
-from gym_combat.envs.Arena.graphics import print_stats, print_episode_graphics, save_win_statistics, save_reward_stats, save_evaluation_data
-from gym_combat.envs.Arena.helper_funcs import *
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Arena.Entity import Entity
+#from gym_combat.gym_combat.envs.Qtable.Qtable_DecisionMaker import *
+from gym_combat.gym_combat.envs.Qtable.QPlayer_constants import START_EPSILON, EPSILONE_DECAY, LEARNING_RATE, DISCOUNT
+from gym_combat.gym_combat.envs.Arena.CState import *
+from gym_combat.gym_combat.envs.Arena.Position import Position
+from gym_combat.gym_combat.envs.Arena.graphics import print_stats, print_episode_graphics, save_win_statistics, save_reward_stats, save_evaluation_data
+from gym_combat.gym_combat.envs.Arena.helper_funcs import *
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.Entity import Entity
 
 import numpy as np
 from PIL import Image
 import pandas as pd
-
+import os
 
 class Environment(object):
     def __init__(self, TRAIN=True):
@@ -512,6 +512,7 @@ class Environment(object):
 
         # save models
         self.red_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
+        self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
 
 class Episode():
     def __init__(self, episode_number, EVALUATE=False):

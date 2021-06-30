@@ -14,7 +14,7 @@ def temp():
 
 
     from PIL import Image
-    srcImage = Image.open("gym_combat.envs.Common/maps/Berlin_1_256.png")
+    srcImage = Image.open("gym_combat/envs/Common/maps/Berlin_1_256.png")
     img1 = np.array(srcImage.convert('L').resize((150, 150)))
     img2 = 255-img1
     obs = np.where(img2==255)
@@ -26,7 +26,7 @@ def temp():
     plt.show()
 
     from PIL import Image
-    srcImage = Image.open("gym_combat.envs.Common/maps/Boston_0_256.png")
+    srcImage = Image.open("gym_combat/envs/Common/maps/Boston_0_256.png")
     img1 = np.array(srcImage.convert('L').resize((150, 150)))
     img2 = 255-img1
     obs = np.where(img2==255)
@@ -38,7 +38,7 @@ def temp():
     plt.show()
 
     from PIL import Image
-    srcImage = Image.open("gym_combat.envs.Common/maps/Paris_1_256.png")
+    srcImage = Image.open("gym_combat/envs/Common/maps/Paris_1_256.png")
     img1 = np.array(srcImage.convert('L').resize((150, 150)))
     img2 = 255-img1
     obs = np.where(img2==255)
@@ -70,7 +70,7 @@ def temp():
     plt.show()
 
 def get_DSM_berlin():
-    srcImage = Image.open("../gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.png")
+    srcImage = Image.open("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.png")
     #srcImage = Image.open("../maps/Berlin_1_256.png")
     #srcImage = Image.open('../Common/maps/Berlin_1_256.png')
     img1 = np.array(srcImage.convert('L').resize((100, 100)))
@@ -82,7 +82,7 @@ def get_DSM_berlin():
     return thicken_obs_and_edges
 
 def get_DSM_Paris():
-    srcImage = Image.open("gym_combat/envs/Common/maps/Paris_1_256.png")
+    srcImage = Image.open("gym_combat/gym_combat/envs/Common/maps/Paris_1_256.png")
     #srcImage = Image.open("../maps/Paris_1_256.png")
     img1 = np.array(srcImage.convert('L').resize((100, 100)))
     img2 = cv2.bitwise_not(img1)
@@ -93,7 +93,7 @@ def get_DSM_Paris():
     return thicken_obs_and_edges
 
 def get_DSM_Boston():
-    srcImage = Image.open("gym_combat/envs/Common/maps/Boston_0_256.png")
+    srcImage = Image.open("gym_combat/gym_combat/envs/Common/maps/Boston_0_256.png")
     #srcImage = Image.open("../maps/Boston_0_256.png")
     img1 = np.array(srcImage.convert('L').resize((100, 100)))
     img2 = cv2.bitwise_not(img1)

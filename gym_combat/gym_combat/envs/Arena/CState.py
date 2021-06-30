@@ -1,6 +1,6 @@
-from gym_combat.envs.Arena.Position import Position
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Arena.helper_funcs import check_if_LOS
+from gym_combat.gym_combat.envs.Arena.Position import Position
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.helper_funcs import check_if_LOS
 import matplotlib.pyplot as plt
 
 

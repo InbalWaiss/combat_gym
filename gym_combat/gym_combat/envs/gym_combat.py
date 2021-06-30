@@ -2,11 +2,11 @@ import gym
 import gym_combat
 from gym import error, spaces, utils
 from gym.utils import seeding
-from gym_combat.envs.Arena.Environment import Environment, Episode
-from gym_combat.envs.Greedy import Greedy_player
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Arena.Entity import Entity
-from gym_combat.envs.Arena.CState import State
+from gym_combat.gym_combat.envs.Arena.Environment import Environment, Episode
+from gym_combat.gym_combat.envs.Greedy import Greedy_player
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.Entity import Entity
+from gym_combat.gym_combat.envs.Arena.CState import State
 
 
 def evaluate(episode_number):
@@ -24,7 +24,7 @@ def evaluate(episode_number):
 class GymCombatEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, run_name="", env_num = None, train_mode = True):
         self.action_space = spaces.Discrete(NUMBER_OF_ACTIONS)
         # Example for using image as input:
         if BB_STATE:
@@ -33,13 +33,17 @@ class GymCombatEnv(gym.Env):
         else:
             self.observation_space = spaces.Box(low=0, high=255,
                                                 shape=(SIZE_X, SIZE_Y, 3), dtype=np.uint8)
+        self.env_num = env_num.get() if env_num else None
+        self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num)
 
-        self.env = Environment(IS_TRAINING)
 
         self.red_decision_maker = Greedy_player.Greedy_player()
         self.env.red_player = Entity(self.red_decision_maker)
 
         self.episode_number = 0
+        self.train_mode = train_mode
+
+
 
     def reset(self):
 
@@ -88,10 +92,10 @@ class GymCombatEnv(gym.Env):
                 # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
                 self.current_episode.is_terminal = True
 
-            if self.current_episode.is_terminal:
+            if self.current_episode.is_terminal and self.train_mode:
                 self.end_of_episode()
 
-            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
+            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {'win':self.env.win_status}
 
         else: # STEP BY STEP
             self.current_episode.update_number_of_steps()
@@ -115,17 +119,18 @@ class GymCombatEnv(gym.Env):
             self.current_episode.episode_reward_red += reward_step_red
             self.current_episode.episode_reward_blue += reward_step_blue
 
-            if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
-                # end episode if MAX_STEPS_PER_EPISODE is reached
-                self.current_episode.is_terminal = True
-
-            if self.current_episode.is_terminal:
-                self.end_of_episode()
 
             observation_for_blue_s1: State = self.env.get_observation_for_blue()
             self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
 
-            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {}
+            if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
+                # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
+                self.current_episode.is_terminal = True
+
+            if self.current_episode.is_terminal and self.train_mode:
+                self.end_of_episode()
+
+            return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {'win':self.env.win_status}
 
 
     def end_of_episode(self):
@@ -144,7 +149,7 @@ class GymCombatEnv(gym.Env):
     def evaluate(self):
         episode_number = self.current_episode.episode_number
         a = episode_number % EVALUATE_PLAYERS_EVERY
-        if a>=0 and a<EVALUATE_BATCH_SIZE:
+        if a>0 and a<=EVALUATE_BATCH_SIZE:
             EVALUATE = True
         else:
             EVALUATE = False

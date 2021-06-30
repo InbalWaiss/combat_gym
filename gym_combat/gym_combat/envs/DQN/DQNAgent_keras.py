@@ -1,6 +1,6 @@
 
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.DQN.DQN_constants import *
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.DQN.DQN_constants import *
 import os
 import time
 from keras.models import load_model
@@ -16,12 +16,12 @@ from keras.backend.tensorflow_backend import set_session
 import argparse
 import matplotlib.pyplot as plt
 
-from gym_combat.envs.DQN.deeprl_prj.policy import *
-from gym_combat.envs.DQN.deeprl_prj.objectives import *
-from gym_combat.envs.DQN.deeprl_prj.preprocessors import *
-from gym_combat.envs.DQN.deeprl_prj.utils import *
-from gym_combat.envs.DQN.deeprl_prj.core import  *
-from gym_combat.envs.DQN.fixed_state_berlin import fixed_state_berlin
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.policy import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.objectives import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.preprocessors import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.utils import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.core import  *
+from gym_combat.gym_combat.envs.DQN.fixed_state_berlin import fixed_state_berlin
 
 def save_scalar(step, name, value, writer):
     """Save a scalar value to tensorboard.

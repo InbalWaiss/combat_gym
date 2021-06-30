@@ -3,8 +3,8 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 
-from gym_combat.envs.Arena import Environment
-from gym_combat.envs.Arena.helper_funcs import *
+from gym_combat.gym_combat.envs.Arena import Environment
+from gym_combat.gym_combat.envs.Arena.helper_funcs import *
 from time import sleep
 
 buffer_for_win_reward = 5
@@ -20,9 +20,11 @@ def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True
         plt.suptitle(f"Avg number of steps per episode")
         plt.ylabel(f"steps per episode {SHOW_EVERY}ma")
         if save_figure:
-            plt.savefig(save_folder_path + os.path.sep + '#steps_' + str(len(array_of_results) - 1))
+            plt.savefig(save_folder_path + os.path.sep + '#steps_')
+            #plt.savefig(save_folder_path + os.path.sep + '#steps_' + str(len(array_of_results) - 1))
     else:
-        plt.axis([0, len(array_of_results), LOST_PENALTY - 50, WIN_REWARD + 50])
+        plt.axis([0, len(array_of_results), LOST_PENALTY - 1, WIN_REWARD + 1])
+        #plt.axis([0, len(array_of_results), LOST_PENALTY - 50, WIN_REWARD + 50])
         if player == Color.Blue:
             plt.suptitle(f"Rewards per episode for BLUE player")
         if player == Color.Red:
@@ -30,9 +32,11 @@ def print_stats(array_of_results, save_folder_path, plot_every, save_figure=True
         plt.ylabel(f"Reward {SHOW_EVERY}ma")
         if save_figure:
             if player == Color.Blue:
-                plt.savefig(save_folder_path + os.path.sep + 'rewards_BLUE' + str(len(array_of_results) - 1))
+                plt.savefig(save_folder_path + os.path.sep + 'rewards_BLUE')
+                # plt.savefig(save_folder_path + os.path.sep + 'rewards_BLUE' + str(len(array_of_results) - 1))
             else:
-                plt.savefig(save_folder_path + os.path.sep + 'rewards_RED' + str(len(array_of_results) - 1))
+                plt.savefig(save_folder_path + os.path.sep + 'rewards_RED')
+                #plt.savefig(save_folder_path + os.path.sep + 'rewards_RED' + str(len(array_of_results) - 1))
     plt.close()
     # plt.show()
 
@@ -71,7 +75,8 @@ def save_reward_stats(save_folder_path, plot_every,  win_array_blue, win_array_r
     axs[1, 1].axis([0, len(steps_per_episode), -0.1, 1.1])
     axs[1, 1].set(xlabel="episode", ylabel="epsilon")
 
-    plt.savefig(save_folder_path + os.path.sep + 'reward_statistics' + str(len(blue_epsilon_values)))
+    plt.savefig(save_folder_path + os.path.sep + 'reward_statistics')
+    #plt.savefig(save_folder_path + os.path.sep + 'reward_statistics' + str(len(blue_epsilon_values)))
     plt.close()
     #plt.show()
 
@@ -110,7 +115,8 @@ def save_win_statistics(win_array, blue_epsilon_values, save_folder_path, plot_e
     axs[1, 1].set_title('%Tie_max_num_steps', fontsize=12, fontweight='bold')
     axs[1, 1].axis([0, len(moving_avg_win_blue), -5, 105])
     axs[1, 1].set(xlabel="episode")
-    plt.savefig(save_folder_path + os.path.sep + 'win_statistics' + str(len(win_array)))
+    plt.savefig(save_folder_path + os.path.sep + 'win_statistics')
+    #plt.savefig(save_folder_path + os.path.sep + 'win_statistics' + str(len(win_array)))
     plt.close()
     # plt.show()
 
@@ -148,7 +154,7 @@ def save_evaluation_data(evaluation__number_of_steps, evaluation__win_array_blue
     moving_avg = np.convolve(evaluation__number_of_steps, np.ones((plot_every,)) / plot_every, mode='valid')
     axs[0, 2].plot([i for i in range(len(moving_avg))], moving_avg)
     axs[0, 2].set_title(f"Avg number of steps", fontsize=10, fontweight='bold', color='black')
-    axs[0, 2].axis([0, len(evaluation__number_of_steps), 0, MAX_STEPS_PER_EPISODE])
+    axs[0, 2].axis([0, len(evaluation__number_of_steps), 0, np.max(evaluation__number_of_steps)+1])
     # blue reward
 
     moving_avg_blue = np.convolve(evaluation__rewards_for_blue, np.ones((plot_every,)) / plot_every, mode='valid')
@@ -157,11 +163,13 @@ def save_evaluation_data(evaluation__number_of_steps, evaluation__win_array_blue
     # Blue reward:
     axs[1, 2].plot([i for i in range(len(moving_avg_blue))], moving_avg_blue)
     axs[1, 2].set_title(f"rewards BLUE player", fontsize=10, fontweight='bold', color='blue')
+    #axs[1, 2].axis([0, len(win_array_blue), np.min(evaluation__rewards_for_blue)-1, np.max(evaluation__rewards_for_blue)+1 ])
     axs[1, 2].axis([0, len(win_array_blue), (reward_lower_bound - buffer_for_win_reward / np.max([reward_lower_bound,1])),
                     (reward_upper_bound + buffer_for_win_reward / np.max([reward_upper_bound,1]))])
 
 
-    plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics' + str(len(evaluation__number_of_steps*EVALUATE_PLAYERS_EVERY)))
+    plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics')
+    #plt.savefig(save_folder_path + os.path.sep + 'evaluation_statistics' + str(len(evaluation__number_of_steps*EVALUATE_PLAYERS_EVERY)))
     plt.close()
     # plt.show()
 
@@ -246,6 +254,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                 (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = dict_of_colors_for_graphics[DARK_DARK_RED_N]
 
 
+        # set danger zone in state
         points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
         for point in points_in_enemy_los:
             color = dict_of_colors_for_graphics[DARK_RED_N]
@@ -256,6 +265,8 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                 color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, 15 * dist_floor)))
             informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
             (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
+
+
 
         # set the players as circles
         # set the red player
@@ -392,4 +403,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
     if is_terminal:
         sleep(1.2)
     else:
-        sleep(0.2)
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            sleep(0.4)
+        else:
+            sleep(0.2)

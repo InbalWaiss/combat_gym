@@ -3,9 +3,9 @@ from PIL import Image
 import numpy as np
 from os import path
 import pickle
-from gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
+from gym_combat.gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
-
+BASELINES_RUN = True
 LOS_PENALTY_FLAG = True
 SAVE_BERLIN_FIXED_STATE = False
 
@@ -18,7 +18,6 @@ RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
 FIXED_START_POINT_BLUE = False
 TAKE_WINNING_STEP_BLUE = False
-
 
 NONEDETERMINISTIC_TERMINAL_STATE = False
 SIMULTANEOUS_STEPS = False
@@ -34,14 +33,15 @@ STR_FOLDER_NAME = "main_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name = "100X100_Berlin"#"15X15"
+DSM_name = "15X15" #"100X100_Berlin"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
 MAIN_PATH = path.dirname(COMMON_PATH)
 OUTPUT_DIR = path.join(MAIN_PATH, 'Arena')
-STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
-RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, '../gym_combat/gym_combat/envsQtable/trained_agents')
+#STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
+STATS_RESULTS_RELATIVE_PATH = "statistics"
+RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, 'gym_combat/gym_combat/envsQtable/trained_agents')
 
 
 if DSM_name=="15X15":
@@ -74,7 +74,7 @@ if DSM_name=="15X15":
     SIZE_X_BB = SIZE_X
     SIZE_Y_BB = SIZE_Y
     MIN_PATH_DIST_FOR_START_POINTS = 2
-    all_pairs_distances_path = '../gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
@@ -94,10 +94,13 @@ elif DSM_name=="100X100_Berlin":
     MAX_STEPS_PER_EPISODE = 250
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
-    BB_MARGIN = 5#3
+    if BASELINES_RUN:
+        BB_MARGIN = 5
+    else:
+        BB_MARGIN = 3
     SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    all_pairs_distances_path = '../gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
@@ -132,7 +135,7 @@ if False:
 
 
 try:
-    with open('../gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl', 'rb') as f:
+    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl', 'rb') as f:
         DICT_POS_FIRE_RANGE = pickle.load(f)
 except:
     try:
@@ -146,7 +149,7 @@ except:
             pass
 
 try:
-    with open('../gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
+    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
         DICT_POS_LOS = pickle.load(f)
 except:
     try:
@@ -162,15 +165,15 @@ except:
 
 
 
-#MOVE_PENALTY = -0.1
-#WIN_REWARD = 20
-#LOST_PENALTY = -1
-#ENEMY_LOS_PENALTY = MOVE_PENALTY*2
-#TIE = 0
+# MOVE_PENALTY = -0.05
+# WIN_REWARD = 1
+# LOST_PENALTY = -1
+# ENEMY_LOS_PENALTY = MOVE_PENALTY*2
+# TIE = 0
 
-MOVE_PENALTY = -0.05
-WIN_REWARD = 1
-LOST_PENALTY = -1
+MOVE_PENALTY = -0.1
+WIN_REWARD = 3
+LOST_PENALTY = -3
 ENEMY_LOS_PENALTY = MOVE_PENALTY*2
 TIE = 0
 
@@ -287,10 +290,10 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = False
+USE_DISPLAY = True
 SHOW_EVERY =50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
-SAVE_STATS_EVERY = 5000+EVALUATE_BATCH_SIZE
+SAVE_STATS_EVERY = 200+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True

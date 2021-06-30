@@ -13,7 +13,8 @@ keys/
 
 # Virtualenv
 /env
-
+/venv
+/venv2
 
 *.sublime-project
 *.sublime-workspace
@@ -21,6 +22,11 @@ keys/
 .idea
 
 logs/
+/tensorboard_log/*
+/trained_models/*
+/checkpoints/*
+/res/*
+/statistics/*
 
 .ipynb_checkpoints
 ghostdriver.log

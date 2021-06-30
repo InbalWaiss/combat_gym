@@ -1,7 +1,7 @@
 import abc
 
-from gym_combat.envs.Arena.CState import State
-from gym_combat.envs.Common.constants import AgentAction, AgentType
+from gym_combat.gym_combat.envs.Arena.CState import State
+from gym_combat.gym_combat.envs.Common.constants import AgentAction, AgentType
 
 
 class AbsDecisionMaker(metaclass=abc.ABCMeta):
