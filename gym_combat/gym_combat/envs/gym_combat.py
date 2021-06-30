@@ -77,9 +77,6 @@ class GymCombatEnv(gym.Env):
 
             self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Red) is not WinEnum.NoWin)
 
-            if self.current_episode.is_terminal:
-                self.env.update_win_counters(self.current_episode.number_of_steps)
-
             self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
 
             observation_for_blue_s1: State = self.env.get_observation_for_blue()
@@ -92,7 +89,7 @@ class GymCombatEnv(gym.Env):
                 # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
                 self.current_episode.is_terminal = True
 
-            if self.current_episode.is_terminal and self.train_mode:
+            if self.current_episode.is_terminal:
                 self.end_of_episode()
 
             return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {'win':self.env.win_status}
@@ -127,16 +124,20 @@ class GymCombatEnv(gym.Env):
                 # if we exited the loop because we reached MAX_STEPS_PER_EPISODE
                 self.current_episode.is_terminal = True
 
-            if self.current_episode.is_terminal and self.train_mode:
+            if self.current_episode.is_terminal: #Eran: moved the check of self.train_mode after update_win_counters
                 self.end_of_episode()
 
             return observation_for_blue_s1.img, reward_step_blue, self.current_episode.is_terminal, {'win':self.env.win_status}
 
 
     def end_of_episode(self):
+        self.env.update_win_counters(self.current_episode.number_of_steps)
+
+        if not self.train_mode:
+            return
+
         # for statistics
         EVALUATE = self.evaluate()
-        self.env.update_win_counters(self.current_episode.number_of_steps)
         self.env.data_for_statistics(self.current_episode.episode_reward_blue, self.current_episode.episode_reward_red, self.current_episode.number_of_steps, 0)
         self.env.evaluate_info(EVALUATE, self.current_episode.episode_number, self.current_episode.number_of_steps, 0)
 

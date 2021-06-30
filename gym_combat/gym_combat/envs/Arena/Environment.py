@@ -15,8 +15,9 @@ from PIL import Image
 import pandas as pd
 import os
 
+
 class Environment(object):
-    def __init__(self, TRAIN=True):
+    def __init__(self, TRAIN=True, run_name="", combat_env_num = None):
 
         self.blue_player = Entity()
         self.red_player = None
@@ -26,6 +27,7 @@ class Environment(object):
         self.wins_for_red = 0
         self.tie_count = 0
         self.win_status: WinEnum = WinEnum.NoWin
+        self.combat_env_num = combat_env_num
 
 
         if TRAIN:
@@ -35,9 +37,11 @@ class Environment(object):
         else:
             self.SHOW_EVERY = EVALUATE_SHOW_EVERY
             self.NUMBER_OF_EPISODES = EVALUATE_NUM_OF_EPISODES
-
-        self.create_path_for_statistics()
-
+        if run_name != "":
+            self.collect_stats = True
+            self.create_path_for_statistics(run_name)
+        else:
+            self.collect_stats = False
         self.end_game_flag = False
 
         # data for statistics
@@ -65,10 +69,14 @@ class Environment(object):
         self.evaluation__rewards_for_blue = []
         self.evaluation__epsilon_value = []
 
-    def create_path_for_statistics(self):
+    def create_path_for_statistics(self, run_name):
+
         save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH,
                                      format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
-                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}"))
+                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}")
+                                     + "_" + run_name + "_" + DSM_name)
+        if self.combat_env_num:
+            save_folder_path = path.join(save_folder_path, str(self.combat_env_num))
         if not os.path.exists(save_folder_path):
             os.makedirs(save_folder_path)
         self.path_for_run = save_folder_path
@@ -162,12 +170,11 @@ class Environment(object):
             reward_step_blue = MOVE_PENALTY
             reward_step_red = MOVE_PENALTY
 
-            if LOS_PENALTY_FLAG:
-                red_pos = self.red_player.get_coordinates()
-                blue_pos = self.blue_player.get_coordinates()
-                points_in_enemy_los = DICT_POS_LOS[red_pos]
-                if blue_pos in points_in_enemy_los:
-                    reward_step_blue= ENEMY_LOS_PENALTY
+            red_pos = self.red_player.get_coordinates()
+            blue_pos = self.blue_player.get_coordinates()
+            points_in_enemy_los = DICT_POS_LOS[red_pos]
+            if blue_pos in points_in_enemy_los:
+                reward_step_blue= ENEMY_LOS_PENALTY
 
             return reward_step_blue, reward_step_red
 
@@ -419,6 +426,12 @@ class Environment(object):
 
     def evaluate_info(self, EVALUATE_FLAG, episode_number, steps_current_game, blue_epsilon):
 
+        if EVALUATE_FLAG:
+            self.evaluation__number_of_steps_batch.append(steps_current_game)
+            self.evaluation__win_array_batch.append(self.win_status)
+            self.evaluation__rewards_for_blue_batch.append(self.episodes_rewards_blue[-1])
+            self.evaluation__epsilon_value_batch.append(blue_epsilon)
+
         if episode_number % EVALUATE_PLAYERS_EVERY==EVALUATE_BATCH_SIZE:
             self.evaluation__number_of_steps.append(np.mean(self.evaluation__number_of_steps_batch))
             self.evaluation__rewards_for_blue.append(np.mean(self.evaluation__rewards_for_blue_batch))
@@ -431,7 +444,8 @@ class Environment(object):
             win_array_Tie = (win_array == WinEnum.Tie) * 100
             self.evaluation__win_array_tie.append(np.mean(win_array_Tie))
 
-            print("\nEvaluation summury: num_episodes: ", episode_number, ", epsilon is: ", np.mean(self.evaluation__epsilon_value_batch))
+            print("\nEvaluation summary - env " + str(self.combat_env_num)+":", len(self.evaluation__number_of_steps_batch)
+                  ,"episodes ends in episode number", episode_number, ", epsilon is: ", np.mean(self.evaluation__epsilon_value_batch))
             print("Avg number of steps: ",  np.mean(self.evaluation__number_of_steps_batch))
             print("Avg reward for Blue: ", np.mean(self.evaluation__rewards_for_blue_batch))
             print("Win % for Blue: ", np.mean(win_array_blue))
@@ -441,21 +455,17 @@ class Environment(object):
             self.evaluation__rewards_for_blue_batch = []
             self.evaluation__epsilon_value_batch = []
 
-        elif EVALUATE_FLAG:
-            self.evaluation__number_of_steps_batch.append(steps_current_game)
-            self.evaluation__win_array_batch.append(self.win_status)
-            self.evaluation__rewards_for_blue_batch.append(self.episodes_rewards_blue[-1])
-            self.evaluation__epsilon_value_batch.append(blue_epsilon)
-
         return
 
 
     def end_run(self):
-        STATS_RESULTS_RELATIVE_PATH_THIS_RUN = os.path.join(self.path_for_run, STATS_RESULTS_RELATIVE_PATH)
-        self.save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH_THIS_RUN,
-                                     format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
-                                            f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}_{str(STR_FOLDER_NAME)}"))
-
+        if self.collect_stats == False:
+            return
+        #STATS_RESULTS_RELATIVE_PATH_THIS_RUN = os.path.join(self.path_for_run, STATS_RESULTS_RELATIVE_PATH)
+        # self.save_folder_path = path.join(STATS_RESULTS_RELATIVE_PATH_THIS_RUN,
+        #                              format(f"{str(time.strftime('%d'))}_{str(time.strftime('%m'))}_"
+        #                                    f"{str(time.strftime('%H'))}_{str(time.strftime('%M'))}_{str(STR_FOLDER_NAME)}"))
+        self.save_folder_path = self.path_for_run
         # save info on run
         self.save_stats(self.save_folder_path)
 
@@ -495,7 +505,6 @@ class Environment(object):
                 f"epsilon": [START_EPSILON],
                 f"EPSILONE_DECAY": [EPSILONE_DECAY],
                 f"ACTION_SPACE_9": [ACTION_SPACE_9],
-                f"LOS_PENALTY_FLAG": [LOS_PENALTY_FLAG],
                 f"FIRE_RANGE": [FIRE_RANGE],
                 f"DSM_NAME": [DSM_name],
                 f"RED_PLAYER_MOVES": [RED_PLAYER_MOVES],
@@ -512,7 +521,8 @@ class Environment(object):
 
         # save models
         self.red_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
-        self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
+        if not BASELINES_RUN:
+            self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
 
 class Episode():
     def __init__(self, episode_number, EVALUATE=False):

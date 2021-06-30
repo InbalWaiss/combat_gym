@@ -6,7 +6,6 @@ import pickle
 from gym_combat.gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
 BASELINES_RUN = True
-LOS_PENALTY_FLAG = True
 SAVE_BERLIN_FIXED_STATE = False
 
 ACTION_SPACE_9 = True
@@ -19,7 +18,7 @@ FIXED_START_POINT_RED = False
 FIXED_START_POINT_BLUE = False
 TAKE_WINNING_STEP_BLUE = False
 
-NONEDETERMINISTIC_TERMINAL_STATE = False
+NONEDETERMINISTIC_TERMINAL_STATE = True
 SIMULTANEOUS_STEPS = False
 if SIMULTANEOUS_STEPS:
     NONEDETERMINISTIC_TERMINAL_STATE = True
@@ -33,13 +32,12 @@ STR_FOLDER_NAME = "main_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name = "15X15" #"100X100_Berlin"
+DSM_name = "100X100_Berlin"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
 MAIN_PATH = path.dirname(COMMON_PATH)
 OUTPUT_DIR = path.join(MAIN_PATH, 'Arena')
-#STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
 STATS_RESULTS_RELATIVE_PATH = "statistics"
 RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, 'gym_combat/gym_combat/envsQtable/trained_agents')
 
@@ -68,7 +66,6 @@ if DSM_name=="15X15":
     MAX_STEPS_PER_EPISODE = 100
     BB_STATE = False
     CLOSE_START_POSITION = False
-    LOS_PENALTY_FLAG = True
     LOS_PENALTY_RANGE = 2 * FIRE_RANGE
     BB_MARGIN = 0
     SIZE_X_BB = SIZE_X
@@ -89,7 +86,6 @@ elif DSM_name=="100X100_Berlin":
     SIZE_X=100
     SIZE_Y=100
     FIRE_RANGE = 10
-    LOS_PENALTY_FLAG = True
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
     MAX_STEPS_PER_EPISODE = 250
     MIN_PATH_DIST_FOR_START_POINTS = 2
@@ -164,18 +160,21 @@ except:
 
 
 
+if BASELINES_RUN:
+    MOVE_PENALTY = -0.1
+    WIN_REWARD = 3
+    LOST_PENALTY = -3
+    ENEMY_LOS_PENALTY = MOVE_PENALTY * 2
+    TIE = 0
 
-# MOVE_PENALTY = -0.05
-# WIN_REWARD = 1
-# LOST_PENALTY = -1
-# ENEMY_LOS_PENALTY = MOVE_PENALTY*2
-# TIE = 0
+else:
+    MOVE_PENALTY = -0.05
+    WIN_REWARD = 1
+    LOST_PENALTY = -1
+    ENEMY_LOS_PENALTY = MOVE_PENALTY*2
+    TIE = 0
 
-MOVE_PENALTY = -0.1
-WIN_REWARD = 3
-LOST_PENALTY = -3
-ENEMY_LOS_PENALTY = MOVE_PENALTY*2
-TIE = 0
+
 
 
 NUMBER_OF_ACTIONS = 9
@@ -227,8 +226,8 @@ dict_of_colors_for_graphics = {1: (239, 0, 0),  #blue
                                8: (0, 239, 0),  #green
                                9: (0, 0, 0),  #black
                                10: (0, 0, 100),  #bright red
-                               11: (0, 0, 25),  #bright bright red
-                               12: (0, 0, 60), #dark dark red
+                               11: (0, 0, 50),  #bright bright red
+                               12: (0, 0, 75), #dark dark red
                                }
 
 OBSTACLE = 1.
