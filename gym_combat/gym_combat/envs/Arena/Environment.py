@@ -554,11 +554,12 @@ class Episode():
             else:
                 number_of_episodes = env.SHOW_EVERY
 
-            print(f"\non #{self.episode_number}:")
+            if not BASELINES_RUN:
+                print(f"\non #{self.episode_number}:")
 
-            print(f"reward for blue player is: , {self.episode_reward_blue}")
-            print(f"epsilon (blue player) is {blue_epsilon}")
-            print(f"number of steps: {steps_current_game}")
+                print(f"reward for blue player is: , {self.episode_reward_blue}")
+                print(f"epsilon (blue player) is {blue_epsilon}")
+                print(f"number of steps: {steps_current_game}")
 
             self.print_episode(env, steps_current_game)
 
