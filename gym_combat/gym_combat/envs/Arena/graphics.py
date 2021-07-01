@@ -282,7 +282,9 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
             dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
             dist_floor = np.floor(dist)
             enemy_color = dict_of_colors_for_graphics[RED_N]
-            color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([0,np.min([points_dom_points_color[2],15 * dist_floor])]))))
+            #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]))))
+            color = tuple(map(lambda i, j: int(i - j), enemy_color,
+                              (0, 0, np.max([10, 14 * dist_floor]))))
         informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
         (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
 
@@ -411,7 +413,9 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
                 dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
                 dist_floor = np.floor(dist)
                 enemy_color = red_player_color
-                color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([0,np.min([points_dom_points_color[2],15 * dist_floor])]) )))
+                #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]) )))
+                color = tuple(map(lambda i, j: int(i - j), enemy_color,
+                                  (0, 0, np.max([10,  14 * dist_floor]))))
             informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
             (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
         # center_cord_red_x = (red.x + margin_x) * const + radius
@@ -428,7 +432,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
         center_cord_blue_x = (blue.x + margin_x) * const + radius
         center_cord_blue_y = (blue.y + margin_y) * const + radius
         cv2.circle(informative_env, (center_cord_blue_y, center_cord_blue_x), radius, blue_player_color, thickness)
-    cv2.imshow("informative_env", np.array(informative_env))  # show it!
+    cv2.imshow("informative_env_"+str(env.combat_env_num), np.array(informative_env))  # show it!
     cv2.waitKey(2)
     if is_terminal:
         sleep(1.2)
