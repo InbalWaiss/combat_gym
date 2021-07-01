@@ -3,10 +3,10 @@ from PIL import Image
 import numpy as np
 from os import path
 import pickle
-from gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
+from gym_combat.gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
-
-LOS_PENALTY_FLAG = True
+BASELINES_RUN = True
+SAVE_BERLIN_FIXED_STATE = False
 
 ACTION_SPACE_9 = True
 ACTION_SPACE_4 = False
@@ -19,25 +19,27 @@ FIXED_START_POINT_BLUE = False
 TAKE_WINNING_STEP_BLUE = False
 
 NONEDETERMINISTIC_TERMINAL_STATE = False
+SIMULTANEOUS_STEPS = False
+if SIMULTANEOUS_STEPS:
+    NONEDETERMINISTIC_TERMINAL_STATE = True
 
 #image state mode
 CLOSE_START_POSITION = True
 
-FULLY_CONNECTED = True
+FULLY_CONNECTED = False
 NUM_FRAMES = 1
-STR_FOLDER_NAME = "Berlin_NONEDETERMINISTIC_TERMINAL_STATE"#"Berlin_right_action"#"15X15_1_frames_two_array_state_no_red_when_win"#"Berlin_eval"#"Berlin_BB" #"15X15_baselines"
+STR_FOLDER_NAME = "main_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name =  "15X15"#"100X100_Berlin" #
+DSM_name = "100X100_Berlin"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
 MAIN_PATH = path.dirname(COMMON_PATH)
 OUTPUT_DIR = path.join(MAIN_PATH, 'Arena')
-#STATS_RESULTS_RELATIVE_PATH = path.join(OUTPUT_DIR, './statistics')
 STATS_RESULTS_RELATIVE_PATH = "statistics"
-RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, '../gym_combat/gym_combat/envsQtable/trained_agents')
+RELATIVE_PATH_HUMAN_VS_MACHINE_DATA = path.join(MAIN_PATH, 'gym_combat/gym_combat/envsQtable/trained_agents')
 
 
 if DSM_name=="15X15":
@@ -64,7 +66,6 @@ if DSM_name=="15X15":
     MAX_STEPS_PER_EPISODE = 100
     BB_STATE = False
     CLOSE_START_POSITION = False
-    LOS_PENALTY_FLAG = True
     LOS_PENALTY_RANGE = 2 * FIRE_RANGE
     BB_MARGIN = 0
     SIZE_X_BB = SIZE_X
@@ -85,12 +86,14 @@ elif DSM_name=="100X100_Berlin":
     SIZE_X=100
     SIZE_Y=100
     FIRE_RANGE = 10
-    LOS_PENALTY_FLAG = True
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
     MAX_STEPS_PER_EPISODE = 250
     MIN_PATH_DIST_FOR_START_POINTS = 2
-    BB_STATE = False#True
-    BB_MARGIN = 3
+    BB_STATE = True
+    if BASELINES_RUN:
+        BB_MARGIN = 5
+    else:
+        BB_MARGIN = 3
     SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
@@ -98,6 +101,7 @@ elif DSM_name=="100X100_Berlin":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
+    SAVE_BERLIN_FIXED_STATE = False
 
 elif DSM_name=="100X100_Paris":
     DSM = get_DSM_Paris()
@@ -156,18 +160,21 @@ except:
 
 
 
+if BASELINES_RUN:
+    MOVE_PENALTY = -0.1
+    WIN_REWARD = 3
+    LOST_PENALTY = -3
+    ENEMY_LOS_PENALTY = MOVE_PENALTY * 2
+    TIE = 0
 
-#MOVE_PENALTY = -0.1
-#WIN_REWARD = 20
-#LOST_PENALTY = -1
-#ENEMY_LOS_PENALTY = MOVE_PENALTY*2
-#TIE = 0
+else:
+    MOVE_PENALTY = -0.05
+    WIN_REWARD = 1
+    LOST_PENALTY = -1
+    ENEMY_LOS_PENALTY = MOVE_PENALTY*2
+    TIE = 0
 
-MOVE_PENALTY = -0.1
-WIN_REWARD = 3
-LOST_PENALTY = -3
-ENEMY_LOS_PENALTY = MOVE_PENALTY*2
-TIE = 0
+
 
 
 NUMBER_OF_ACTIONS = 9
@@ -208,18 +215,19 @@ dict_of_colors_for_state = {1: (0, 0, 255),  #blue
                   12: (50, 0, 0), #dark dark red
                   }
 
-dict_of_colors_for_graphics = {1: (255, 0, 0),  #blue
+
+dict_of_colors_for_graphics = {1: (239, 0, 0),  #blue
                                2: (175, 0, 0),  #darker blue
-                               3: (0, 0, 255),  # red
+                               3: (0, 0, 239),  # red
                                4: (0, 20, 175),  #dark red
                                5: (230, 100, 150),  #purple
                                6: (60, 255, 255),  #yellow
                                7: (100, 100, 100),  #grey
-                               8: (0, 255, 0),  #green
+                               8: (0, 239, 0),  #green
                                9: (0, 0, 0),  #black
                                10: (0, 0, 100),  #bright red
-                               11: (0, 0, 25),  #bright bright red
-                               12: (0, 0, 60), #dark dark red
+                               11: (0, 0, 50),  #bright bright red
+                               12: (0, 0, 75), #dark dark red
                                }
 
 OBSTACLE = 1.
@@ -273,12 +281,12 @@ class Color(IntEnum):
 
 
 # params to evaluate trained models
-EVALUATE_SHOW_EVERY = 50
-EVALUATE_NUM_OF_EPISODES = 50
-EVALUATE_SAVE_STATS_EVERY = 5000
+EVALUATE_SHOW_EVERY = 1
+EVALUATE_NUM_OF_EPISODES = 100
+EVALUATE_SAVE_STATS_EVERY = 1000
 
-EVALUATE_PLAYERS_EVERY = 5000
-EVALUATE_BATCH_SIZE=50
+EVALUATE_PLAYERS_EVERY = 1000
+EVALUATE_BATCH_SIZE=100
 
 #save information
 USE_DISPLAY = False
@@ -288,9 +296,4 @@ SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True
-UPDATE_RED_CONTEXT = True
-UPDATE_BLUE_CONTEXT = True
 
-if not IS_TRAINING:
-    UPDATE_RED_CONTEXT=False
-    UPDATE_BLUE_CONTEXT=False

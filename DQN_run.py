@@ -1,29 +1,30 @@
 import gym
-import gym_combat
-from gym_combat.envs.gym_combat import GymCombatEnv
-from gym_combat.envs.Common.constants import WinEnum
+import gym_combat.gym_combat
+from gym_combat.gym_combat.envs.Common.constants import WinEnum
 import os
 import time
 
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import CheckpointCallback
-from gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Common.constants import *
 
 total_timesteps = 20000
 checkpoint_freq = 5000
 
-n_games = 1000
+n_games = 1000000
 tensorboard_path = "tensorboard_log"#os.path.join("..", "tensorboard_log")
 checkpoint_path = "checkpoints"#os.path.join("..", "checkpoints")
 trained_models_path = "trained_models"#os.path.join("..", "trained_models")
 res_path = "res"#os.path.join("..", "res")
+if not os.path.exists(res_path):
+    os.makedirs(res_path)
+
 checkpoint_callback = CheckpointCallback(save_freq=checkpoint_freq, save_path=checkpoint_path, name_prefix='dqn')
 
 def dqn_train(gamma, lr):
     network_arc = 'MlpPolicy'
     model_name = "dqn_{}_{}M_g_{}_lr_{}".format(network_arc[:3], total_timesteps/1000000, gamma, lr)
-
-    env = GymCombatEnv(run_name = model_name)
+    env = gym.make('gym-combat-v0', run_name = model_name)
     model = DQN(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path)
     model.learn(total_timesteps=total_timesteps+1000, log_interval = 100, callback=checkpoint_callback, tb_log_name = model_name)
     model.save(os.path.join(trained_models_path, model_name + ".zip"))
@@ -31,7 +32,7 @@ def dqn_train(gamma, lr):
 
 def ppo_check_model(model_path, n_games):
     model = DQN.load(model_path)
-    env = GymCombatEnv(train_mode=False)
+    env = gym.make('gym-combat-v0', train_mode = False)
     obs = env.reset()
     counter, blue_win_counter = 0,0
     while counter < n_games:

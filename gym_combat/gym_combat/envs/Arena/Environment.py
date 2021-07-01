@@ -1,18 +1,19 @@
 
 import time
 
-from gym_combat.envs.Qtable.Qtable_DecisionMaker import *
-from gym_combat.envs.Qtable.QPlayer_constants import START_EPSILON, EPSILONE_DECAY, LEARNING_RATE, DISCOUNT
-from gym_combat.envs.Arena.CState import *
-from gym_combat.envs.Arena.Position import Position
-from gym_combat.envs.Arena.graphics import print_stats, print_episode_graphics, save_win_statistics, save_reward_stats, save_evaluation_data
-from gym_combat.envs.Arena.helper_funcs import *
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Arena.Entity import Entity
+#from gym_combat.gym_combat.envs.Qtable.Qtable_DecisionMaker import *
+from gym_combat.gym_combat.envs.Qtable.QPlayer_constants import START_EPSILON, EPSILONE_DECAY, LEARNING_RATE, DISCOUNT
+from gym_combat.gym_combat.envs.Arena.CState import *
+from gym_combat.gym_combat.envs.Arena.Position import Position
+from gym_combat.gym_combat.envs.Arena.graphics import print_stats, print_episode_graphics, save_win_statistics, save_reward_stats, save_evaluation_data
+from gym_combat.gym_combat.envs.Arena.helper_funcs import *
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.Entity import Entity
 
 import numpy as np
 from PIL import Image
 import pandas as pd
+import os
 
 
 class Environment(object):
@@ -25,8 +26,6 @@ class Environment(object):
         self.wins_for_blue = 0
         self.wins_for_red = 0
         self.tie_count = 0
-        self.starts_at_win = 0
-        self.starts_at_win_in_last_SHOW_EVERY_games = 0
         self.win_status: WinEnum = WinEnum.NoWin
         self.combat_env_num = combat_env_num
 
@@ -117,9 +116,6 @@ class Environment(object):
                 self.blue_player.y = 72
 
 
-        if self.SHOW_EVERY==1 or episode_number % (self.SHOW_EVERY-1) == 0:
-            self.starts_at_win_in_last_SHOW_EVERY_games = 0
-
     def _choose_second_position(self):
         first_player_x = self.blue_player.x
         first_player_y = self.blue_player.y
@@ -174,12 +170,11 @@ class Environment(object):
             reward_step_blue = MOVE_PENALTY
             reward_step_red = MOVE_PENALTY
 
-            if LOS_PENALTY_FLAG:
-                red_pos = self.red_player.get_coordinates()
-                blue_pos = self.blue_player.get_coordinates()
-                points_in_enemy_los = DICT_POS_LOS[red_pos]
-                if blue_pos in points_in_enemy_los:
-                    reward_step_blue= ENEMY_LOS_PENALTY
+            red_pos = self.red_player.get_coordinates()
+            blue_pos = self.blue_player.get_coordinates()
+            points_in_enemy_los = DICT_POS_LOS[red_pos]
+            if blue_pos in points_in_enemy_los:
+                reward_step_blue= ENEMY_LOS_PENALTY
 
             return reward_step_blue, reward_step_red
 
@@ -217,53 +212,56 @@ class Environment(object):
             return win_status
 
 
-        dist = np.linalg.norm(
-            np.array([first_player.x, first_player.y]) - np.array([second_player.x, second_player.y]))
-
-
-        if NONEDETERMINISTIC_TERMINAL_STATE:
-            dist = np.max([dist, 1])
-            p = 1/dist
-            r = np.random.rand()
-            if r<=p: # blue takes a shoot
-                # Blue won!
+        if whos_turn == Color.Blue or SIMULTANEOUS_STEPS:
+            blue_hits = self.blue_player_shoots_and_hits()
+            if blue_hits:
                 self.end_game_flag = True
                 self.win_status = WinEnum.Blue
                 return self.win_status
 
-            else: # red takes a shoot
-                p = 0.5
-                r = np.random.rand()
-                if r<=p:
-                    # Red won!
-                    self.end_game_flag = True
-                    self.win_status = WinEnum.Red
-                    return self.win_status
+        if whos_turn== Color.Red or SIMULTANEOUS_STEPS:
+            red_hits = self.red_player_shoots_and_hits()
+            if red_hits:
+                self.end_game_flag = True
+                self.win_status = WinEnum.Red
+                return self.win_status
 
-                else:
-                    # No kill
-                    win_status = WinEnum.NoWin
-                    self.win_status = win_status
-                    return win_status
 
-        else: #DETERMINISTIC_TERMINAL_STATE
-            if dist>FIRE_RANGE:
-                win_status = WinEnum.NoWin
-                self.win_status = win_status
-                return win_status
-
-        if whos_turn == Color.Blue:
-            win_status = WinEnum.Blue
-            self.end_game_flag = True
-        elif whos_turn == Color.Red:
-            win_status = WinEnum.Red
-            self.end_game_flag = True
-        else:
-            print("Bug in compute_terminal- whos turn???")
         self.win_status = win_status
         return win_status
 
+    def blue_player_shoots_and_hits(self):
+        dist = np.linalg.norm(
+            np.array([self.blue_player.x, self.blue_player.y]) - np.array([self.red_player.x, self.red_player.y]))
 
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            dist = np.max([dist, 1])
+            # p = 1/dist
+            p = np.min([(1 / dist) * 3, 1])
+            r = np.random.rand()
+            if r <= p:  # blue takes a shoot
+                return True
+        else:
+            if dist<=FIRE_RANGE:
+                return True
+
+        return False
+
+    def red_player_shoots_and_hits(self):
+        dist = np.linalg.norm(
+            np.array([self.blue_player.x, self.blue_player.y]) - np.array([self.red_player.x, self.red_player.y]))
+
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            p = 0.5
+            r = np.random.rand()
+            if r <= p:
+                # Red won!
+                return True
+        else:
+            if dist<=FIRE_RANGE:
+                return True
+
+        return False
 
     def get_observation_for_blue(self)-> State:
         blue_pos = Position(self.blue_player.x, self.blue_player.y)
@@ -274,7 +272,6 @@ class Environment(object):
             ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, Red_won=True)
         else:
             ret_val = State(my_pos=blue_pos, enemy_pos=red_pos)
-
 
         return ret_val
 
@@ -294,12 +291,18 @@ class Environment(object):
                 self.red_player.action(action)
 
         else: #player_color==Color.Blue
-            if TAKE_WINNING_STEP_BLUE:
+            if TAKE_WINNING_STEP_BLUE and not NONEDETERMINISTIC_TERMINAL_STATE:
                 ret_val, winning_action = self.can_blue_win()
                 if ret_val:
                     action = winning_action
             self.blue_player.action(action)
             return action
+
+    def check_if_blue_and_red_same_pos(self):
+        if self.blue_player.x == self.red_player.x:
+            if self.blue_player.y == self.red_player.y:
+                return True
+        return False
 
     def can_red_win(self):
         blue_player = self.blue_player
@@ -329,9 +332,14 @@ class Environment(object):
 
 
             if is_los:
+                dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
 
-                if dist<=FIRE_RANGE:
-
+                number_of_wins = 0
+                for i in range(3):
+                    red_won = self.red_player_shoots_and_hits()
+                    if red_won:
+                        number_of_wins+=1
+                if number_of_wins==3:
                     ret_val = True
 
                     winning_point_for_red = (red_player.x, red_player.y)
@@ -383,9 +391,12 @@ class Environment(object):
 
 
             if is_los:
-                dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
-                if dist<=FIRE_RANGE:
-
+                number_of_wins = 0
+                for i in range(3):
+                    blue_won = self.blue_player_shoots_and_hits()
+                    if blue_won:
+                        number_of_wins+=1
+                if number_of_wins==3:
                     ret_val = True
 
                     #winning_point_for_blue = (blue_player.x, blue_player.y)
@@ -485,7 +496,6 @@ class Environment(object):
         if not os.path.exists(save_folder_path):
             os.makedirs(save_folder_path)
 
-
         info = {f"NUM_OF_EPISODES": [NUM_OF_EPISODES],
                 f"MOVE_PENALTY": [MOVE_PENALTY],
                 f"WIN_REWARD": [WIN_REWARD],
@@ -495,13 +505,11 @@ class Environment(object):
                 f"epsilon": [START_EPSILON],
                 f"EPSILONE_DECAY": [EPSILONE_DECAY],
                 f"ACTION_SPACE_9": [ACTION_SPACE_9],
-                f"LOS_PENALTY_FLAG": [LOS_PENALTY_FLAG],
                 f"FIRE_RANGE": [FIRE_RANGE],
                 f"DSM_NAME": [DSM_name],
                 f"RED_PLAYER_MOVES": [RED_PLAYER_MOVES],
                 f"FIXED_START_POINT_RED": [FIXED_START_POINT_RED],
                 f"FIXED_START_POINT_BLUE": [FIXED_START_POINT_BLUE],
-                f"%Games started at Tie" : [self.starts_at_win / self.NUMBER_OF_EPISODES*100],
                 f"%WINS_BLUE": [self.wins_for_blue/self.NUMBER_OF_EPISODES*100],
                 f"%WINS_RED": [self.wins_for_red/self.NUMBER_OF_EPISODES*100],
                 f"%TIES": [self.tie_count/self.NUMBER_OF_EPISODES*100],
@@ -513,36 +521,26 @@ class Environment(object):
 
         # save models
         self.red_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
-        #self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Blue)
-
+        if not BASELINES_RUN:
+            self.blue_player._decision_maker.save_model(self.episodes_rewards_blue, save_folder_path, Color.Red)
 
 class Episode():
-    def __init__(self, episode_number, EVALUATE=False, show_always=False):
+    def __init__(self, episode_number, EVALUATE=False):
         self.episode_number = episode_number
         self.episode_reward_blue = 0
         self.episode_reward_red = 0
         self.number_of_steps = 0
         self.is_terminal = False
+        self.show = self.show_episode(EVALUATE)
 
-        if EVALUATE or episode_number == 1 or show_always:
-            self.show = True
-        else:
-            self.show = False
+    def update_number_of_steps(self):
+        self.number_of_steps+=1
 
-        self.Blue_starts = True#np.random.random() >= 0.5 # for even statistics
+    def show_episode(self, EVALUATE):
+        if EVALUATE or self.episode_number==1:
+            return True
+        return False
 
-    def whos_turn(self, steps_current_game)-> Color:
-        if self.Blue_starts:
-            if steps_current_game % 2 == 1:
-                return Color.Blue
-            else:
-                return Color.Red
-
-        else:
-            if steps_current_game % 2 == 1:
-                return Color.Red
-            else:
-                return Color.Blue
 
     def print_episode(self, env, last_step_number, save_file=False):
         if self.show and USE_DISPLAY:
@@ -556,15 +554,14 @@ class Episode():
             else:
                 number_of_episodes = env.SHOW_EVERY
 
-            print(f"\non #{self.episode_number}:")
+            if not BASELINES_RUN:
+                print(f"\non #{self.episode_number}:")
 
-            print(f"reward for blue player is: , {self.episode_reward_blue}")
-            print(f"epsilon (blue player) is {blue_epsilon}")
-            print(f"number of steps: {steps_current_game}")
-            # print(f"mean number of steps of last {number_of_episodes} episodes: , {np.mean(env.steps_per_episode[-env.SHOW_EVERY:])}")
+                print(f"reward for blue player is: , {self.episode_reward_blue}")
+                print(f"epsilon (blue player) is {blue_epsilon}")
+                print(f"number of steps: {steps_current_game}")
 
             self.print_episode(env, steps_current_game)
-
 
         if self.episode_number % SAVE_STATS_EVERY == 0:
             env.end_run()

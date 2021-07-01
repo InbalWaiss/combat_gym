@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from gym_combat.envs.Arena.Position import Position
-from gym_combat.envs.Arena.CState import State
-from gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
-from gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.Position import Position
+from gym_combat.gym_combat.envs.Arena.CState import State
+from gym_combat.gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
+from gym_combat.gym_combat.envs.Common.constants import *
 import numpy as np
 import os
 PRINT_FLAG = False

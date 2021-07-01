@@ -1,6 +1,6 @@
 
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.DQN.DQN_constants import *
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.DQN.DQN_constants import *
 import os
 import time
 from keras.models import load_model
@@ -16,12 +16,12 @@ from keras.backend.tensorflow_backend import set_session
 import argparse
 import matplotlib.pyplot as plt
 
-from gym_combat.envs.DQN.deeprl_prj.policy import *
-from gym_combat.envs.DQN.deeprl_prj.objectives import *
-from gym_combat.envs.DQN.deeprl_prj.preprocessors import *
-from gym_combat.envs.DQN.deeprl_prj.utils import *
-from gym_combat.envs.DQN.deeprl_prj.core import  *
-from gym_combat.envs.DQN.fixed_state_berlin import fixed_state_berlin
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.policy import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.objectives import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.preprocessors import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.utils import *
+from gym_combat.gym_combat.envs.DQN.deeprl_prj.core import  *
+from gym_combat.gym_combat.envs.DQN.fixed_state_berlin import fixed_state_berlin
 
 def save_scalar(step, name, value, writer):
     """Save a scalar value to tensorboard.
@@ -487,7 +487,7 @@ class decision_maker_DQN_keras:
 
 
     def save_fixed_berlin_state(self, SAVE=False, save_folder_path=None):
-        if DSM_name is not "100X100_Berlin":
+        if DSM_name is not "100X100_Berlin" or not SAVE_BERLIN_FIXED_STATE:
             return
         s_a_s = np.stack([self.Berlin_fixed_state.fixed_state])
 
@@ -597,7 +597,7 @@ class DQNAgent_keras:
         self._decision_maker.update_replay_memory(previous_state_for_network, action, reward, new_state_for_network,
                                                   is_terminal)
         if self.UPDATE_CONTEXT and not EVALUATE:
-            self._decision_maker.train(state, action, reward, new_state, is_terminal)
+            self._decision_maker.train(state.img, action, reward, new_state.img, is_terminal)
 
 
 

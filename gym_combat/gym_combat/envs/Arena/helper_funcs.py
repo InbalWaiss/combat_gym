@@ -1,7 +1,7 @@
 import unittest
 
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Arena.geometry import LOS, bresenham
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.geometry import LOS, bresenham
 
 
 def check_if_LOS(x1, y1, x2, y2):

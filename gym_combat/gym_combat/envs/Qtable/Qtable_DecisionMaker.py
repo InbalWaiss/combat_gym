@@ -1,6 +1,6 @@
-from gym_combat.envs.Arena.CState import State
-from gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
-from gym_combat.envs.Qtable import QPlayer_constants
+from gym_combat.gym_combat.envs.Arena.CState import State
+from gym_combat.gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
+from gym_combat.gym_combat.envs.Qtable import QPlayer_constants
 from gym_combat.envs.Common.constants import *
 import numpy as np
 import os

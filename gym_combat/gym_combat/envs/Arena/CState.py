@@ -1,6 +1,6 @@
-from gym_combat.envs.Arena.Position import Position
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.Arena.helper_funcs import check_if_LOS
+from gym_combat.gym_combat.envs.Arena.Position import Position
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Arena.helper_funcs import check_if_LOS
 import matplotlib.pyplot as plt
 
 
@@ -18,10 +18,9 @@ class State(object):
         env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
 
         if not self.enemy_pos is None:
-            if LOS_PENALTY_FLAG:
-                points_in_enemy_los = DICT_POS_LOS[(self.enemy_pos._x, self.enemy_pos._y)]
-                for point in points_in_enemy_los:
-                    env[point[0]][point[1]] = dict_of_colors_for_state[DARK_DARK_RED_N]
+            points_in_enemy_los = DICT_POS_LOS[(self.enemy_pos._x, self.enemy_pos._y)]
+            for point in points_in_enemy_los:
+                env[point[0]][point[1]] = dict_of_colors_for_state[DARK_DARK_RED_N]
 
             # set danger zone in state
             points_in_enemy_los = DICT_POS_FIRE_RANGE[(self.enemy_pos._x, self.enemy_pos._y)]
@@ -41,10 +40,9 @@ class State(object):
             env[self.my_pos._x][self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
 
         if (not BB_STATE):
-            for x in range(SIZE_X):
-                for y in range(SIZE_Y):
-                    if DSM[x][y] == 1.:
-                        env[x][y] = dict_of_colors_for_state[GREY_N]
+            obs_locations = np.where(DSM == 1)
+            env[obs_locations] = dict_of_colors_for_graphics[GREY_N]
+
         else:
             start_x = np.max([0, self.my_pos._x - FIRE_RANGE - BB_MARGIN])
             end_x = np.min([self.my_pos._x + FIRE_RANGE + BB_MARGIN + 1, SIZE_X])

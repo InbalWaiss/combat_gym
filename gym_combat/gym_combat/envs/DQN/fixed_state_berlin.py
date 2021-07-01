@@ -1,4 +1,4 @@
-from gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Common.constants import *
 import os
 
 class fixed_state_berlin():
