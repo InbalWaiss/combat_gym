@@ -1,5 +1,4 @@
 import gym
-import gym_combat
 from gym import error, spaces, utils
 from gym.utils import seeding
 from gym_combat.gym_combat.envs.Arena.Environment import Environment, Episode

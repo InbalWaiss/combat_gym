@@ -1,6 +1,5 @@
 import gym
-import gym_combat
-from gym_combat.gym_combat.envs.gym_combat import GymCombatEnv
+import gym_combat.gym_combat
 from gym_combat.gym_combat.envs.Common.constants import WinEnum
 import os
 import time
@@ -9,14 +8,6 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3 import PPO, DQN
-
-#Inbal sanity check
-env = GymCombatEnv()
-model = PPO('MlpPolicy', env, verbose=1)
-model.learn(total_timesteps=10000000)
-model.save("ppo_GymCombatEnv_MlpPolicy_10000000")
-
-
 
 n_envs = 4
 total_timesteps = 20000
@@ -51,7 +42,7 @@ def ppo_train(gamma, lr, vf_coef):
 
 def ppo_check_model(model_path, n_games):
     model = PPO.load(model_path)
-    env = GymCombatEnv(train_mode=False)
+    env = gym.make('gym-combat-v0', train_mode = False )
     obs = env.reset()
     counter, blue_win_counter = 0,0
     while counter < n_games:
