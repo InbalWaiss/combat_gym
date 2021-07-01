@@ -16,34 +16,37 @@ class State(object):
 
     def get_image(self):
         env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
-
-        if not self.enemy_pos is None:
+        if self.enemy_pos is not None:
             points_in_enemy_los = DICT_POS_LOS[(self.enemy_pos._x, self.enemy_pos._y)]
-            for point in points_in_enemy_los:
-                env[point[0]][point[1]] = dict_of_colors_for_state[DARK_DARK_RED_N]
+            p = np.array(points_in_enemy_los)
+            env[p[:,0],p[:,1]] = dict_of_colors_for_state[DARK_DARK_RED_N]
 
             # set danger zone in state
             points_in_enemy_los = DICT_POS_FIRE_RANGE[(self.enemy_pos._x, self.enemy_pos._y)]
-            for point in points_in_enemy_los:
-                color = dict_of_colors_for_state[DARK_RED_N]
-                if NONEDETERMINISTIC_TERMINAL_STATE:
+            if NONEDETERMINISTIC_TERMINAL_STATE:
+                enemy_color = dict_of_colors_for_state[RED_N]
+                for point in points_in_enemy_los:
                     dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
                     dist_floor = np.floor(dist)
-                    enemy_color = dict_of_colors_for_state[RED_N]
                     color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
-                env[point[0]][point[1]] = color  # dict_of_colors_for_state[DARK_RED_N]
+                    env[point[0]][point[1]] = color
+            else:
+                p = np.array(points_in_enemy_los)
+                env[p[:, 0], p[:, 1]] = dict_of_colors_for_state[DARK_RED_N]
 
 
-            env[self.enemy_pos._x][self.enemy_pos._y] = dict_of_colors_for_state[RED_N]
+            #set enemy (red player)
+            env[self.enemy_pos._x,self.enemy_pos._y] = dict_of_colors_for_state[RED_N]
 
         if not self.Red_won:
-            env[self.my_pos._x][self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
+            #set blue player
+            env[self.my_pos._x,self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
 
-        if (not BB_STATE):
-            obs_locations = np.where(DSM == 1)
-            env[obs_locations] = dict_of_colors_for_graphics[GREY_N]
+        #set obstacles
+        env[np.where(DSM == 1)] = dict_of_colors_for_graphics[GREY_N]
 
-        else:
+        if (BB_STATE):
+
             start_x = np.max([0, self.my_pos._x - FIRE_RANGE - BB_MARGIN])
             end_x = np.min([self.my_pos._x + FIRE_RANGE + BB_MARGIN + 1, SIZE_X])
             start_y = np.max([0, self.my_pos._y - FIRE_RANGE - BB_MARGIN])
