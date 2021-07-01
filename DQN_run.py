@@ -1,6 +1,5 @@
 import gym
-import gym_combat
-from gym_combat.gym_combat.envs.gym_combat import GymCombatEnv
+import gym_combat.gym_combat
 from gym_combat.gym_combat.envs.Common.constants import WinEnum
 import os
 import time
@@ -25,8 +24,7 @@ checkpoint_callback = CheckpointCallback(save_freq=checkpoint_freq, save_path=ch
 def dqn_train(gamma, lr):
     network_arc = 'MlpPolicy'
     model_name = "dqn_{}_{}M_g_{}_lr_{}".format(network_arc[:3], total_timesteps/1000000, gamma, lr)
-
-    env = GymCombatEnv(run_name = model_name)
+    env = gym.make('gym-combat-v0', run_name = model_name)
     model = DQN(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path)
     model.learn(total_timesteps=total_timesteps+1000, log_interval = 100, callback=checkpoint_callback, tb_log_name = model_name)
     model.save(os.path.join(trained_models_path, model_name + ".zip"))
@@ -34,7 +32,7 @@ def dqn_train(gamma, lr):
 
 def ppo_check_model(model_path, n_games):
     model = DQN.load(model_path)
-    env = GymCombatEnv(train_mode=False)
+    env = gym.make('gym-combat-v0', train_mode = False)
     obs = env.reset()
     counter, blue_win_counter = 0,0
     while counter < n_games:

@@ -1,6 +1,5 @@
 import gym
-import gym_combat
-from gym_combat.gym_combat.envs.gym_combat import GymCombatEnv
+import gym_combat.gym_combat
 from gym_combat.gym_combat.envs.Common.constants import WinEnum
 import os
 import time
@@ -51,7 +50,7 @@ def ppo_train(gamma, lr, vf_coef):
 
 def ppo_check_model(model_path, n_games):
     model = PPO.load(model_path)
-    env = GymCombatEnv(train_mode=False)
+    env = gym.make('gym-combat-v0', train_mode = False )
     obs = env.reset()
     counter, blue_win_counter = 0,0
     while counter < n_games:
