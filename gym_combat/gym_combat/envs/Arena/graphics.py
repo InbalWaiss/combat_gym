@@ -381,14 +381,14 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
         radius = int(np.ceil(const / 2))
         thickness = -1
         if env.win_status == WinEnum.Blue:
-            red_color_0 = int(np.max([0, dict_of_colors_for_graphics[DARK_DARK_RED_N][0] - 30 - 60]))
-            red_color_1 = int(np.max([0, dict_of_colors_for_graphics[DARK_DARK_RED_N][1] - 30 - 60]))
-            red_color_2 = int(np.max([0, dict_of_colors_for_graphics[DARK_DARK_RED_N][2] - 30 - 60]))
+            red_color_0 = int(np.max([0, dict_of_colors_for_graphics[DARK_DARK_RED_N][0] - 30]))
+            red_color_1 = int(np.max([0, dict_of_colors_for_graphics[DARK_DARK_RED_N][1] - 30]))
+            red_color_2 = int(np.max([0, dict_of_colors_for_graphics[DARK_DARK_RED_N][2] - 30]))
             points_dom_points_color = (red_color_0, red_color_1, red_color_2)
 
-            los_color_0 = int(np.max([0, dict_of_colors_for_graphics[DARK_RED_N][0] - 30-60]))
-            los_color_1 = int(np.max([0, dict_of_colors_for_graphics[DARK_RED_N][1] - 30-60]))
-            los_color_2 = int(np.max([0, dict_of_colors_for_graphics[DARK_RED_N][2] - 30-60]))
+            los_color_0 = int(np.max([0, dict_of_colors_for_graphics[DARK_RED_N][0] - 30-100]))
+            los_color_1 = int(np.max([0, dict_of_colors_for_graphics[DARK_RED_N][1] - 30-100]))
+            los_color_2 = int(np.max([0, dict_of_colors_for_graphics[DARK_RED_N][2] - 30-100]))
             points_in_enemy_los_color = (los_color_0, los_color_1, los_color_2)
 
             red_player_color_0 = int(np.max([0, dict_of_colors_for_graphics[RED_N][0] - 50 - 60]))
@@ -401,13 +401,13 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
             red_player_color = dict_of_colors_for_graphics[RED_N]
         # if env.win_status != WinEnum.Blue:
         # set the red player
-        if NONEDETERMINISTIC_TERMINAL_STATE:
-            points_dom_points = DICT_POS_LOS[(red.x, red.y)]
-            for point in points_dom_points:
-                informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-                (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = points_in_enemy_los_color
-        points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
-        for point in points_in_enemy_los:
+        #if NONEDETERMINISTIC_TERMINAL_STATE:
+        points_dom_points = DICT_POS_LOS[(red.x, red.y)]
+        for point in points_dom_points:
+            informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
+            (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = points_in_enemy_los_color
+        points_in_enemy_fire_range = DICT_POS_FIRE_RANGE[(red.x, red.y)]
+        for point in points_in_enemy_fire_range:
             color = points_dom_points_color
             if NONEDETERMINISTIC_TERMINAL_STATE:
                 dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
