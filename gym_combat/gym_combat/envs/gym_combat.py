@@ -8,17 +8,6 @@ from gym_combat.gym_combat.envs.Arena.Entity import Entity
 from gym_combat.gym_combat.envs.Arena.CState import State
 
 
-def evaluate(episode_number):
-    if not IS_TRAINING:
-        return True
-
-    a = episode_number % EVALUATE_PLAYERS_EVERY
-    if a>=0 and a<EVALUATE_BATCH_SIZE:
-        EVALUATE = True
-    else:
-        EVALUATE = False
-    return EVALUATE
-
 
 class GymCombatEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -47,7 +36,7 @@ class GymCombatEnv(gym.Env):
     def reset(self):
 
         self.episode_number+=1
-        EVALUATE = evaluate(self.episode_number)
+        EVALUATE = self.evaluate()
 
         self.current_episode = Episode(self.episode_number, EVALUATE=EVALUATE)
 
@@ -147,7 +136,10 @@ class GymCombatEnv(gym.Env):
         self.current_episode.print_info_of_episode(self.env, self.current_episode.number_of_steps, 0, self.current_episode.episode_number)
 
     def evaluate(self):
-        episode_number = self.current_episode.episode_number
+        if not IS_TRAINING:
+            return True
+
+        episode_number = self.episode_number
         a = episode_number % EVALUATE_PLAYERS_EVERY
         if a>0 and a<=EVALUATE_BATCH_SIZE:
             EVALUATE = True
