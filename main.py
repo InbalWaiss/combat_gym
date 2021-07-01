@@ -51,8 +51,6 @@ def print_states(observation_for_blue_s0, observation_for_blue_s1):
 
 
 if __name__ == '__main__':
-
-
     env = Environment(IS_TRAINING)
 
     print("Starting Blue player")
