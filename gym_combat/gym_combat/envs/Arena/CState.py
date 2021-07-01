@@ -42,10 +42,7 @@ class State(object):
         if (not BB_STATE):
             obs_locations = np.where(DSM == 1)
             env[obs_locations] = dict_of_colors_for_graphics[GREY_N]
-            # for x in range(SIZE_X):
-            #     for y in range(SIZE_Y):
-            #         if DSM[x][y] == 1.:
-            #             env[x][y] = dict_of_colors_for_state[GREY_N]
+
         else:
             start_x = np.max([0, self.my_pos._x - FIRE_RANGE - BB_MARGIN])
             end_x = np.min([self.my_pos._x + FIRE_RANGE + BB_MARGIN + 1, SIZE_X])

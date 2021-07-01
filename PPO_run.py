@@ -10,11 +10,11 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3 import PPO, DQN
 
-#Inbal sanity check
-env = GymCombatEnv()
-model = PPO('MlpPolicy', env, verbose=1)
-model.learn(total_timesteps=10000000)
-model.save("ppo_GymCombatEnv_MlpPolicy_10000000")
+# #Inbal sanity check
+# env = GymCombatEnv()
+# model = PPO('MlpPolicy', env, verbose=1)
+# model.learn(total_timesteps=10000000)
+# model.save("ppo_GymCombatEnv_MlpPolicy_10000000")
 
 
 
