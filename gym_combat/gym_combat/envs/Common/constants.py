@@ -78,13 +78,18 @@ if DSM_name=="15X15":
             print("all_pairs_distances loaded")
 
 elif DSM_name=="100X100_Berlin":
-    # BERLIN_DSM_PATH_1 = path.join(MAIN_PATH, 'Common')
-    # BERLIN_DSM_PATH_2 = path.join(BERLIN_DSM_PATH_1, 'maps')
-    # BERLIN_DSM_PATH_3 = path.join(BERLIN_DSM_PATH_2, 'Berlin')
-    # BERLIN_DSM_PATH_4 = path.join(BERLIN_DSM_PATH_3, 'berlin_100_0_1_inflated.png')
-    DSM = get_DSM_berlin()
+
+    #DSM = get_DSM_berlin()
+    #np.savetxt("gym_combat/gym_combat/envs/Common/maps/Berlin/Berlin_1_256_inbal.txt", DSM, fmt="%d")
+
     SIZE_X=100
     SIZE_Y=100
+    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256_inbal.txt", usecols=range(SIZE_X))
+    if False:
+        import matplotlib.pyplot as plt
+        plt.matshow(DSM)
+        plt.show()
+
     FIRE_RANGE = 10
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
     MAX_STEPS_PER_EPISODE = 250
