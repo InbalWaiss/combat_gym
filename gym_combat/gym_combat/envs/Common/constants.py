@@ -76,7 +76,8 @@ if DSM_name=="15X15":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
-
+    else:
+        all_pairs_distances = {}
 elif DSM_name=="100X100_Berlin":
 
     #DSM = get_DSM_berlin()
@@ -84,7 +85,7 @@ elif DSM_name=="100X100_Berlin":
 
     SIZE_X=100
     SIZE_Y=100
-    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256_inbal.txt", usecols=range(SIZE_X))
+    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin/Berlin_1_256_inbal.txt", usecols=range(SIZE_X))
     if False:
         import matplotlib.pyplot as plt
         plt.matshow(DSM)
@@ -106,6 +107,8 @@ elif DSM_name=="100X100_Berlin":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
+    else:
+        all_pairs_distances = {}
     SAVE_BERLIN_FIXED_STATE = False
 
 elif DSM_name=="100X100_Paris":
@@ -272,13 +275,15 @@ class AgentType(IntEnum):
     DQN_temporalAttention = 4
     DQNAgent_spatioalAttention = 5
     Greedy = 6
+    Smart = 7
 
 Agent_type_str = {AgentType.Q_table : "Q_table",
                   AgentType.DQN_basic : "DQN_basic",
                   AgentType.DQN_keras : "DQN_keras",
                   AgentType.DQN_temporalAttention : "DQN_temporalAttention",
                   AgentType.DQNAgent_spatioalAttention : "DQNAgent_spatioalAttention",
-                  AgentType.Greedy : "Greedy_player"}
+                  AgentType.Greedy : "Greedy_player",
+                  AgentType.Smart : "smart_player"}
 
 class Color(IntEnum):
     Blue = 1
@@ -302,3 +307,4 @@ SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
 # training mode
 IS_TRAINING = True
 
+RED_TYPE = 'Smart' # 'Greedy'

@@ -3,6 +3,7 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 from gym_combat.gym_combat.envs.Arena.Environment import Environment, Episode
 from gym_combat.gym_combat.envs.Greedy import Greedy_player
+from gym_combat.gym_combat.envs.Greedy import smart_player
 from gym_combat.gym_combat.envs.Common.constants import *
 from gym_combat.gym_combat.envs.Arena.Entity import Entity
 from gym_combat.gym_combat.envs.Arena.CState import State
@@ -24,8 +25,11 @@ class GymCombatEnv(gym.Env):
         self.env_num = env_num.get() if env_num else None
         self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num)
 
+        if RED_TYPE == 'Smart':
+            self.red_decision_maker = smart_player.SmartPlayer()
+        else: # 'Greedy'
+            self.red_decision_maker = Greedy_player.Greedy_player()
 
-        self.red_decision_maker = Greedy_player.Greedy_player()
         self.env.red_player = Entity(self.red_decision_maker)
 
         self.episode_number = 0
