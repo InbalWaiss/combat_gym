@@ -18,8 +18,8 @@ from stable_baselines3 import PPO, DQN
 
 
 n_envs = 4
-total_timesteps = 20000
-checkpoint_freq = 5000
+total_timesteps = 20000000
+checkpoint_freq = 500000
 
 n_games = 1000
 tensorboard_path = "tensorboard_log"#os.path.join("..", "tensorboard_log")
@@ -38,12 +38,12 @@ class EnvNum():
 
 def ppo_train(gamma, lr, vf_coef):
 
-    network_arc = 'MlpPolicy'
+    network_arc = 'CnnPolicy'
     model_name = "ppo_{}_{}M_g_{}_lr_{}_vfc_{}".format(network_arc[:3], total_timesteps/1000000, gamma, lr, vf_coef)
     env_num = EnvNum()
     env = make_vec_env('gym-combat-v0', n_envs=n_envs, env_kwargs={"run_name": model_name, "env_num": env_num}, seed = 0)
 
-    model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path,n_steps=32, n_epochs=4, clip_range=0.2, ent_coef=0, vf_coef=vf_coef, clip_range_vf=None)
+    model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path, n_steps=32, n_epochs=4, clip_range=0.25, ent_coef=0, vf_coef=vf_coef, clip_range_vf=None)
     model.learn(total_timesteps=total_timesteps+1000, log_interval = 100, callback=checkpoint_callback, tb_log_name = model_name)
     model.save(os.path.join(trained_models_path, model_name + ".zip"))
     return model_name
@@ -64,10 +64,10 @@ def ppo_check_model(model_path, n_games):
     print ("{}:{} Blue won in {} games out of {}".format(model_path, blue_win_counter/n_games, blue_win_counter, n_games))
     return blue_win_counter/n_games
 
-gamma = 0.99
-lr = 0.0003
+gamma = 0.97
+lr = 0.0002
 vf_coef = 0.1
-for vf_coef in [0.1]:
+for gamma in [0.97,0.96,0.95]:
     res = {}
     t0 = time.time()
     trained_model_name = ppo_train(gamma, lr, vf_coef)

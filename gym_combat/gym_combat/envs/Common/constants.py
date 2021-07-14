@@ -85,7 +85,7 @@ elif DSM_name=="100X100_Berlin":
 
     SIZE_X=100
     SIZE_Y=100
-    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin/Berlin_1_256_inbal.txt", usecols=range(SIZE_X))
+    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", usecols=range(SIZE_X))
     if False:
         import matplotlib.pyplot as plt
         plt.matshow(DSM)
@@ -97,7 +97,7 @@ elif DSM_name=="100X100_Berlin":
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
     if BASELINES_RUN:
-        BB_MARGIN = 5
+        BB_MARGIN = 8
     else:
         BB_MARGIN = 3
     SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
@@ -153,6 +153,21 @@ except:
             pass
 
 try:
+    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '_tuple.pkl', 'rb') as f:
+        DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
+except:
+    try:
+        with open('dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+'_tuple.pkl', 'rb') as f:
+            DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
+    except:
+        try:
+            with open('/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+'_tuple.pkl', 'rb') as f:
+                DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
+        except:
+            pass
+
+
+try:
     with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
         DICT_POS_LOS = pickle.load(f)
 except:
@@ -166,6 +181,19 @@ except:
         except:
             pass
 
+try:
+    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '_tuple.pkl', 'rb') as f:
+        DICT_POS_LOS_TUPLE = pickle.load(f)
+except:
+    try:
+        with open('dictionary_position_los_' +DSM_name+'_'+str(LOS_PENALTY_RANGE)+ '_tuple.pkl', 'rb') as f:
+            DICT_POS_LOS_TUPLE = pickle.load(f)
+    except:
+        try:
+            with open('../Common/Preprocessing/dictionary_position_los_' +DSM_name+ '_'+str(LOS_PENALTY_RANGE)+'_tuple.pkl', 'rb') as f:
+                DICT_POS_LOS_TUPLE = pickle.load(f)
+        except:
+            pass
 
 
 if BASELINES_RUN:
@@ -307,4 +335,4 @@ SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
 # training mode
 IS_TRAINING = True
 
-RED_TYPE = 'Smart' # 'Greedy'
+RED_TYPE = 'Greedy'# 'Smart'
