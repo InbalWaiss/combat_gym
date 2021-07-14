@@ -13,6 +13,8 @@ ACTION_SPACE_4 = False
 if not ACTION_SPACE_9:
     ACTION_SPACE_4 = True
 
+RED_TYPE = 'Greedy'# 'Smart'
+
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
 FIXED_START_POINT_BLUE = False
@@ -77,6 +79,7 @@ if DSM_name=="15X15":
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
     else:
+        assert not RED_TYPE == 'Greedy'
         all_pairs_distances = {}
 elif DSM_name=="100X100_Berlin":
 
@@ -108,6 +111,7 @@ elif DSM_name=="100X100_Berlin":
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
     else:
+        assert not RED_TYPE == 'Greedy'
         all_pairs_distances = {}
     SAVE_BERLIN_FIXED_STATE = False
 
@@ -335,4 +339,3 @@ SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
 # training mode
 IS_TRAINING = True
 
-RED_TYPE = 'Greedy'# 'Smart'
