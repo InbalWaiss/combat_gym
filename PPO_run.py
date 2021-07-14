@@ -26,7 +26,7 @@ tensorboard_path = "tensorboard_log"#os.path.join("..", "tensorboard_log")
 checkpoint_path = "checkpoints"#os.path.join("..", "checkpoints")
 trained_models_path = "trained_models"#os.path.join("..", "trained_models")
 res_path = "res"#os.path.join("..", "res")
-checkpoint_callback = CheckpointCallback(save_freq=checkpoint_freq/n_envs, save_path=checkpoint_path, name_prefix='ppo')
+
 
 class EnvNum():
     def __init__(self):
@@ -40,6 +40,8 @@ def ppo_train(gamma, lr, vf_coef):
 
     network_arc = 'CnnPolicy'
     model_name = "ppo_{}_{}M_g_{}_lr_{}_vfc_{}".format(network_arc[:3], total_timesteps/1000000, gamma, lr, vf_coef)
+    checkpoint_callback = CheckpointCallback(save_freq=checkpoint_freq / n_envs, save_path=checkpoint_path,
+                                             name_prefix='ppo')
     env_num = EnvNum()
     env = make_vec_env('gym-combat-v0', n_envs=n_envs, env_kwargs={"run_name": model_name, "env_num": env_num}, seed = 0)
 
