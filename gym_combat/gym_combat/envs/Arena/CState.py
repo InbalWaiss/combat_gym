@@ -11,12 +11,13 @@ class State(object):
         self.my_pos = my_pos
         self.enemy_pos = enemy_pos
         self.img = self.get_image()
+        self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
 
     def get_image(self):
-        env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
+        self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
         if self.enemy_pos is not None:
             points_in_enemy_los_as_tuple = DICT_POS_LOS_TUPLE[(self.enemy_pos._x, self.enemy_pos._y)]
-            env[points_in_enemy_los_as_tuple] = dict_of_colors_for_state[DARK_DARK_RED_N]
+            self.env[points_in_enemy_los_as_tuple] = dict_of_colors_for_state[DARK_DARK_RED_N]
 
             # set danger zone in state
             if NONEDETERMINISTIC_TERMINAL_STATE:
@@ -26,24 +27,24 @@ class State(object):
                     dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
                     dist_floor = np.floor(dist)
                     color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
-                    env[point[0]][point[1]] = color
+                    self.env[point[0]][point[1]] = color
             else:
                 points_in_enemy_fire_range_tuple = DICT_POS_FIRE_RANGE_TUPLE[(self.enemy_pos._x, self.enemy_pos._y)]
-                env[points_in_enemy_fire_range_tuple] = dict_of_colors_for_state[DARK_RED_N]
+                self.env[points_in_enemy_fire_range_tuple] = dict_of_colors_for_state[DARK_RED_N]
             #set enemy (red player)
-            env[self.enemy_pos._x,self.enemy_pos._y] = dict_of_colors_for_state[RED_N]
+            self.env[self.enemy_pos._x,self.enemy_pos._y] = dict_of_colors_for_state[RED_N]
 
         if not self.Red_won:
             #set blue player
-            env[self.my_pos._x,self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
+            self.env[self.my_pos._x,self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
 
         #set obstacles
-        env[np.where(DSM == 1)] = dict_of_colors_for_graphics[GREY_N]
+        self.env[np.where(DSM == 1)] = dict_of_colors_for_graphics[GREY_N]
 
         if (BB_STATE):
             extension = FIRE_RANGE + BB_MARGIN
             extended_env = np.zeros((SIZE_X + 2 * extension, SIZE_Y + 2 * extension, 3), dtype=np.uint8)
-            extended_env[extension:-extension, extension: - extension] = env
+            extended_env[extension:-extension, extension: - extension] = self.env
             BB_env = extended_env[self.my_pos._x: self.my_pos._x + 2 * extension + 1,
                                   self.my_pos._y: self.my_pos._y + 2 * extension + 1]
 
@@ -53,8 +54,8 @@ class State(object):
                 plt.matshow(BB_env)
                 plt.show()
 
-            env = BB_env
-        return env
+            self.env = BB_env
+        return self.env
 
 
 def print_env(env):
