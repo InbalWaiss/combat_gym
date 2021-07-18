@@ -78,9 +78,7 @@ if DSM_name=="15X15":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
-    else:
-        assert not RED_TYPE == 'Greedy'
-        all_pairs_distances = {}
+
 elif DSM_name=="100X100_Berlin":
 
     #DSM = get_DSM_berlin()
@@ -110,9 +108,7 @@ elif DSM_name=="100X100_Berlin":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
-    else:
-        assert not RED_TYPE == 'Greedy'
-        all_pairs_distances = {}
+
     SAVE_BERLIN_FIXED_STATE = False
 
 elif DSM_name=="100X100_Paris":
