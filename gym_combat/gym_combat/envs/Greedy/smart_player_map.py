@@ -26,19 +26,19 @@ def calc_possible_locs(my_map, opponent_loc, depth = 10, neighborhood=4):
     return res
 
 
-def calc_covers_map(my_map, enemy):
+def calc_covers_map(my_map, enemy, max_range):
     enemy = np.asarray(enemy)
     fire_map = np.zeros_like(my_map)
     for j in [0, my_map.shape[1]]:
         for i in range(my_map.shape[0]):
-            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map)
+            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map, max_range)
     for i in [0, my_map.shape[0]]:
         for j in range(my_map.shape[1]):
-            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map)
+            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map, max_range)
     return fire_map
 
 
-def mark_beyond_clear_range(obs_map, to_loc, from_loc, fire_map):
+def mark_beyond_clear_range(obs_map, to_loc, from_loc, fire_map, range = 10000):
     dist = np.linalg.norm(to_loc - from_loc)
     step = 1./dist
     met_wall = False
@@ -49,6 +49,8 @@ def mark_beyond_clear_range(obs_map, to_loc, from_loc, fire_map):
             fire_map[loc[0], loc[1]] = 1
         if obs_map[loc[0], loc[1]]:
             met_wall = True
+        if np.linalg.norm(loc - from_loc) > range:
+            break
 
 
 def make_3d_map(map_2d, blue, red, depth):
@@ -151,7 +153,7 @@ def find_move_in_path(player_path):
         return player_path[i]
 
 def plan_next_action(state):
-    future_length = 7
+    future_length = FIRE_RANGE * 2
     my_pos = state.my_pos.get_tuple()
     enemy_pos = state.enemy_pos.get_tuple()
     im = state.env
@@ -214,7 +216,7 @@ def get_action_9_actions( delta_x, delta_y, loc, shape):
     return a
 
 def plan_path(my_map, blue, red, depth):
-    covers_map = calc_covers_map(my_map, red)
+    covers_map = calc_covers_map(my_map, red, depth)
     possible_locs = calc_possible_locs(my_map, red, depth=FIRE_RANGE, neighborhood=8)
     possible_locs[possible_locs == 0] = FIRE_RANGE+1
     without_obs = calc_possible_locs(np.zeros_like(my_map), red, depth=FIRE_RANGE, neighborhood=8)
