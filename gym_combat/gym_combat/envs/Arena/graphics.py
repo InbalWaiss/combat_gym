@@ -205,13 +205,12 @@ def print_stats_humna_player(array_of_results, save_folder_path, number_of_episo
 
     plt.show()
 
+def create_image(env: Environment, episode, last_step_number):
 
 
-def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False):
     blue = env.blue_player
     red = env.red_player
     game_number = episode.episode_number
-    is_terminal = episode.is_terminal
     number_of_steps = last_step_number
     wins_for_blue = env.wins_for_blue
     wins_for_red = env.wins_for_red
@@ -349,7 +348,7 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
             cv2.putText(informative_env, f"after {number_of_steps} steps", botoomLeftCornerOfText_steps, font, 0.7,
                         dict_of_colors_for_graphics[PURPLE_N], 0, cv2.LINE_AA)
 
-        cv2.waitKey(2)
+       # cv2.waitKey(2)
 
     else:  # not terminal state
         botoomLeftCornerOfText = (int(np.floor(SIZE_Y / 2)) * const - 45, 20)
@@ -432,9 +431,14 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
         center_cord_blue_x = (blue.x + margin_x) * const + radius
         center_cord_blue_y = (blue.y + margin_y) * const + radius
         cv2.circle(informative_env, (center_cord_blue_y, center_cord_blue_x), radius, blue_player_color, thickness)
-    cv2.imshow("informative_env_"+str(env.combat_env_num), np.array(informative_env))  # show it!
+    return np.array(informative_env)
+
+def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False):
+    image = create_image(env, episode, last_step_number)
+    cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
     cv2.waitKey(2)
-    if is_terminal:
+    if episode.is_terminal:
         sleep(1.2)
     else:
         sleep(0.2)
+        
