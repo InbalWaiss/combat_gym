@@ -13,7 +13,7 @@ ACTION_SPACE_4 = False
 if not ACTION_SPACE_9:
     ACTION_SPACE_4 = True
 
-RED_TYPE = 'Smart' #'Greedy'#
+RED_TYPE = 'Greedy'#'Smart' #
 
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
