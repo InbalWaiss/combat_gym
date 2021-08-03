@@ -3,6 +3,7 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 from gym_combat.gym_combat.envs.Arena.Environment import Environment, Episode
 from gym_combat.gym_combat.envs.Greedy import Greedy_player
+from gym_combat.gym_combat.envs.Greedy import smart_player
 from gym_combat.gym_combat.envs.Common.constants import *
 from gym_combat.gym_combat.envs.Arena.Entity import Entity
 from gym_combat.gym_combat.envs.Arena.CState import State
