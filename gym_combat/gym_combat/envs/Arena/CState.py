@@ -10,8 +10,8 @@ class State(object):
         self.Red_won = Red_won
         self.my_pos = my_pos
         self.enemy_pos = enemy_pos
+        self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
         self.img = self.get_image()
-        self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
 
     def get_image(self):
         self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
@@ -54,7 +54,7 @@ class State(object):
                 plt.matshow(BB_env)
                 plt.show()
 
-            self.env = BB_env
+            return BB_env
         return self.env
 
 

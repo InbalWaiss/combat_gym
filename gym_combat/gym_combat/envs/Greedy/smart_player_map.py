@@ -1,5 +1,7 @@
 import skimage.graph as sg
 from gym_combat.gym_combat.envs.Common.constants import *
+import matplotlib.pyplot as plt
+
 
 def calc_possible_locs(my_map, opponent_loc, depth = 10, neighborhood=4):
     queue = []
@@ -27,15 +29,18 @@ def calc_possible_locs(my_map, opponent_loc, depth = 10, neighborhood=4):
 
 
 def calc_covers_map(my_map, enemy, max_range):
-    enemy = np.asarray(enemy)
-    fire_map = np.zeros_like(my_map)
-    for j in [0, my_map.shape[1]]:
-        for i in range(my_map.shape[0]):
-            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map, max_range)
-    for i in [0, my_map.shape[0]]:
-        for j in range(my_map.shape[1]):
-            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map, max_range)
-    return fire_map
+    my_map = my_map.astype(float)
+    res = np.zeros_like(my_map)
+    TL = my_map[1:enemy[0]+1, 1:enemy[1]+1] - my_map[:enemy[0], :enemy[1]] > 0
+    BR = my_map[enemy[0]:-1, enemy[1]:-1] - my_map[enemy[0]+1:, enemy[1]+1:] > 0
+    TR = my_map[1:enemy[0]+1, enemy[1]:-1] - my_map[:enemy[0], enemy[1]+1:] > 0
+    BL = my_map[enemy[0]:-1, 1:enemy[1]+1] - my_map[enemy[0]+1:, :enemy[1]] > 0
+
+    res[:enemy[0], 1:enemy[1]+1][TL>0] = 30
+    res[enemy[0]:-1, enemy[1]:-1][BR > 0] = 40
+    res[:enemy[0], enemy[1]:-1][TR > 0] = 50
+    res[enemy[0]:-1, 1:enemy[1]+1][BL > 0] = 60
+    return res
 
 
 def mark_beyond_clear_range(obs_map, to_loc, from_loc, fire_map, range = 10000):
