@@ -100,18 +100,36 @@ def find_path_to_cover(map_3d, blue, red, closest_cover, time_to_cover):
     return path_3d
 
 
-def select_cover(covers_map, without_obs, blue, red, depth=10):
+def select_cover(covers_map, without_obs, blue, red, possible_locs, obs_map, depth=10):
     cands = np.where(covers_map > 0)
     blue = np.asarray(blue)
-    min_dist = 100000
-    closest = []
+    closest = {}
     for i in range(cands[0].shape[0]):
         cand = np.asarray([cands[0][i], cands[1][i]])
         dist = np.linalg.norm(blue - cand, 1)
-        if dist < min_dist and dist < covers_map[cand[0], cand[1]]:
-            min_dist = dist
-            closest = cand
-    return closest
+        dist += np.random.rand()*0.1 # to get all same-distance without changing order too much.
+        closest[dist] = cand
+
+    sorted_dists = sorted(closest.keys())
+    for dist in sorted_dists:
+        if dist > depth:
+            break
+        cand = closest[dist]
+        reach_time = calc_reach_time(cand, possible_locs, obs_map, depth)
+        if np.floor(dist) < reach_time:
+            return cand
+    return []
+
+
+def calc_reach_time(cover, possible_locs, obs_map, final_reach_time):
+    for reach_time in range(2, final_reach_time):
+        reach_time_locs = np.where(possible_locs == reach_time)
+        n_reach_time_locs = len(reach_time_locs[0])
+        for reach_time_loc_i in range(n_reach_time_locs):
+            reach_time_loc = np.asarray([reach_time_locs[0][reach_time_loc_i], reach_time_locs[1][reach_time_loc_i]])
+            if is_clear_range(reach_time_loc, cover, obs_map):
+                return reach_time
+    return final_reach_time
 
 
 def is_clear_range(reach_time_loc, cover, obs_map):
@@ -225,9 +243,9 @@ def plan_path(my_map, blue, red, depth):
     possible_locs = calc_possible_locs(my_map, red, depth=FIRE_RANGE, neighborhood=8)
     possible_locs[possible_locs == 0] = FIRE_RANGE+1
     without_obs = calc_possible_locs(np.zeros_like(my_map), red, depth=FIRE_RANGE, neighborhood=8)
-    covers_map = update_killing_range(covers_map.astype(int), possible_locs, FIRE_RANGE)
+    #covers_map = update_killing_range(covers_map.astype(int), possible_locs, FIRE_RANGE)
 
-    closest_cover = select_cover(covers_map, without_obs, blue, red)
+    closest_cover = select_cover(covers_map, without_obs, blue, red, possible_locs, my_map, FIRE_RANGE)
 
     if len(closest_cover):
         if (np.asarray(blue) == closest_cover).all():
