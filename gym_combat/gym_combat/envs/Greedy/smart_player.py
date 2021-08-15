@@ -17,6 +17,7 @@ class SmartPlayer(AbsDecisionMaker):
         self.episode_number = 0
         self._epsilon = 0
         self.path_model_to_load = None
+        self.path_planner = spm.PathPlanner()
 
         self.G = self.create_graph()
 
@@ -41,7 +42,7 @@ class SmartPlayer(AbsDecisionMaker):
         pass
 
     def get_action(self, state: State, evaluate=False)-> AgentAction:
-        action = spm.plan_next_action(state)
+        action = self.path_planner.plan_next_action(state)
         self._action = action
         return self._action
 
