@@ -1,3 +1,5 @@
+import os
+os.chdir(r"D:\projects\RL\fps\code\combat_gym")
 import skimage.graph as sg
 from gym_combat.gym_combat.envs.Common.constants import *
 import matplotlib.pyplot as plt
@@ -24,23 +26,33 @@ def calc_possible_locs(my_map, opponent_loc, depth = 10, neighborhood=4):
                 res[nei[0], nei[1]] = res[curr[0], curr[1]]+1
                 queue.append(nei)
                 # plt.imshow(res)
-                a=1
+
     return res
 
 
 def calc_covers_map(my_map, enemy, max_range):
-    my_map = my_map.astype(float)
-    res = np.zeros_like(my_map)
-    TL = my_map[1:enemy[0]+1, 1:enemy[1]+1] - my_map[:enemy[0], :enemy[1]] > 0
-    BR = my_map[enemy[0]:-1, enemy[1]:-1] - my_map[enemy[0]+1:, enemy[1]+1:] > 0
-    TR = my_map[1:enemy[0]+1, enemy[1]:-1] - my_map[:enemy[0], enemy[1]+1:] > 0
-    BL = my_map[enemy[0]:-1, 1:enemy[1]+1] - my_map[enemy[0]+1:, :enemy[1]] > 0
+    enemy = np.asarray(enemy)
+    fire_map = np.zeros_like(my_map)
+    for j in [0, my_map.shape[1]]:
+        for i in range(my_map.shape[0]):
+            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map, max_range)
+    for i in [0, my_map.shape[0]]:
+        for j in range(my_map.shape[1]):
+            mark_beyond_clear_range(my_map, np.asarray([i, j]), enemy, fire_map, max_range)
+    return fire_map
 
-    res[:enemy[0], 1:enemy[1]+1][TL>0] = 30
-    res[enemy[0]:-1, enemy[1]:-1][BR > 0] = 40
-    res[:enemy[0], enemy[1]:-1][TR > 0] = 50
-    res[enemy[0]:-1, 1:enemy[1]+1][BL > 0] = 60
-    return res
+    # my_map = my_map.astype(float)
+    # res = np.zeros_like(my_map)
+    # TL = my_map[1:enemy[0]+1, 1:enemy[1]+1] - my_map[:enemy[0], :enemy[1]] > 0
+    # BR = my_map[enemy[0]:-1, enemy[1]:-1] - my_map[enemy[0]+1:, enemy[1]+1:] > 0
+    # TR = my_map[1:enemy[0]+1, enemy[1]:-1] - my_map[:enemy[0], enemy[1]+1:] > 0
+    # BL = my_map[enemy[0]:-1, 1:enemy[1]+1] - my_map[enemy[0]+1:, :enemy[1]] > 0
+    #
+    # res[:enemy[0], 1:enemy[1]+1][TL>0] = 30
+    # res[enemy[0]:-1, enemy[1]:-1][BR > 0] = 40
+    # res[:enemy[0], enemy[1]:-1][TR > 0] = 50
+    # res[enemy[0]:-1, 1:enemy[1]+1][BL > 0] = 60
+    # return res
 
 
 def mark_beyond_clear_range(obs_map, to_loc, from_loc, fire_map, range = 10000):
@@ -277,5 +289,26 @@ def main():
     a=1
 
 
+def prepare_dataset():
+    dsm = get_DSM_berlin()
+    maps_map = np.zeros((dsm.shape[0], dsm.shape[1], dsm.shape[0], dsm.shape[1]))
+    for enemy_x in range(dsm.shape[0]):
+        for enemy_y in range(dsm.shape[1]):
+            if dsm[enemy_x, enemy_y]:
+                continue
+            print(enemy_x, enemy_y)
+            enemy = [enemy_x, enemy_y]
+            covers_map = calc_covers_map(my_map=dsm, enemy=enemy, max_range=10)
+            possible_locs = calc_possible_locs(my_map=dsm, opponent_loc=enemy, depth=FIRE_RANGE, neighborhood=8)
+            possible_locs[possible_locs == 0] = FIRE_RANGE + 1
+            covers_map = update_killing_range(covers_map=covers_map, possible_locs=possible_locs, killing_range=FIRE_RANGE)
+            maps_map[enemy_x, enemy_y, :, :] = covers_map
+    import pickle
+    f = open(r'D:\projects\RL\fps\code\combat_gym\gym_combat\gym_combat\envs\Common\Preprocessing\covers_map_100x100_Berlin.pkl', 'wb')
+    pickle.dump(covers_map, f)
+
 if __name__ == '__main__':
-    main()
+    import os
+    os.chdir(r"D:\projects\RL\fps\code\combat_gym")
+    prepare_dataset()
+    # main()
