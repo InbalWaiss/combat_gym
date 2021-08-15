@@ -1,5 +1,4 @@
 import os
-os.chdir(r"D:\projects\RL\fps\code\combat_gym")
 import skimage.graph as sg
 from gym_combat.gym_combat.envs.Common.constants import *
 import matplotlib.pyplot as plt
@@ -250,24 +249,33 @@ def get_action_9_actions( delta_x, delta_y, loc, shape):
 
     return a
 
-def plan_path(my_map, blue, red, depth):
-    covers_map = calc_covers_map(my_map, red, depth)
-    possible_locs = calc_possible_locs(my_map, red, depth=FIRE_RANGE, neighborhood=8)
-    possible_locs[possible_locs == 0] = FIRE_RANGE+1
-    without_obs = calc_possible_locs(np.zeros_like(my_map), red, depth=FIRE_RANGE, neighborhood=8)
-    #covers_map = update_killing_range(covers_map.astype(int), possible_locs, FIRE_RANGE)
+class path_planner():
+    def __init__(self):
+        f = open(
+            r'.\gym_combat\gym_combat\envs\Common\Preprocessing\covers_map_100x100_Berlin.pkl', 'rb')
+        self.maps_map = pickle.load(f)
 
-    closest_cover = select_cover(covers_map, without_obs, blue, red, possible_locs, my_map, FIRE_RANGE)
+    def plan_path(self, my_map, blue, red, depth):
+        possible_locs = calc_possible_locs(my_map, red, depth=FIRE_RANGE, neighborhood=8)
+        possible_locs[possible_locs == 0] = FIRE_RANGE + 1
+        without_obs = calc_possible_locs(np.zeros_like(my_map), red, depth=FIRE_RANGE, neighborhood=8)
 
-    if len(closest_cover):
-        if (np.asarray(blue) == closest_cover).all():
-            return [[closest_cover[0]],[closest_cover[0]]]
-        map_3d = make_3d_map(possible_locs, blue, red, depth=depth)
-        time_to_cover = possible_locs[closest_cover[1], closest_cover[0]]
-        path = find_path_to_cover(map_3d, blue, red, closest_cover, time_to_cover)
-        return path
-    else:
-        return []
+        # covers_map = calc_covers_map(my_map, red, depth)
+        #covers_map = update_killing_range(covers_map.astype(int), possible_locs, FIRE_RANGE)
+
+        covers_map = self.maps_map[red[0], red[1], :, :]
+
+        closest_cover = select_cover(covers_map, without_obs, blue, red, possible_locs, my_map, FIRE_RANGE)
+
+        if len(closest_cover):
+            if (np.asarray(blue) == closest_cover).all():
+                return [[closest_cover[0]],[closest_cover[0]]]
+            map_3d = make_3d_map(possible_locs, blue, red, depth=depth)
+            time_to_cover = possible_locs[closest_cover[1], closest_cover[0]]
+            path = find_path_to_cover(map_3d, blue, red, closest_cover, time_to_cover)
+            return path
+        else:
+            return []
 
 
 def build_map(n,m):
@@ -304,11 +312,12 @@ def prepare_dataset():
             covers_map = update_killing_range(covers_map=covers_map, possible_locs=possible_locs, killing_range=FIRE_RANGE)
             maps_map[enemy_x, enemy_y, :, :] = covers_map
     import pickle
-    f = open(r'D:\projects\RL\fps\code\combat_gym\gym_combat\gym_combat\envs\Common\Preprocessing\covers_map_100x100_Berlin.pkl', 'wb')
+    f = open(r'.\gym_combat\gym_combat\envs\Common\Preprocessing\covers_map_100x100_Berlin.pkl', 'wb')
     pickle.dump(covers_map, f)
 
 if __name__ == '__main__':
     import os
-    os.chdir(r"D:\projects\RL\fps\code\combat_gym")
+    # os.chdir(r".\combat_gym")
     prepare_dataset()
+
     # main()
