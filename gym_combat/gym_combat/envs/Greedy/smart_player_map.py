@@ -1,4 +1,5 @@
-import os
+#import os
+#os.chdir(r'D:\projects\RL\code\combat\combat_gym')
 import skimage.graph as sg
 from gym_combat.gym_combat.envs.Common.constants import *
 import matplotlib.pyplot as plt
