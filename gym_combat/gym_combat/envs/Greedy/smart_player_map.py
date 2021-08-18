@@ -145,8 +145,9 @@ def calc_reach_time(cover, possible_locs, obs_map, final_reach_time):
 
 
 def is_clear_range(reach_time_loc, cover, obs_map):
+    ε = 0.00001
     dist = np.linalg.norm(reach_time_loc - cover)
-    step = 1./dist
+    step = 1./(dist + ε)
     for α in np.arange(0, 1, step):
         loc = np.abs((1-α)*reach_time_loc + α*cover).astype(int)
         if obs_map[loc[0], loc[1]]:
