@@ -1,3 +1,4 @@
+
 import gym
 import gym_combat.gym_combat
 from gym_combat.gym_combat.envs.Common.constants import WinEnum
@@ -8,7 +9,8 @@ import imageio
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.callbacks import CheckpointCallback
-from stable_baselines3 import PPO, DQN
+from stable_baselines3 import PPO
+
 
 # #Inbal sanity check
 # env = GymCombatEnv()
@@ -100,14 +102,15 @@ gamma = 0.95
 lr = 0.0001
 vf_coef = 0.15
 ent_coef = 0
-for vf_coef in [0.15,0.25]:
+for vf_coef in [0.2]:
     res = {}
     t0 = time.time()
     trained_model_name = ppo_train(gamma, lr, vf_coef, ent_coef)
     t1 = time.time()
     print("starting tests:")
     for x in range(checkpoint_freq, total_timesteps+1000, checkpoint_freq):
-        res[x] = ppo_check_model(checkpoint_path, "ppo_{}_steps".format(x), n_games)
+    #for x in range(8000000, 8000000+1000, checkpoint_freq):
+        res[x] = ppo_check_model(checkpoint_path, "ppo_{}_steps".format(x), n_games, save_video=False)
     res[trained_model_name] = ppo_check_model(trained_models_path, trained_model_name, 10000)
     t2 = time.time()
     print(res)

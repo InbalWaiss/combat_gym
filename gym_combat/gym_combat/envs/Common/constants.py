@@ -94,15 +94,15 @@ elif DSM_name=="100X100_Berlin":
 
     FIRE_RANGE = 10
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
-    MAX_STEPS_PER_EPISODE = 250
+    MAX_STEPS_PER_EPISODE = 100
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
     if BASELINES_RUN:
-        BB_MARGIN = 8
+        BB_MARGIN = 16
     else:
         BB_MARGIN = 3
-    SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_X_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_Y_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
     all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
@@ -327,8 +327,8 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = False
-SHOW_EVERY =50
+USE_DISPLAY = False # True #
+SHOW_EVERY = 50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
 

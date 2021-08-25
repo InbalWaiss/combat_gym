@@ -119,11 +119,11 @@ class Environment(object):
     def _choose_second_position(self):
         first_player_x = self.blue_player.x
         first_player_y = self.blue_player.y
-        min_cord_x = np.min([np.max([0, first_player_x-2*(FIRE_RANGE + BB_MARGIN)]), SIZE_X ])
-        max_cord_x = np.max([0,  np.min([SIZE_X, first_player_x+2*(FIRE_RANGE + BB_MARGIN)])])
+        min_cord_x = np.min([np.max([0, first_player_x-1*(FIRE_RANGE + BB_MARGIN)]), SIZE_X ])
+        max_cord_x = np.max([0,  np.min([SIZE_X, first_player_x+1*(FIRE_RANGE + BB_MARGIN)])])
 
-        min_cord_y = np.min([np.max([0, first_player_y-2*(FIRE_RANGE + BB_MARGIN)]), SIZE_X])
-        max_cord_y = np.max([0, np.min([SIZE_Y, first_player_y+2*(FIRE_RANGE + BB_MARGIN)])])
+        min_cord_y = np.min([np.max([0, first_player_y-1*(FIRE_RANGE + BB_MARGIN)]), SIZE_X])
+        max_cord_y = np.max([0, np.min([SIZE_Y, first_player_y+1*(FIRE_RANGE + BB_MARGIN)])])
 
         is_obs = True
         while is_obs:

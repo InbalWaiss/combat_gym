@@ -42,7 +42,7 @@ class State(object):
         self.env[np.where(DSM == 1)] = dict_of_colors_for_graphics[GREY_N]
 
         if (BB_STATE):
-            extension = FIRE_RANGE + BB_MARGIN
+            extension = 2 * FIRE_RANGE + BB_MARGIN
             extended_env = np.zeros((SIZE_X + 2 * extension, SIZE_Y + 2 * extension, 3), dtype=np.uint8)
             extended_env[extension:-extension, extension: - extension] = self.env
             BB_env = extended_env[self.my_pos._x: self.my_pos._x + 2 * extension + 1,
