@@ -204,18 +204,17 @@ def get_action_9_actions( delta_x, delta_y, loc, shape):
     elif delta_x == 1 and delta_y == 1:
         a = AgentAction.BottomRight
     elif delta_x == 0 and delta_y == -1:
-        a = AgentAction.Bottom
-    elif delta_x == 0 and delta_y == 1:
         a = AgentAction.Top
+    elif delta_x == 0 and delta_y == 1:
+        a = AgentAction.Bottom
     elif delta_x == -1 and delta_y == -1:
-        a = AgentAction.BottomLeft
+        a = AgentAction.TopLeft
     elif delta_x == -1 and delta_y == 0:
         a = AgentAction.Left
     elif delta_x == -1 and delta_y == 1:
-        a = AgentAction.TopLeft
+        a = AgentAction.BottomLeft
     else: ## delta_x == 0 and delta_y == 0:
         a = AgentAction.Stay
-
     return a
 
 class PathPlanner():
@@ -224,6 +223,39 @@ class PathPlanner():
             r'.\gym_combat\gym_combat\envs\Common\Preprocessing\covers_map_100x100_Berlin.pkl', 'rb')
         self.maps_map = pickle.load(f)
         a=1
+
+    def plan_next_action(self, state):
+        future_length = FIRE_RANGE * 2
+        my_pos = state.my_pos.get_tuple()
+        enemy_pos = state.enemy_pos.get_tuple()
+        im = state.env
+        fire = im[:, :, 0] > im[:, :, 1] + 50 # HACK
+        # maybe fire is near and we can win:
+        window = fire[my_pos[0] - 1:my_pos[0] + 2, my_pos[1] - 1:my_pos[1] + 2]
+        close_fire = np.where(window)
+        if len(close_fire[0]):
+            win_loc = np.asarray([close_fire[1][0],close_fire[0][0]])
+            win_step = win_loc - np.asarray((1, 1))
+            action = get_action_9_actions(win_step[0], win_step[1], my_pos, fire.shape)
+            return action
+
+        # Else search for a cover:
+        im[im[:, :, 0] != im[:, :, 1]] = 0
+        im[im[:, :, 2] != im[:, :, 1]] = 0
+        my_path = self.plan_path(im[:, :, 0], my_pos, enemy_pos, future_length)
+        if my_path:
+            next_step = find_move_in_path(my_path)
+            direc = np.asarray(next_step[:2]) - my_pos
+        else:
+            # no cover, just run far from enemy:
+            # TODO: make sure it runs to the best place awaay from enemy
+            #pos_locs = 1- im[my_pos[0] - 1:my_pos[0] + 2, my_pos[1] - 1:my_pos[1] + 2]
+            #np.linalg.norm((np.asarray(my_pos) - np.asarray(enemy_pos)))
+            direc = (np.asarray(my_pos) - np.asarray(enemy_pos))
+            direc = np.sign(direc)
+
+        action = get_action_9_actions(direc[0], direc[1], my_pos, fire.shape)
+        return action
 
     def plan_path(self, my_map, blue, red, depth):
         possible_locs = calc_possible_locs(my_map, red, depth=FIRE_RANGE, neighborhood=8)
@@ -247,40 +279,6 @@ class PathPlanner():
         else:
             return []
 
-    def plan_next_action(self, state):
-        future_length = FIRE_RANGE * 2
-        my_pos = state.my_pos.get_tuple()
-        enemy_pos = state.enemy_pos.get_tuple()
-        im = state.env
-        fire = im[:, :, 0] > im[:, :, 1] + 50
-        # maybe fire is near and we can win:
-        if fire[my_pos[0] - 1:my_pos[0] + 1, my_pos[1] - 1:my_pos[1] + 1].any():
-            for i in range(-1, 2):
-                broke = False
-                for j in range(-1, 2):
-                    loc = [my_pos[0] + i, my_pos[1] + j]
-                    if loc[0] < 0 or loc[0] >= fire.shape[0] or loc[1] < 0 or loc[1] >= fire.shape[1]:
-                        continue
-                    if fire[loc[0], loc[1]]:
-                        action = get_action_9_actions(i, j, my_pos, fire.shape)
-                        broke = True
-                        break
-                if broke:
-                    break
-        else:  # search for a cover:
-            im[im[:, :, 0] != im[:, :, 1]] = 0
-            im[im[:, :, 2] != im[:, :, 1]] = 0
-            my_path = self.plan_path(im[:, :, 0], my_pos, enemy_pos, future_length)
-            if my_path:
-                next_step = find_move_in_path(my_path)
-                direc = np.asarray(next_step[:2]) - my_pos
-            else:  # no cover, just run far from enemy:
-                direc = (np.asarray(my_pos) - np.asarray(enemy_pos))
-                direc = direc / np.linalg.norm(direc)
-                direc = np.round(direc)
-
-            action = get_action_9_actions(direc[0], direc[1], my_pos, fire.shape)
-        return action
 
 def build_map(n,m):
     my_map = np.zeros((m,n))

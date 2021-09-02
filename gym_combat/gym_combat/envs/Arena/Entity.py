@@ -89,33 +89,34 @@ class Entity:
     def action(self, a: AgentAction):
         if NUMBER_OF_ACTIONS==9:
             """9 possible moves!"""
+            # BUG: there is a coordinate switch. Here we changed xs and ys places to fix it.
             if a == AgentAction.TopRight: #1
-                self.move(x=1, y=-1)
+                self.move(y=1, x=-1)
             elif a == AgentAction.Right: #2
-                self.move(x=1, y=0)
+                self.move(y=1, x=0)
             elif a == AgentAction.BottomRight: #3
-                self.move(x=1, y=1)
-            elif a == AgentAction.Bottom: # 4
-                self.move(x=0, y=-1)
+                self.move(y=1, x=1)
+            elif a == AgentAction.Top: # 4
+                self.move(y=0, x=-1)
             elif a == AgentAction.Stay:  # 5 - stay in place!
-                self.move(x=0, y=0)
-            elif a == AgentAction.Top: # 6
-                self.move(x=0, y=1)
-            elif a == AgentAction.BottomLeft: # 7
-                self.move(x=-1, y=-1)
+                self.move(y=0, x=0)
+            elif a == AgentAction.Bottom: # 6
+                self.move(y=0, x=1)
+            elif a == AgentAction.TopLeft : # 7
+                self.move(y=-1, x=-1)
             elif a==AgentAction.Left: #8
-                self.move(x=-1, y=0)
-            elif a == AgentAction.TopLeft: #0
-                self.move(x=-1, y=1)
+                self.move(y=-1, x=0)
+            elif a == AgentAction.BottomLeft: #0
+                self.move(y=-1, x=1)
 
         else:
             """4 possible moves!"""
             if a == AgentAction.Right: #0
-                self.move(x=1, y=0)
-            elif a == AgentAction.Bottom: #1
-                self.move(x=0, y=-1)
-            elif a == AgentAction.Top: #2
-                self.move(x=0, y=1)
+                self.move(y=1, x=0)
+            elif a == AgentAction.Top: #1
+                self.move(y=0, x=-1)
+            elif a == AgentAction.Bottom: #2
+                self.move(y=0, x=1)
             elif a == AgentAction.Left: #3
-                self.move(x=-1, y=0)
+                self.move(y=-1, x=0)
 

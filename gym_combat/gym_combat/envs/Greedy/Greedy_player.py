@@ -231,8 +231,13 @@ class Greedy_player(AbsDecisionMaker):
         #print("dist is: ", len(path_to_closest_target))
         return path_to_closest_target
 
-    def get_action_9_actions(self, delta_x, delta_y):
+    def get_action_9_actions(delta_x, delta_y, loc, shape):
         """9 possible moves!"""
+        if loc[0] + delta_x < 0 or loc[0] + delta_x > shape[0]:
+            delta_x = 0
+        if loc[1] + delta_y < 0 or loc[1] + delta_y > shape[1]:
+            delta_y = 0
+
         if delta_x == 1 and delta_y == -1:
             a = AgentAction.TopRight
         elif delta_x == 1 and delta_y == 0:
@@ -240,27 +245,26 @@ class Greedy_player(AbsDecisionMaker):
         elif delta_x == 1 and delta_y == 1:
             a = AgentAction.BottomRight
         elif delta_x == 0 and delta_y == -1:
-            a = AgentAction.Bottom
-        elif delta_x == 0 and delta_y == 0:
-            a = AgentAction.Stay
-        elif delta_x == 0 and delta_y == 1:
             a = AgentAction.Top
+        elif delta_x == 0 and delta_y == 1:
+            a = AgentAction.Bottom
         elif delta_x == -1 and delta_y == -1:
-            a = AgentAction.BottomLeft
+            a = AgentAction.TopLeft
         elif delta_x == -1 and delta_y == 0:
             a = AgentAction.Left
         elif delta_x == -1 and delta_y == 1:
-            a = AgentAction.TopLeft
-
+            a = AgentAction.BottomLeft
+        else:  ## delta_x == 0 and delta_y == 0:
+            a = AgentAction.Stay
         return a
 
     def get_action_4_actions(self, delta_x, delta_y):
         """4 possible moves!"""
         if delta_x == 1 and delta_y == 0:
             a = AgentAction.Right
-        elif delta_x == 0 and delta_y == -1:
-            a = AgentAction.Bottom
         elif delta_x == 0 and delta_y == 1:
+            a = AgentAction.Bottom
+        elif delta_x == 0 and delta_y == -1:
             a = AgentAction.Top
         elif delta_x == -1 and delta_y == 0:
             a = AgentAction.Left
