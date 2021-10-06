@@ -95,50 +95,50 @@ class Environment(object):
                 legal_start_points = self._choose_second_position()
             else:
                 self.red_player._choose_random_position()
-                is_los = (self.red_player.x, self.red_player.y) in DICT_POS_FIRE_RANGE[
-                    (self.blue_player.x, self.blue_player.y)]
+                is_los = (self.red_player.h, self.red_player.w) in DICT_POS_FIRE_RANGE[
+                    (self.blue_player.h, self.blue_player.w)]
                 legal_start_points = not is_los
 
         if FIXED_START_POINT_RED:
             if DSM_name=="15X15":
-                self.red_player.x = 10
-                self.red_player.y = 3
+                self.red_player.h = 10
+                self.red_player.w = 3
             elif DSM_name=="100X100_Berlin":
-                self.red_player.x = 48
-                self.red_player.y = 70
+                self.red_player.h = 48
+                self.red_player.w = 70
 
         if FIXED_START_POINT_BLUE:
             if DSM_name == "15X15":
-                self.blue_player.x = 3
-                self.blue_player.y = 10
+                self.blue_player.h = 3
+                self.blue_player.w = 10
             elif DSM_name == "100X100_Berlin":
-                self.blue_player.x = 61
-                self.blue_player.y = 72
+                self.blue_player.h = 61
+                self.blue_player.w = 72
 
 
     def _choose_second_position(self):
-        first_player_x = self.blue_player.x
-        first_player_y = self.blue_player.y
-        min_cord_x = np.min([np.max([0, first_player_x-1*(FIRE_RANGE + BB_MARGIN)]), SIZE_X ])
-        max_cord_x = np.max([0,  np.min([SIZE_X, first_player_x+1*(FIRE_RANGE + BB_MARGIN)])])
+        first_player_w = self.blue_player.w
+        first_player_h = self.blue_player.h
+        min_cord_w = np.min([np.max([0, first_player_w-1*(FIRE_RANGE + BB_MARGIN)]), SIZE_W ])
+        max_cord_w = np.max([0,  np.min([SIZE_W, first_player_w+1*(FIRE_RANGE + BB_MARGIN)])])
 
-        min_cord_y = np.min([np.max([0, first_player_y-1*(FIRE_RANGE + BB_MARGIN)]), SIZE_X])
-        max_cord_y = np.max([0, np.min([SIZE_Y, first_player_y+1*(FIRE_RANGE + BB_MARGIN)])])
+        min_cord_h = np.min([np.max([0, first_player_h-1*(FIRE_RANGE + BB_MARGIN)]), SIZE_H])
+        max_cord_h = np.max([0, np.min([SIZE_H, first_player_h+1*(FIRE_RANGE + BB_MARGIN)])])
 
         is_obs = True
         while is_obs:
-            self.red_player.x = np.random.randint(min_cord_x, max_cord_x)
-            self.red_player.y = np.random.randint(min_cord_y, max_cord_y)
-            is_obs = self.red_player.is_obs(self.red_player.x, self.red_player.y)
+            self.red_player.w = np.random.randint(min_cord_w, max_cord_w)
+            self.red_player.h = np.random.randint(min_cord_h, max_cord_h)
+            is_obs = self.red_player.is_obs(self.red_player.h, self.red_player.w)
 
-        is_los = (self.red_player.x, self.red_player.y) in DICT_POS_FIRE_RANGE[(self.blue_player.x, self.blue_player.y)]
+        is_los = (self.red_player.h, self.red_player.w) in DICT_POS_FIRE_RANGE[(self.blue_player.h, self.blue_player.w)]
         if is_los:
             return False
 
         has_path = False
-        if (first_player_x, first_player_y) in all_pairs_distances.keys():
-            if (self.red_player.x, self.red_player.y) in all_pairs_distances[(first_player_x, first_player_y)].keys():
-                dist = all_pairs_distances[(first_player_x, first_player_y)][(self.red_player.x, self.red_player.y)]
+        if (first_player_h, first_player_w) in all_pairs_distances.keys():
+            if (self.red_player.h, self.red_player.w) in all_pairs_distances[(first_player_h, first_player_w)].keys():
+                dist = all_pairs_distances[(first_player_h, first_player_w)][(self.red_player.h, self.red_player.w)]
                 if dist>MIN_PATH_DIST_FOR_START_POINTS:
                     has_path = True
         if has_path:
@@ -201,11 +201,11 @@ class Environment(object):
         second_player = self.red_player
         win_status = WinEnum.NoWin
 
-        is_los_first_second = (second_player.x, second_player.y) in DICT_POS_FIRE_RANGE[(first_player.x, first_player.y)]
-        is_los_second_first = (first_player.x, first_player.y) in DICT_POS_FIRE_RANGE[(second_player.x, second_player.y)]
+        is_los_first_second = (second_player.h, second_player.w) in DICT_POS_FIRE_RANGE[(first_player.h, first_player.w)]
+        is_los_second_first = (first_player.h, first_player.w) in DICT_POS_FIRE_RANGE[(second_player.h, second_player.w)]
         assert is_los_first_second==is_los_second_first
 
-        is_los = (second_player.x, second_player.y) in DICT_POS_FIRE_RANGE[(first_player.x, first_player.y)]
+        is_los = (second_player.h, second_player.w) in DICT_POS_FIRE_RANGE[(first_player.h, first_player.w)]
         if not is_los:  # no LOS
             win_status = WinEnum.NoWin
             self.win_status = win_status
@@ -232,7 +232,7 @@ class Environment(object):
 
     def blue_player_shoots_and_hits(self):
         dist = np.linalg.norm(
-            np.array([self.blue_player.x, self.blue_player.y]) - np.array([self.red_player.x, self.red_player.y]))
+            np.array([self.blue_player.h, self.blue_player.w]) - np.array([self.red_player.h, self.red_player.w]))
 
         if NONEDETERMINISTIC_TERMINAL_STATE:
             dist = np.max([dist, 1])
@@ -249,7 +249,7 @@ class Environment(object):
 
     def red_player_shoots_and_hits(self):
         dist = np.linalg.norm(
-            np.array([self.blue_player.x, self.blue_player.y]) - np.array([self.red_player.x, self.red_player.y]))
+            np.array([self.blue_player.h, self.blue_player.w]) - np.array([self.red_player.h, self.red_player.w]))
 
         if NONEDETERMINISTIC_TERMINAL_STATE:
             p = 0.5
@@ -264,8 +264,8 @@ class Environment(object):
         return False
 
     def get_observation_for_blue(self)-> State:
-        blue_pos = Position(self.blue_player.x, self.blue_player.y)
-        red_pos = Position(self.red_player.x, self.red_player.y)
+        blue_pos = Position(self.blue_player.h, self.blue_player.w)
+        red_pos = Position(self.red_player.h, self.red_player.w)
         if self.win_status == WinEnum.Blue:
             ret_val = State(my_pos=blue_pos, enemy_pos=None)
         elif self.win_status == WinEnum.Red:
@@ -278,8 +278,8 @@ class Environment(object):
     def get_observation_for_red(self)-> State:
         if not RED_PLAYER_MOVES:
             return
-        blue_pos = Position(self.blue_player.x, self.blue_player.y)
-        red_pos = Position(self.red_player.x, self.red_player.y)
+        blue_pos = Position(self.blue_player.h, self.blue_player.w)
+        red_pos = Position(self.red_player.h, self.red_player.w)
         return State(my_pos=red_pos, enemy_pos=blue_pos)
 
     def take_action(self, player_color, action):
@@ -299,8 +299,8 @@ class Environment(object):
             return action
 
     def check_if_blue_and_red_same_pos(self):
-        if self.blue_player.x == self.red_player.x:
-            if self.blue_player.y == self.red_player.y:
+        if self.blue_player.h == self.red_player.h:
+            if self.blue_player.w == self.red_player.w:
                 return True
         return False
 
@@ -309,8 +309,8 @@ class Environment(object):
         red_player = self.red_player
         DEBUG=False
 
-        org_cor_blue_player_x, org_cor_blue_player_y = blue_player.get_coordinates()
-        org_cor_red_player_x, org_cor_red_player_y = red_player.get_coordinates()
+        org_cor_blue_player_h, org_cor_blue_player_w = blue_player.get_coordinates()
+        org_cor_red_player_h, org_cor_red_player_w = red_player.get_coordinates()
 
         ret_val = False
         winning_point_for_red = [-1, -1]
@@ -322,17 +322,17 @@ class Environment(object):
 
         for action in range(0, NUMBER_OF_ACTIONS):
 
-            red_player.set_coordinatess(org_cor_red_player_x, org_cor_red_player_y)
+            red_player.set_coordinatess(org_cor_red_player_h, org_cor_red_player_w)
             red_player.action(action)
-            org_cor_blue_player_x, org_cor_blue_player_y = blue_player.get_coordinates()
+            org_cor_blue_player_h, org_cor_blue_player_w = blue_player.get_coordinates()
 
 
-            is_los = (org_cor_blue_player_x, org_cor_blue_player_y) in DICT_POS_FIRE_RANGE[
-                (red_player.x, red_player.y)]
+            is_los = (org_cor_blue_player_h, org_cor_blue_player_w) in DICT_POS_FIRE_RANGE[
+                (red_player.h, red_player.w)]
 
 
             if is_los:
-                dist = np.linalg.norm(np.array([blue_player.x, blue_player.y]) - np.array([red_player.x, red_player.y]))
+                dist = np.linalg.norm(np.array([blue_player.h, blue_player.w]) - np.array([red_player.h, red_player.w]))
 
                 number_of_wins = 0
                 for i in range(3):
@@ -342,22 +342,22 @@ class Environment(object):
                 if number_of_wins==3:
                     ret_val = True
 
-                    winning_point_for_red = (red_player.x, red_player.y)
-                    blue_pos = Position(blue_player.x, blue_player.y)
+                    winning_point_for_red = (red_player.h, red_player.w)
+                    blue_pos = Position(blue_player.h, blue_player.w)
                     red_pos = Position(winning_point_for_red[0], winning_point_for_red[1])
                     winning_state = State(my_pos=blue_pos, enemy_pos=red_pos)
                     # Red Takes winning move!!!
                     return ret_val, winning_state, AgentAction(action)
 
-        red_player.set_coordinatess(org_cor_red_player_x, org_cor_red_player_y)
+        red_player.set_coordinatess(org_cor_red_player_h, org_cor_red_player_w)
         if DEBUG:
-            red_player.set_coordinatess(org_cor_red_player_x, org_cor_red_player_y)
+            red_player.set_coordinatess(org_cor_red_player_h, org_cor_red_player_w)
             import matplotlib.pyplot as plt
             blue_obs_satrt = self.get_observation_for_blue()
             plt.matshow(blue_obs_satrt.img)
             plt.show()
 
-            blue_pos = Position(blue_player.x, blue_player.y)
+            blue_pos = Position(blue_player.h, blue_player.w)
             red_pos = Position(winning_point_for_red[0], winning_point_for_red[1])
             winning_state = State(my_pos=blue_pos, enemy_pos=red_pos)
             plt.matshow(winning_state.img)
@@ -371,8 +371,8 @@ class Environment(object):
         red_player = self.red_player
         DEBUG=False
 
-        org_cor_blue_player_x, org_cor_blue_player_y = blue_player.get_coordinates()
-        org_cor_red_player_x, org_cor_red_player_y = red_player.get_coordinates()
+        org_cor_blue_player_h, org_cor_blue_player_w = blue_player.get_coordinates()
+        org_cor_red_player_h, org_cor_red_player_w = red_player.get_coordinates()
 
         ret_val = False
         winning_point_for_blue = [-1, -1]
@@ -382,12 +382,12 @@ class Environment(object):
 
         for action in range(0, NUMBER_OF_ACTIONS):
 
-            blue_player.set_coordinatess(org_cor_blue_player_x, org_cor_blue_player_y)
+            blue_player.set_coordinatess(org_cor_blue_player_h, org_cor_blue_player_w)
             blue_player.action(action)
-            org_cor_red_player_x, org_cor_red_player_y = red_player.get_coordinates()
+            org_cor_red_player_h, org_cor_red_player_w = red_player.get_coordinates()
 
-            is_los = (org_cor_red_player_x, org_cor_red_player_y) in DICT_POS_FIRE_RANGE[
-                (blue_player.x, blue_player.y)]
+            is_los = (org_cor_red_player_h, org_cor_red_player_w) in DICT_POS_FIRE_RANGE[
+                (blue_player.h, blue_player.w)]
 
 
             if is_los:
@@ -404,18 +404,18 @@ class Environment(object):
                     #blue_pos = Position(winning_point_for_blue[0], winning_point_for_blue[1])
                     #winning_state = State(my_pos=red_pos, enemy_pos=blue_pos)
 
-                    blue_player.set_coordinatess(org_cor_blue_player_x, org_cor_blue_player_y)
+                    blue_player.set_coordinatess(org_cor_blue_player_h, org_cor_blue_player_w)
                     return ret_val, AgentAction(action)
 
-        blue_player.set_coordinatess(org_cor_blue_player_x, org_cor_blue_player_y)
+        blue_player.set_coordinatess(org_cor_blue_player_h, org_cor_blue_player_w)
         if DEBUG:
-            red_player.set_coordinatess(org_cor_red_player_x, org_cor_red_player_y)
+            red_player.set_coordinatess(org_cor_red_player_h, org_cor_red_player_w)
             import matplotlib.pyplot as plt
             red_obs_satrt = self.get_observation_for_red()
             plt.matshow(red_obs_satrt.img)
             plt.show()
 
-            red_pos = Position(red_player.x, red_player.y)
+            red_pos = Position(red_player.h, red_player.w)
             blue_pos = Position(winning_point_for_blue[0], winning_point_for_blue[1])
             winning_state = State(my_pos=blue_pos, enemy_pos=red_pos)
             plt.matshow(winning_state.img)

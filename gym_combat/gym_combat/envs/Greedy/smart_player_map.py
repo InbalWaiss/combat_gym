@@ -228,7 +228,7 @@ class PathPlanner():
         future_length = FIRE_RANGE * 2
         my_pos = state.my_pos.get_tuple()
         enemy_pos = state.enemy_pos.get_tuple()
-        im = state.env
+        im = state.env.copy()
         fire = im[:, :, 0] > im[:, :, 1] + 50 # HACK
         # maybe fire is near and we can win:
         window = fire[my_pos[0] - 1:my_pos[0] + 2, my_pos[1] - 1:my_pos[1] + 2]

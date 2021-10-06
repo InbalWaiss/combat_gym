@@ -13,7 +13,7 @@ class SmartPlayer(AbsDecisionMaker):
     def __init__(self, UPDATE_CONTEXT=True , path_model_to_load=None):
 
         self._action = -1
-        self._type = AgentType.Greedy
+        self._type = AgentType.Smart
         self.episode_number = 0
         self._epsilon = 0
         self.path_model_to_load = None
@@ -53,39 +53,40 @@ class SmartPlayer(AbsDecisionMaker):
     def find_path_to_closest_target(self, my_pos, closest_target):
         pass
 
-    def get_action_9_actions(self, delta_x, delta_y):
+    def get_action_9_actions(self, delta_h, delta_w):
         """9 possible moves!"""
-        if delta_x == 1 and delta_y == -1:
+        if delta_w == 1 and delta_h == -1:
             a = AgentAction.TopRight
-        elif delta_x == 1 and delta_y == 0:
+        elif delta_w == 1 and delta_h == 0:
             a = AgentAction.Right
-        elif delta_x == 1 and delta_y == 1:
+        elif delta_w == 1 and delta_h == 1:
             a = AgentAction.BottomRight
-        elif delta_x == 0 and delta_y == -1:
-            a = AgentAction.Bottom
-        elif delta_x == 0 and delta_y == 0:
-            a = AgentAction.Stay
-        elif delta_x == 0 and delta_y == 1:
+        elif delta_w == 0 and delta_h == -1:
             a = AgentAction.Top
-        elif delta_x == -1 and delta_y == -1:
-            a = AgentAction.BottomLeft
-        elif delta_x == -1 and delta_y == 0:
-            a = AgentAction.Left
-        elif delta_x == -1 and delta_y == 1:
+        elif delta_w == 0 and delta_h == 0:
+            a = AgentAction.Stay
+        elif delta_w == 0 and delta_h == 1:
+            a = AgentAction.Bottom
+        elif delta_w == -1 and delta_h == -1:
             a = AgentAction.TopLeft
+        elif delta_w == -1 and delta_h == 0:
+            a = AgentAction.Left
+        elif delta_w == -1 and delta_h == 1:
+            a = AgentAction.BottomLeft
 
         return a
 
-    def get_action_4_actions(self, delta_x, delta_y):
+    def get_action_4_actions(self, delta_h, delta_w):
         """4 possible moves!"""
-        if delta_x == 1 and delta_y == 0:
+        if delta_w == 1 and delta_h == 0:
             a = AgentAction.Right
-        elif delta_x == 0 and delta_y == -1:
+        elif delta_w == 0 and delta_h == 1:
             a = AgentAction.Bottom
-        elif delta_x == 0 and delta_y == 1:
+        elif delta_w == 0 and delta_h == -1:
             a = AgentAction.Top
-        elif delta_x == -1 and delta_y == 0:
+        elif delta_w == -1 and delta_h == 0:
             a = AgentAction.Left
+        return a
 
     def type(self) -> AgentType:
         return self._type

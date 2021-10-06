@@ -46,7 +46,7 @@ class Greedy_player(AbsDecisionMaker):
                 print("Greedy: closest_target_dict loaded")
 
     def create_graph(self):
-        G = nx.grid_2d_graph(SIZE_X, SIZE_Y)
+        G = nx.grid_2d_graph(SIZE_H, SIZE_W)
         pos = dict((n, n) for n in G.nodes())  # Dictionary of all positions
         labels = dict(((i, j), (i, j)) for i, j in G.nodes())
 
@@ -54,20 +54,20 @@ class Greedy_player(AbsDecisionMaker):
             Diagonals_Weight = 1
             # add diagonals edges
             G.add_edges_from([
-                                 ((x, y), (x + 1, y + 1))
-                                 for x in range(SIZE_Y - 1)
-                                 for y in range(SIZE_Y - 1)
+                                 ((h, w), (h + 1, w + 1))
+                                 for h in range(SIZE_H - 1)
+                                 for w in range(SIZE_W - 1)
                              ] + [
-                                 ((x + 1, y), (x, y + 1))
-                                 for x in range(SIZE_Y - 1)
-                                 for y in range(SIZE_Y - 1)
+                                 ((h + 1, w), (h, w + 1))
+                                 for h in range(SIZE_H - 1)
+                                 for w in range(SIZE_W - 1)
                              ], weight=Diagonals_Weight)
 
         # remove obstacle nodes and edges
-        for x in range(SIZE_X):
-            for y in range(SIZE_Y):
-                if DSM[x][y] == 1.:
-                    G.remove_node((x, y))
+        for h in range(SIZE_H):
+            for w in range(SIZE_W):
+                if DSM[h,w] == 1.:
+                    G.remove_node((h, w))
 
         # self.all_pairs_distances = dict(nx.floyd_warshall(G))
         # self.all_pairs_shortest_path = dict(nx.all_pairs_dijkstra_path(G))
@@ -125,14 +125,14 @@ class Greedy_player(AbsDecisionMaker):
             return a
 
         first_step = path_to_closest_target[1]
-        delta_x =  first_step[0]-my_pos[0]
-        delta_y = first_step[1] - my_pos[1]
+        delta_h =  first_step[0]-my_pos[0]
+        delta_w = first_step[1] - my_pos[1]
 
         a=-1
         if NUMBER_OF_ACTIONS==9:
-            a = self.get_action_9_actions(delta_x, delta_y)
+            a = self.get_action_9_actions(delta_h, delta_w)
         else:
-            a = self.get_action_4_actions(delta_x, delta_y)
+            a = self.get_action_4_actions(delta_h, delta_w)
 
         if PRINT_FLAG:
             # print graph for debug
@@ -231,43 +231,39 @@ class Greedy_player(AbsDecisionMaker):
         #print("dist is: ", len(path_to_closest_target))
         return path_to_closest_target
 
-    def get_action_9_actions(delta_x, delta_y, loc, shape):
+    def get_action_9_actions(self, delta_h, delta_w):
         """9 possible moves!"""
-        if loc[0] + delta_x < 0 or loc[0] + delta_x > shape[0]:
-            delta_x = 0
-        if loc[1] + delta_y < 0 or loc[1] + delta_y > shape[1]:
-            delta_y = 0
-
-        if delta_x == 1 and delta_y == -1:
+        if delta_w == 1 and delta_h == -1:
             a = AgentAction.TopRight
-        elif delta_x == 1 and delta_y == 0:
+        elif delta_w == 1 and delta_h == 0:
             a = AgentAction.Right
-        elif delta_x == 1 and delta_y == 1:
+        elif delta_w == 1 and delta_h == 1:
             a = AgentAction.BottomRight
-        elif delta_x == 0 and delta_y == -1:
+        elif delta_w == 0 and delta_h == -1:
             a = AgentAction.Top
-        elif delta_x == 0 and delta_y == 1:
+        elif delta_w == 0 and delta_h == 1:
             a = AgentAction.Bottom
-        elif delta_x == -1 and delta_y == -1:
+        elif delta_w == -1 and delta_h == -1:
             a = AgentAction.TopLeft
-        elif delta_x == -1 and delta_y == 0:
+        elif delta_w == -1 and delta_h == 0:
             a = AgentAction.Left
-        elif delta_x == -1 and delta_y == 1:
+        elif delta_w == -1 and delta_h == 1:
             a = AgentAction.BottomLeft
-        else:  ## delta_x == 0 and delta_y == 0:
+        else:  ## delta_w == 0 and delta_h == 0:
             a = AgentAction.Stay
         return a
 
-    def get_action_4_actions(self, delta_x, delta_y):
+    def get_action_4_actions(self, delta_h, delta_w):
         """4 possible moves!"""
-        if delta_x == 1 and delta_y == 0:
+        if delta_w == 1 and delta_h == 0:
             a = AgentAction.Right
-        elif delta_x == 0 and delta_y == 1:
+        elif delta_w == 0 and delta_h == 1:
             a = AgentAction.Bottom
-        elif delta_x == 0 and delta_y == -1:
+        elif delta_w == 0 and delta_h == -1:
             a = AgentAction.Top
-        elif delta_x == -1 and delta_y == 0:
+        elif delta_w == -1 and delta_h == 0:
             a = AgentAction.Left
+        return a
 
     def type(self) -> AgentType:
         return self._type

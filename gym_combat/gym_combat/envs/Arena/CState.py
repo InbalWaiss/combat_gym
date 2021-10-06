@@ -10,11 +10,11 @@ class State(object):
         self.Red_won = Red_won
         self.my_pos = my_pos
         self.enemy_pos = enemy_pos
-        self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
+        self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8)  # starts an rbg of small world
         self.img = self.get_image()
 
     def get_image(self):
-        self.env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8) # starts an rbg of small world
+        self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8) # starts an rbg of small world
         if self.enemy_pos is not None:
             points_in_enemy_los_as_tuple = DICT_POS_LOS_TUPLE[(self.enemy_pos._x, self.enemy_pos._y)]
             self.env[points_in_enemy_los_as_tuple] = dict_of_colors_for_state[DARK_DARK_RED_N]
@@ -43,7 +43,7 @@ class State(object):
 
         if (BB_STATE):
             extension = 2 * FIRE_RANGE + BB_MARGIN
-            extended_env = np.zeros((SIZE_X + 2 * extension, SIZE_Y + 2 * extension, 3), dtype=np.uint8)
+            extended_env = np.zeros((SIZE_H + 2 * extension, SIZE_W + 2 * extension, 3), dtype=np.uint8)
             extended_env[extension:-extension, extension: - extension] = self.env
             BB_env = extended_env[self.my_pos._x: self.my_pos._x + 2 * extension + 1,
                                   self.my_pos._y: self.my_pos._y + 2 * extension + 1]

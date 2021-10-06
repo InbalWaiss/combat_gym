@@ -218,29 +218,29 @@ def create_image(env: Environment, episode, last_step_number):
 
     # img = img.resize((600, 600))
 
-    if SIZE_X<20:
+    if SIZE_H<20:
         const = 30
-        margin_x = 2
-        margin_y = 0
+        margin_h = 2
+        margin_w = 0
 
     else:
         const=5
-        margin_x = 8
-        margin_y = 0
+        margin_h = 8
+        margin_w = 0
 
-    informative_env = np.zeros((const * (SIZE_X + margin_x * 2), const * (SIZE_X + margin_y * 2), 3), dtype=np.uint8)
+    informative_env = np.zeros((const * (SIZE_H + margin_h * 2), const * (SIZE_H + margin_w * 2), 3), dtype=np.uint8)
 
-    only_env = np.zeros((const * SIZE_X, const * SIZE_X, 3), dtype=np.uint8)
-    for x in range(SIZE_X):
-        for y in range(SIZE_Y):
-            if DSM[x][y] == 1.:
-                only_env[x * const: x * const + const, y * const: + y * const + const] = dict_of_colors_for_graphics[GREY_N]
+    only_env = np.zeros((const * SIZE_H, const * SIZE_W, 3), dtype=np.uint8)
+    for h in range(SIZE_H):
+        for w in range(SIZE_W):
+            if DSM[h,w] == 1.:
+                only_env[h * const: h * const + const, w * const: + w * const + const] = dict_of_colors_for_graphics[GREY_N]
 
     # add margins to print information on
-    informative_env[0:margin_x * const] = dict_of_colors_for_graphics[GREY_N]
-    informative_env[(margin_x + SIZE_X) * const:(2 * margin_x + SIZE_X) * const] = dict_of_colors_for_graphics[GREY_N]
-    informative_env[margin_x * const: (margin_x + SIZE_X) * const,
-    margin_y * const: (margin_y + SIZE_Y) * const] = only_env
+    informative_env[0:margin_h * const] = dict_of_colors_for_graphics[GREY_N]
+    informative_env[(margin_h + SIZE_H) * const:(2 * margin_h + SIZE_H) * const] = dict_of_colors_for_graphics[GREY_N]
+    informative_env[margin_h * const: (margin_h + SIZE_H) * const,
+    margin_w * const: (margin_w + SIZE_W) * const] = only_env
 
     radius = int(np.ceil(const / 2))
     thickness = -1
@@ -268,35 +268,35 @@ def create_image(env: Environment, episode, last_step_number):
 
     #if env.win_status!=WinEnum.Blue:
 
-    points_dom_points = DICT_POS_LOS[(red.x, red.y)]
+    points_dom_points = DICT_POS_LOS[(red.h, red.w)]
     for point in points_dom_points:
-        informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-        (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = points_in_enemy_los_color
+        informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
+        (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = points_in_enemy_los_color
 
 
-    points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.x, red.y)]
+    points_in_enemy_los = DICT_POS_FIRE_RANGE[(red.h, red.w)]
     for point in points_in_enemy_los:
         color = points_dom_points_color
         if NONEDETERMINISTIC_TERMINAL_STATE:
-            dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
+            dist = np.linalg.norm(np.array(point) - np.array([red.h, red.w]))
             dist_floor = np.floor(dist)
             enemy_color = dict_of_colors_for_graphics[RED_N]
             #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]))))
             color = tuple(map(lambda i, j: int(i - j), enemy_color,
                               (0, 0, np.max([10, 14 * dist_floor]))))
-        informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-        (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
+        informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
+        (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = color
 
     # set the players as circles
     # set the red player
-    center_cord_red_x = (red.x + margin_x) * const + radius
-    center_cord_red_y = (red.y + margin_y) * const + radius
+    center_cord_red_h = (red.h + margin_h) * const + radius
+    center_cord_red_w = (red.w + margin_w) * const + radius
     red_color = red_player_color
-    cv2.circle(informative_env, (center_cord_red_y, center_cord_red_x), radius, red_color, thickness)
+    cv2.circle(informative_env, (center_cord_red_w, center_cord_red_h), radius, red_color, thickness)
 
     # Plot Blue player
-    center_cord_blue_x = (blue.x + margin_x) * const + radius
-    center_cord_blue_y = (blue.y + margin_y) * const + radius
+    center_cord_blue_h = (blue.h + margin_h) * const + radius
+    center_cord_blue_w = (blue.w + margin_w) * const + radius
     # plot the blue player
     if env.win_status == WinEnum.Red:
         blue_color_0 = int(np.max([0, dict_of_colors_for_graphics[BLUE_N][0]-150]))
@@ -307,11 +307,11 @@ def create_image(env: Environment, episode, last_step_number):
         blue_player_color = dict_of_colors_for_graphics[BLUE_N]
 
 
-    cv2.circle(informative_env, (center_cord_blue_y, center_cord_blue_x), radius, blue_player_color, thickness)
+    cv2.circle(informative_env, (center_cord_blue_w, center_cord_blue_h), radius, blue_player_color, thickness)
 
     # add episode number at the bottom of the window
     font = cv2.FONT_HERSHEY_SIMPLEX
-    botoomLeftCornerOfText = (5, (SIZE_Y + margin_x * 2) * const - 10)
+    botoomLeftCornerOfText = (5, (SIZE_W + margin_h * 2) * const - 10)
     fontScale = 0.5
     color = (100, 200, 120)  # greenish
     thickness = 1
@@ -322,27 +322,27 @@ def create_image(env: Environment, episode, last_step_number):
     if env.win_status != WinEnum.NoWin:
         # print who won
         thickness = 2
-        botoomLeftCornerOfText_steps = (int(np.floor(SIZE_Y / 2)) * const - 79, 55)
+        botoomLeftCornerOfText_steps = (int(np.floor(SIZE_W / 2)) * const - 79, 55)
         if env.win_status == WinEnum.NoWin:
-            botoomLeftCornerOfText = (int(np.floor(SIZE_Y / 2)) * const - 38, 30)
+            botoomLeftCornerOfText = (int(np.floor(SIZE_W / 2)) * const - 38, 30)
             cv2.putText(informative_env, f"No Winner!", botoomLeftCornerOfText, font, fontScale, dict_of_colors_for_graphics[PURPLE_N],
                         thickness, cv2.LINE_AA)
             cv2.putText(informative_env, f"after {number_of_steps} steps", botoomLeftCornerOfText_steps, font, 0.7,
                         dict_of_colors_for_graphics[PURPLE_N], 0, cv2.LINE_AA)
         elif env.win_status == WinEnum.Red:
-            botoomLeftCornerOfText = (int(np.floor(SIZE_Y / 2)) * const - 55, 30)
+            botoomLeftCornerOfText = (int(np.floor(SIZE_W / 2)) * const - 55, 30)
             cv2.putText(informative_env, f"RED WON!", botoomLeftCornerOfText, font, fontScale, dict_of_colors_for_graphics[RED_N],
                         thickness - 1, cv2.LINE_AA)
             cv2.putText(informative_env, f"after {number_of_steps} steps", botoomLeftCornerOfText_steps, font, 0.7,
                         dict_of_colors_for_graphics[PURPLE_N], 0, cv2.LINE_AA)
         elif env.win_status == WinEnum.Blue:
-            botoomLeftCornerOfText = (int(np.floor(SIZE_Y / 2)) * const - 50, 30)
+            botoomLeftCornerOfText = (int(np.floor(SIZE_W / 2)) * const - 50, 30)
             cv2.putText(informative_env, f"BLUE WON!", botoomLeftCornerOfText, font, fontScale, dict_of_colors_for_graphics[BLUE_N],
                         thickness - 1, cv2.LINE_AA)
             cv2.putText(informative_env, f"after {number_of_steps} steps", botoomLeftCornerOfText_steps, font, 0.7,
                         dict_of_colors_for_graphics[PURPLE_N], 0, cv2.LINE_AA)
         else:  # both lost...
-            botoomLeftCornerOfText = (int(np.floor(SIZE_Y / 2)) * const - 60, 30)
+            botoomLeftCornerOfText = (int(np.floor(SIZE_W / 2)) * const - 60, 30)
             cv2.putText(informative_env, f"both lost...", botoomLeftCornerOfText, font, fontScale,
                         dict_of_colors_for_graphics[PURPLE_N], thickness - 1, cv2.LINE_AA)
             cv2.putText(informative_env, f"after {number_of_steps} steps", botoomLeftCornerOfText_steps, font, 0.7,
@@ -351,7 +351,7 @@ def create_image(env: Environment, episode, last_step_number):
        # cv2.waitKey(2)
 
     else:  # not terminal state
-        botoomLeftCornerOfText = (int(np.floor(SIZE_Y / 2)) * const - 45, 20)
+        botoomLeftCornerOfText = (int(np.floor(SIZE_W / 2)) * const - 45, 20)
         cv2.putText(informative_env, f"steps: {number_of_steps}", botoomLeftCornerOfText, font, fontScale,
                     dict_of_colors_for_graphics[PURPLE_N], 0, cv2.LINE_AA)
 
@@ -370,12 +370,12 @@ def create_image(env: Environment, episode, last_step_number):
                 cv2.LINE_AA)
 
     if BB_STATE:
-        start_x = np.max([0, blue.x - FIRE_RANGE - BB_MARGIN])
-        end_x = np.min([blue.x + FIRE_RANGE + BB_MARGIN + 1, SIZE_X])
-        start_y = np.max([0, blue.y - FIRE_RANGE - BB_MARGIN])
-        end_y = np.min([blue.y + FIRE_RANGE + BB_MARGIN + 1, SIZE_Y])
-        informative_env[(start_x + margin_x) * const: (end_x + margin_x) * const + const,
-        (start_y + margin_y) * const: (end_y + margin_y) * const + const] += 85
+        start_h = np.max([0, blue.h - FIRE_RANGE - BB_MARGIN])
+        end_h = np.min([blue.h + FIRE_RANGE + BB_MARGIN + 1, SIZE_H])
+        start_w = np.max([0, blue.w - FIRE_RANGE - BB_MARGIN])
+        end_w = np.min([blue.w + FIRE_RANGE + BB_MARGIN + 1, SIZE_W])
+        informative_env[(start_h + margin_h) * const: (end_h + margin_h) * const + const,
+        (start_w + margin_w) * const: (end_w + margin_w) * const + const] += 85
         # set the players as circles
         radius = int(np.ceil(const / 2))
         thickness = -1
@@ -401,42 +401,45 @@ def create_image(env: Environment, episode, last_step_number):
         # if env.win_status != WinEnum.Blue:
         # set the red player
         #if NONEDETERMINISTIC_TERMINAL_STATE:
-        points_dom_points = DICT_POS_LOS[(red.x, red.y)]
+        points_dom_points = DICT_POS_LOS[(red.h, red.w)]
         for point in points_dom_points:
-            informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-            (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = points_in_enemy_los_color
-        points_in_enemy_fire_range = DICT_POS_FIRE_RANGE[(red.x, red.y)]
+            informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
+            (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = points_in_enemy_los_color
+        points_in_enemy_fire_range = DICT_POS_FIRE_RANGE[(red.h, red.w)]
         for point in points_in_enemy_fire_range:
             color = points_dom_points_color
             if NONEDETERMINISTIC_TERMINAL_STATE:
-                dist = np.linalg.norm(np.array(point) - np.array([red.x, red.y]))
+                dist = np.linalg.norm(np.array(point) - np.array([red.h, red.w]))
                 dist_floor = np.floor(dist)
                 enemy_color = red_player_color
                 #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]) )))
                 color = tuple(map(lambda i, j: int(i - j), enemy_color,
                                   (0, 0, np.max([10,  14 * dist_floor]))))
-            informative_env[(point[0] + margin_x) * const: (point[0] + margin_x) * const + const,
-            (point[1] + margin_y) * const: (point[1] + margin_y) * const + const] = color
+            informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
+            (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = color
         # center_cord_red_x = (red.x + margin_x) * const + radius
         # center_cord_red_y = (red.y + margin_y) * const + radius
         # red_color = dict_of_colors_for_graphics[RED_N]
         # cv2.circle(informative_env, (center_cord_red_y, center_cord_red_x), radius, red_color, thickness)
-        informative_env[(start_x + margin_x) * const: (end_x + margin_x) * const + const,
-        (start_y + margin_y) * const: (end_y + margin_y) * const + const] += 15
+        informative_env[(start_h + margin_h) * const: (end_h + margin_h) * const + const,
+        (start_w + margin_w) * const: (end_w + margin_w) * const + const] += 15
         # plot the Red player
-        center_cord_red_x = (red.x + margin_x) * const + radius
-        center_cord_red_y = (red.y + margin_y) * const + radius
-        cv2.circle(informative_env, (center_cord_red_y, center_cord_red_x), radius, red_player_color, thickness)
+        center_cord_red_h = (red.h + margin_h) * const + radius
+        center_cord_red_w = (red.w + margin_w) * const + radius
+        cv2.circle(informative_env, (center_cord_red_w, center_cord_red_h), radius, red_player_color, thickness)
         # plot the Blue player
-        center_cord_blue_x = (blue.x + margin_x) * const + radius
-        center_cord_blue_y = (blue.y + margin_y) * const + radius
-        cv2.circle(informative_env, (center_cord_blue_y, center_cord_blue_x), radius, blue_player_color, thickness)
+        center_cord_blue_h = (blue.h + margin_h) * const + radius
+        center_cord_blue_w = (blue.w + margin_w) * const + radius
+        cv2.circle(informative_env, (center_cord_blue_w, center_cord_blue_h), radius, blue_player_color, thickness)
     return np.array(informative_env)
 
 def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False):
     image = create_image(env, episode, last_step_number)
-    cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
-    cv2.waitKey(2)
+    #cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
+    #cv2.waitKey(2)
+    plt.title("informative_env_"+str(env.combat_env_num))
+    plt.imshow(image)
+    plt.pause(.1)
     if episode.is_terminal:
         sleep(1.2)
     else:

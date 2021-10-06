@@ -62,16 +62,16 @@ if DSM_name=="15X15":
         [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 0.],
         [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
     ])
-    SIZE_X = 15
-    SIZE_Y = 15
+    SIZE_W = 15
+    SIZE_H = 15
     FIRE_RANGE = 7
     MAX_STEPS_PER_EPISODE = 250 # 100
     BB_STATE = False
     CLOSE_START_POSITION = False
     LOS_PENALTY_RANGE = 2 * FIRE_RANGE
     BB_MARGIN = 0
-    SIZE_X_BB = SIZE_X
-    SIZE_Y_BB = SIZE_Y
+    SIZE_W_BB = SIZE_W
+    SIZE_H_BB = SIZE_H
     MIN_PATH_DIST_FOR_START_POINTS = 2
     all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
@@ -84,9 +84,9 @@ elif DSM_name=="100X100_Berlin":
     #DSM = get_DSM_berlin()
     #np.savetxt("gym_combat/gym_combat/envs/Common/maps/Berlin/Berlin_1_256_inbal.txt", DSM, fmt="%d")
 
-    SIZE_X=100
-    SIZE_Y=100
-    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", usecols=range(SIZE_X))
+    SIZE_H=100
+    SIZE_W=100
+    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", usecols=range(SIZE_W))
     if False:
         import matplotlib.pyplot as plt
         plt.matshow(DSM)
@@ -101,8 +101,8 @@ elif DSM_name=="100X100_Berlin":
         BB_MARGIN = 16
     else:
         BB_MARGIN = 3
-    SIZE_X_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_Y_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_W_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_H_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
     all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
@@ -113,25 +113,25 @@ elif DSM_name=="100X100_Berlin":
 
 elif DSM_name=="100X100_Paris":
     DSM = get_DSM_Paris()
-    SIZE_X=100
-    SIZE_Y=100
+    SIZE_W=100
+    SIZE_H=100
     FIRE_RANGE = 10
     MAX_STEPS_PER_EPISODE = 250
     BB_STATE = True
     BB_MARGIN = 3
-    SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_W_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_H_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
 
 elif DSM_name=="100X100_Boston":
     DSM = get_DSM_Boston()
-    SIZE_X=100
-    SIZE_Y=100
+    SIZE_W=100
+    SIZE_H=100
     FIRE_RANGE = 10
     MAX_STEPS_PER_EPISODE = 250
     BB_STATE = True
     BB_MARGIN = 3
-    SIZE_X_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_Y_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_W_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_H_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
 if False:
     import matplotlib.pyplot as plt
     plt.matshow(DSM)
@@ -252,18 +252,18 @@ dict_of_colors_for_state = {1: (0, 0, 255),  #blue
                   }
 
 
-dict_of_colors_for_graphics = {1: (239, 0, 0),  #blue
-                               2: (175, 0, 0),  #darker blue
-                               3: (0, 0, 239),  # red
-                               4: (0, 20, 175),  #dark red
-                               5: (230, 100, 150),  #purple
-                               6: (60, 255, 255),  #yellow
+dict_of_colors_for_graphics = {1: (0, 0, 239),  #blue
+                               2: (0, 0, 175),  #darker blue
+                               3: (239, 0, 0),  # red
+                               4: (175, 20, 0),  #dark red
+                               5: (150, 100, 230),  #purple
+                               6: (255, 255, 60),  #yellow
                                7: (100, 100, 100),  #grey
                                8: (0, 239, 0),  #green
                                9: (0, 0, 0),  #black
-                               10: (0, 0, 100),  #bright red
-                               11: (0, 0, 50),  #bright bright red
-                               12: (0, 0, 75), #dark dark red
+                               10: (100, 0, 0),  #bright red
+                               11: (50, 0, 0),  #bright bright red
+                               12: (75, 0, 0), #dark dark red
                                }
 
 OBSTACLE = 1.
@@ -327,7 +327,7 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = False # True #
+USE_DISPLAY = True #
 SHOW_EVERY = 50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE

@@ -19,10 +19,10 @@ class GymCombatEnv(gym.Env):
         # Example for using image as input:
         if BB_STATE:
             self.observation_space = spaces.Box(low=0, high=255,
-                                                shape=(SIZE_X_BB, SIZE_Y_BB, 3), dtype=np.uint8)
+                                                shape=(SIZE_H_BB, SIZE_W_BB, 3), dtype=np.uint8)
         else:
             self.observation_space = spaces.Box(low=0, high=255,
-                                                shape=(SIZE_X, SIZE_Y, 3), dtype=np.uint8)
+                                                shape=(SIZE_H, SIZE_W, 3), dtype=np.uint8)
         self.env_num = env_num.get() if env_num else None
         self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num)
 
