@@ -13,7 +13,8 @@ ACTION_SPACE_4 = False
 if not ACTION_SPACE_9:
     ACTION_SPACE_4 = True
 
-RED_TYPE = 'Smart' #'Greedy'#
+#RED_TYPE = 'Greedy'
+RED_TYPE = 'Smart'
 
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
@@ -94,7 +95,7 @@ elif DSM_name=="100X100_Berlin":
 
     FIRE_RANGE = 10
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
-    MAX_STEPS_PER_EPISODE = 100
+    MAX_STEPS_PER_EPISODE = 50
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
     if BASELINES_RUN:

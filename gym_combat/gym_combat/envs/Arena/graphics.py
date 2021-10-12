@@ -439,9 +439,9 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
     #cv2.waitKey(2)
     plt.title("informative_env_"+str(env.combat_env_num))
     plt.imshow(image)
-    plt.pause(.1)
+    plt.pause(.01)
     if episode.is_terminal:
         sleep(1.2)
     else:
-        sleep(0.2)
+        sleep(0.02)
         
