@@ -17,7 +17,7 @@ import os
 
 
 class Environment(object):
-    def __init__(self, TRAIN=True, run_name="", combat_env_num = None):
+    def __init__(self, TRAIN=True, run_name="", combat_env_num = None, move_penalty = -0.1):
 
         self.blue_player = Entity()
         self.red_player = None
@@ -28,6 +28,8 @@ class Environment(object):
         self.tie_count = 0
         self.win_status: WinEnum = WinEnum.NoWin
         self.combat_env_num = combat_env_num
+        self.move_penalty = move_penalty
+        self.enemy_los_penealty = 2*self.move_penalty
 
 
         if TRAIN:
@@ -167,14 +169,17 @@ class Environment(object):
 
     def handle_reward(self, steps_current_game):
         if not self.end_game_flag or steps_current_game==MAX_STEPS_PER_EPISODE:
-            reward_step_blue = MOVE_PENALTY
-            reward_step_red = MOVE_PENALTY
+            #reward_step_blue = MOVE_PENALTY
+            #reward_step_red = MOVE_PENALTY
+            reward_step_blue = self.move_penalty
+            reward_step_red = self.move_penalty
 
             red_pos = self.red_player.get_coordinates()
             blue_pos = self.blue_player.get_coordinates()
             points_in_enemy_los = DICT_POS_LOS[red_pos]
             if blue_pos in points_in_enemy_los:
-                reward_step_blue= ENEMY_LOS_PENALTY
+                #reward_step_blue= ENEMY_LOS_PENALTY
+                reward_step_blue= self.enemy_los_penealty
 
             return reward_step_blue, reward_step_red
 

@@ -21,10 +21,8 @@ class SmartPlayer(AbsDecisionMaker):
 
         self.add_to_all_pairs_distances = False
         self.add_to_all_pairs_shortest_path = False
-        self.add_to_closest_target_dict = False
         self.all_pairs_distances = {}
         self.all_pairs_shortest_path = {}
-        self.closest_target_dict = {}
         self.load_data()
 
     def load_data(self):
@@ -36,11 +34,16 @@ class SmartPlayer(AbsDecisionMaker):
             with open(all_pairs_shortest_path, 'rb') as f:
                 self.all_pairs_shortest_path = pickle.load(f)
                 print("Smart: all_pairs_shortest_path loaded")
-        covers_map = 'gym_combat/gym_combat/envs/Common/Preprocessing/covers_map_100x100_Berlin.pkl'
-        if os.path.exists(covers_map):
-            with open(covers_map, 'rb') as f:
+        covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_100x100_Berlin.pkl'
+        if os.path.exists(covers_map_path):
+            with open(covers_map_path, 'rb') as f:
                 self.maps_map = pickle.load(f)
                 print("Smart: covers map loaded")
+        possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_100x100_Berlin.pkl'
+        if os.path.exists(possible_locs_path):
+            with open(possible_locs_path, 'rb') as f:
+                self.possible_locs_map = pickle.load(f)
+                print("Smart: possible locs map loaded")
 
 
     def create_graph(self):
@@ -207,7 +210,7 @@ class SmartPlayer(AbsDecisionMaker):
         return action
 
     def plan_path(self, my_pos, enemy_pos):
-        possible_locs = self.calc_possible_locs(enemy_pos, depth=FIRE_RANGE)
+        possible_locs = self.possible_locs_map[enemy_pos]
         possible_locs[possible_locs == 0] = FIRE_RANGE + 1
 
         covers_map = self.maps_map[enemy_pos[0], enemy_pos[1], :, :]
@@ -221,29 +224,6 @@ class SmartPlayer(AbsDecisionMaker):
         else:
             return []
 
-    def calc_possible_locs(self, enemy_loc, depth=10, neighborhood=8):
-        queue = []
-        queue.append(enemy_loc)
-        res = (100 * DSM).astype(np.uint8)
-        opponent_loc = np.asarray(enemy_loc)
-        res[opponent_loc[0], opponent_loc[1]] = 2
-        neighbors = np.asarray([[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]])
-        if neighborhood == 4:
-            neighbors = np.asarray([[0, -1], [0, 1], [-1, 0], [1, 0]])
-        while queue:
-            curr = queue.pop(0)
-            for nei_dir in neighbors:
-                nei = curr + nei_dir
-                if nei[0] < 0 or nei[0] >= res.shape[0] or nei[1] < 0 or nei[1] >= res.shape[1]:
-                    continue
-                if res[nei[0], nei[1]]:
-                    continue
-                if res[curr[0], curr[1]] < depth:
-                    res[nei[0], nei[1]] = res[curr[0], curr[1]] + 1
-                    queue.append(nei)
-                    # plt.imshow(res)
-
-        return res
 
     def select_cover(self, covers_map, my_pos, possible_locs, depth=10):
         covers_dist_dict = {}

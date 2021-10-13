@@ -14,7 +14,7 @@ from gym_combat.gym_combat.envs.Arena.graphics import create_image
 class GymCombatEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, run_name="", env_num = None, train_mode = True):
+    def __init__(self, run_name="", env_num = None, train_mode = True, move_penalty = -0.1):
         self.action_space = spaces.Discrete(NUMBER_OF_ACTIONS)
         # Example for using image as input:
         if BB_STATE:
@@ -24,7 +24,7 @@ class GymCombatEnv(gym.Env):
             self.observation_space = spaces.Box(low=0, high=255,
                                                 shape=(SIZE_H, SIZE_W, 3), dtype=np.uint8)
         self.env_num = env_num.get() if env_num else None
-        self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num)
+        self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num, move_penalty = move_penalty)
 
 
         if RED_TYPE == 'Smart':
@@ -52,7 +52,7 @@ class GymCombatEnv(gym.Env):
         return observation_for_blue_s0.img
 
     def render(self, mode='human', close=False, show = False):
-        return create_image(self.env, self.current_episode, self.current_episode.number_of_steps)[...,::-1]
+        return create_image(self.env, self.current_episode, self.current_episode.number_of_steps)#[...,::-1]
         #self.current_episode.print_info_of_episode(self.env, self.current_episode.number_of_steps, 0, self.current_episode.episode_number)
 
 

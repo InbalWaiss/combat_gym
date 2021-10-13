@@ -87,7 +87,7 @@ elif DSM_name=="100X100_Berlin":
 
     SIZE_H=100
     SIZE_W=100
-    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", usecols=range(SIZE_W))
+    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", dtype = np.uint8, usecols=range(SIZE_W))
     if False:
         import matplotlib.pyplot as plt
         plt.matshow(DSM)
@@ -328,7 +328,7 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = True #
+USE_DISPLAY = False #
 SHOW_EVERY = 50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE

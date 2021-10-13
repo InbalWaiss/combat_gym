@@ -1,30 +1,44 @@
 from gym_combat.gym_combat.envs.Common.constants import *
+import pickle
+import os
 
+possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_100x100_Berlin.pkl'
+covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_100x100_Berlin.pkl'
 
-def calc_possible_locs(my_map, opponent_loc, depth = 10, neighborhood=4):
+def calc_possible_locs(enemy_loc, depth=10, neighborhood=8):
     queue = []
-    queue.append(opponent_loc)
-    res = my_map.copy()
-    opponent_loc = np.asarray(opponent_loc)
-    res[opponent_loc[0],opponent_loc[1]] = 2
-    neighbors = np.asarray([[0,-1],[0,1],[-1,0],[1,0]])
-    if neighborhood == 8:
-        neighbors = np.asarray([[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[1,-1],[-1,1],[1,1]])
+    queue.append(enemy_loc)
+    res = (100 * DSM).astype(np.uint8)
+    res[enemy_loc[0], enemy_loc[1]] = 2
+    neighbors = np.asarray([[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]])
+    if neighborhood == 4:
+        neighbors = np.asarray([[0, -1], [0, 1], [-1, 0], [1, 0]])
     while queue:
         curr = queue.pop(0)
         for nei_dir in neighbors:
             nei = curr + nei_dir
-            if nei[0] < 0 or nei[0] >= my_map.shape[0] or nei[1] < 0 or nei[1] >= my_map.shape[1]:
+            if nei[0] < 0 or nei[0] >= res.shape[0] or nei[1] < 0 or nei[1] >= res.shape[1]:
                 continue
             if res[nei[0], nei[1]]:
                 continue
             if res[curr[0], curr[1]] < depth:
-                res[nei[0], nei[1]] = res[curr[0], curr[1]]+1
+                res[nei[0], nei[1]] = res[curr[0], curr[1]] + 1
                 queue.append(nei)
-                # plt.imshow(res)
 
     return res
 
+def prepare_possible_locs():
+    locs_maps = np.zeros((DSM.shape[0], DSM.shape[1], DSM.shape[0], DSM.shape[1])).astype(np.uint8)
+    for enemy_h in range(DSM.shape[0]):
+        for enemy_w in range(DSM.shape[1]):
+            if DSM[enemy_h, enemy_w]:
+                continue
+            print(enemy_h, enemy_w)
+            enemy_loc = (enemy_h, enemy_w)
+            locs_maps[enemy_h, enemy_w, :,:] = calc_possible_locs(enemy_loc)
+    f = open(possible_locs_path, 'wb')
+    pickle.dump(locs_maps, f)
+    return locs_maps
 
 def calc_covers_map(my_map, enemy, max_range):
     enemy = np.asarray(enemy)
@@ -87,25 +101,34 @@ def update_killing_range(covers_map, possible_locs, killing_range):
         covers_map[cover[0], cover[1]] = reach_time
     return covers_map
 
-def prepare_dataset():
+def prepare_covers():
+    if os.path.exists(possible_locs_path):
+        with open(possible_locs_path, 'rb') as f:
+            possible_locs_maps = pickle.load(f)
+            print ("found and loaded possible locs")
+    else:
+        print ("could not found possible_locs. preparing it")
+        possible_locs_maps = prepare_possible_locs()
 
-    maps_map = np.zeros((DSM.shape[0], DSM.shape[1], DSM.shape[0], DSM.shape[1]))
-    for enemy_x in range(DSM.shape[0]):
-        for enemy_y in range(DSM.shape[1]):
-            if DSM[enemy_x, enemy_y]:
+    maps_map = np.zeros((DSM.shape[0], DSM.shape[1], DSM.shape[0], DSM.shape[1])).astype(np.uint8)
+    for enemy_h in range(DSM.shape[0]):
+        for enemy_w in range(DSM.shape[1]):
+            if DSM[enemy_h, enemy_w]:
                 continue
-            print(enemy_x, enemy_y)
-            enemy = [enemy_x, enemy_y]
-            covers_map = calc_covers_map(my_map=DSM, enemy=enemy, max_range=10)
-            possible_locs = calc_possible_locs(my_map=DSM, opponent_loc=enemy, depth=FIRE_RANGE, neighborhood=8)
+            enemy_loc = (enemy_h, enemy_w)
+            print (enemy_loc)
+            covers_map = calc_covers_map(my_map=DSM, enemy=enemy_loc, max_range=10)
+            possible_locs = possible_locs_maps[enemy_loc]
             possible_locs[possible_locs == 0] = FIRE_RANGE + 1
             covers_map = update_killing_range(covers_map=covers_map, possible_locs=possible_locs, killing_range=FIRE_RANGE)
-            maps_map[enemy_x, enemy_y, :, :] = covers_map
-    import pickle
-    f = open(r'.\gym_combat\gym_combat\envs\Common\Preprocessing\covers_map_100x100_Berlin.pkl', 'wb')
+            maps_map[enemy_h, enemy_w, :, :] = covers_map
+
+    f = open(covers_map_path, 'wb')
     pickle.dump(maps_map, f)
 
 if __name__ == '__main__':
-    prepare_dataset()
+    #prepare_possible_locs()
+    prepare_covers()
+
 
 
