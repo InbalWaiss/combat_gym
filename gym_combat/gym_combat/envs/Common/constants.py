@@ -152,6 +152,10 @@ except:
                 DICT_POS_FIRE_RANGE = pickle.load(f)
         except:
             pass
+#turning DICT_POS_FIRE_RANGE to hold sets
+for k in DICT_POS_FIRE_RANGE:
+    DICT_POS_FIRE_RANGE[k] = set(DICT_POS_FIRE_RANGE[k])
+
 
 try:
     with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '_tuple.pkl', 'rb') as f:
@@ -328,7 +332,7 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = False #
+USE_DISPLAY = True #
 SHOW_EVERY = 50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE

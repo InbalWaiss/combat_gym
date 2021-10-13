@@ -211,8 +211,6 @@ class SmartPlayer(AbsDecisionMaker):
 
     def plan_path(self, my_pos, enemy_pos):
         possible_locs = self.possible_locs_map[enemy_pos]
-        possible_locs[possible_locs == 0] = FIRE_RANGE + 1
-
         covers_map = self.maps_map[enemy_pos[0], enemy_pos[1], :, :]
 
         closest_cover = self.select_cover(covers_map, my_pos, possible_locs, FIRE_RANGE)

@@ -24,7 +24,7 @@ def calc_possible_locs(enemy_loc, depth=10, neighborhood=8):
             if res[curr[0], curr[1]] < depth:
                 res[nei[0], nei[1]] = res[curr[0], curr[1]] + 1
                 queue.append(nei)
-
+    res[res == 0] = depth + 1
     return res
 
 def prepare_possible_locs():
@@ -119,7 +119,6 @@ def prepare_covers():
             print (enemy_loc)
             covers_map = calc_covers_map(my_map=DSM, enemy=enemy_loc, max_range=10)
             possible_locs = possible_locs_maps[enemy_loc]
-            possible_locs[possible_locs == 0] = FIRE_RANGE + 1
             covers_map = update_killing_range(covers_map=covers_map, possible_locs=possible_locs, killing_range=FIRE_RANGE)
             maps_map[enemy_h, enemy_w, :, :] = covers_map
 
@@ -127,8 +126,8 @@ def prepare_covers():
     pickle.dump(maps_map, f)
 
 if __name__ == '__main__':
-    #prepare_possible_locs()
-    prepare_covers()
+    prepare_possible_locs()
+    #prepare_covers()
 
 
 
