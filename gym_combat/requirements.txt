@@ -3,7 +3,7 @@ cycler==0.10.0
 kiwisolver==1.3.1
 matplotlib==3.3.3
 numpy==1.19.4
-#opencv-python==4.4.0.46
+opencv-python==4.4.0.46
 pandas==1.1.4
 Pillow==8.0.1
 pyparsing==2.4.7
@@ -23,3 +23,6 @@ tensorflow-gpu==1.14
 tensorflow==1.14.0
 tqdm
 moviepy
+stable-baselines3
+pymap3d
+tensorboard==1.15.0
