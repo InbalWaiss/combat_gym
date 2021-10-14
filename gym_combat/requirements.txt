@@ -12,7 +12,7 @@ pytz==2020.4
 six==1.15.0
 scikit-image
 attrs
-h5py #TODO: Inbal: add version!
+h5py=3.4.0
 keras==2.0.8
 protobuf>=3.0
 pydot-ng
