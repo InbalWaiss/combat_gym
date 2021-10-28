@@ -29,3 +29,11 @@ class AbsDecisionMaker(metaclass=abc.ABCMeta):
     def save_model(self, number_of_rounds):
 
         pass
+
+    def get_cover(self):
+
+        return None
+
+    def reset_cover(self):
+
+        pass

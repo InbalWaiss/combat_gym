@@ -205,7 +205,7 @@ def print_stats_humna_player(array_of_results, save_folder_path, number_of_episo
 
     plt.show()
 
-def create_image(env: Environment, episode, last_step_number):
+def create_image(env: Environment, episode, last_step_number, cover = None):
 
 
     blue = env.blue_player
@@ -431,10 +431,15 @@ def create_image(env: Environment, episode, last_step_number):
         center_cord_blue_h = (blue.h + margin_h) * const + radius
         center_cord_blue_w = (blue.w + margin_w) * const + radius
         cv2.circle(informative_env, (center_cord_blue_w, center_cord_blue_h), radius, blue_player_color, thickness)
+
+        if cover and ((cover[0] != red.h) or (cover[1] != red.w)):
+            informative_env[(cover[0] + margin_h) * const: (cover[0] + margin_h) * const + const,
+            (cover[1] + margin_w) * const: (cover[1] + margin_w) * const + const] = dict_of_colors_for_graphics[GREEN_N]
+
     return np.array(informative_env)
 
-def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False):
-    image = create_image(env, episode, last_step_number)
+def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False, cover = None):
+    image = create_image(env, episode, last_step_number, cover)
     #cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
     #cv2.waitKey(2)
     plt.title("informative_env_"+str(env.combat_env_num))

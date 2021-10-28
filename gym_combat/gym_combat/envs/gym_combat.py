@@ -48,11 +48,12 @@ class GymCombatEnv(gym.Env):
 
         # set new start position for the players
         self.env.reset_game(self.episode_number)
+        self.red_decision_maker.reset_cover()
         observation_for_blue_s0: State = self.env.get_observation_for_blue()
         return observation_for_blue_s0.img
 
     def render(self, mode='human', close=False, show = False):
-        return create_image(self.env, self.current_episode, self.current_episode.number_of_steps)#[...,::-1]
+        return create_image(self.env, self.current_episode, self.current_episode.number_of_steps, cover = self.red_decision_maker.get_cover())#[...,::-1]
         #self.current_episode.print_info_of_episode(self.env, self.current_episode.number_of_steps, 0, self.current_episode.episode_number)
 
 
@@ -96,7 +97,8 @@ class GymCombatEnv(gym.Env):
             self.env.take_action(Color.Blue, AgentAction(action_blue))
 
             self.current_episode.is_terminal = (self.env.compute_terminal(whos_turn=Color.Blue) is not WinEnum.NoWin)
-            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
+            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps,
+                                               cover=self.red_decision_maker.get_cover())
 
             if not self.current_episode.is_terminal:
                 ##### Red's turn! #####
@@ -113,7 +115,8 @@ class GymCombatEnv(gym.Env):
 
 
             observation_for_blue_s1: State = self.env.get_observation_for_blue()
-            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps)
+            self.current_episode.print_episode(self.env, self.current_episode.number_of_steps,
+                                               cover=self.red_decision_maker.get_cover())
 
             if self.current_episode.number_of_steps == MAX_STEPS_PER_EPISODE:
                 # if we exited the loop because we reached MAX_STEPS_PER_EPISODE

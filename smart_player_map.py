@@ -128,8 +128,8 @@ def prepare_covers():
     pickle.dump(maps_map, f)
 
 if __name__ == '__main__':
-    prepare_possible_locs()
-    #prepare_covers()
+    #prepare_possible_locs()
+    prepare_covers()
 
 
 

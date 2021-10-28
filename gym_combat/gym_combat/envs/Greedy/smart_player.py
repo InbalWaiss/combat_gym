@@ -16,6 +16,7 @@ class SmartPlayer(AbsDecisionMaker):
         self.episode_number = 0
         self._epsilon = 0
         self.path_model_to_load = None
+        self.cover = None
 
         self.G = self.create_graph()
 
@@ -81,6 +82,12 @@ class SmartPlayer(AbsDecisionMaker):
         action = self.plan_next_action(state)
         self._action = action
         return self._action
+
+    def get_cover(self):
+        return self.cover
+
+    def reset_cover(self):
+        self.cover  =None
 
     def find_closest_point_in_enemy_LOS(self, my_pos, enemy_pos):
         pass
@@ -182,6 +189,7 @@ class SmartPlayer(AbsDecisionMaker):
         pass
 
     def plan_next_action(self, state):
+        self.cover = None
         my_pos = state.my_pos.get_tuple()
         enemy_pos = state.enemy_pos.get_tuple()
         neighbors = np.asarray([[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1], [0,0]])
@@ -197,6 +205,8 @@ class SmartPlayer(AbsDecisionMaker):
         if my_path:
             next_step = self.find_move_in_path(my_path)
             direc = np.asarray(next_step[:2]) - np.array(my_pos)
+            if len (my_path) > 1:
+                self.cover = my_path[-1]
         else:
             # no cover, just run far from enemy:
             neighbors_dist = {}

@@ -547,9 +547,9 @@ class Episode():
         return False
 
 
-    def print_episode(self, env, last_step_number, save_file=False):
+    def print_episode(self, env, last_step_number, save_file=False, cover = None):
         if self.show and USE_DISPLAY:
-            print_episode_graphics(env, self, last_step_number, save_file)
+            print_episode_graphics(env, self, last_step_number, save_file, cover)
 
 
     def print_info_of_episode(self, env, steps_current_game, blue_epsilon, episode_number):
