@@ -442,6 +442,6 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
     plt.pause(.01)
     if episode.is_terminal:
         sleep(1.2)
-    else:
-        sleep(0.02)
+    # else:
+    #     sleep(0.02)
         

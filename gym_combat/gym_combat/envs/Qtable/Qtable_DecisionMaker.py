@@ -35,10 +35,10 @@ class Qtable_DecisionMaker(AbsDecisionMaker):
             # (x1, y1)- blue cor (if Entity is Blue, otherwise (x1, y1) is the red cor)
             # (x2, y2)- red cor (if Entity is Blue, otherwise (x1, y1) is the red cor)
             q_table = {}
-            for x1 in range(0, SIZE_X):
-                for y1 in range(0, SIZE_Y):
-                    for x2 in range(0, SIZE_X):
-                        for y2 in range(0, SIZE_Y):
+            for x1 in range(0, SIZE_W):
+                for y1 in range(0, SIZE_H):
+                    for x2 in range(0, SIZE_W):
+                        for y2 in range(0, SIZE_H):
                             q_table[((x1, y1), (x2, y2))] = np.ones(
                                 NUMBER_OF_ACTIONS)  # [np.random.uniform(-5, 0) for i in range(NUMBER_OF_ACTIONS)]
         else:  # if we have a saved Q-table

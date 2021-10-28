@@ -3,13 +3,13 @@
 import numpy as np
 from PIL import Image
 import gym_combat.gym_combat.envs.Arena as Arena
-from gym_combat.gym_combat.envs.Common.constants import SIZE_X, SIZE_Y, SIZE_X_BB, SIZE_Y_BB, BB_STATE
+from gym_combat.gym_combat.envs.Common.constants import SIZE_H, SIZE_W, SIZE_H_BB, SIZE_W_BB, BB_STATE
 
 from gym_combat.gym_combat.envs.DQN.deeprl_prj.core import Preprocessor
 
 if BB_STATE:
-    SIZE_X = SIZE_X_BB
-    SIZE_Y = SIZE_Y_BB
+    SIZE_W = SIZE_W_BB
+    SIZE_H = SIZE_H_BB
 
 
 class HistoryPreprocessor(Preprocessor):
@@ -129,12 +129,12 @@ class AtariPreprocessor(Preprocessor):
 
 
         # 'L': 8-bit pixels, black and white
-        state_for_network = np.array(Image.fromarray(org_state).convert('L').resize((SIZE_X, SIZE_Y)))
+        state_for_network = np.array(Image.fromarray(org_state).convert('L').resize((SIZE_W, SIZE_H)))
 
 
 
         # org:
-        # img = Image.fromarray(org_state).convert('L').resize((SIZE_X, SIZE_Y), Image.BILINEAR)
+        # img = Image.fromarray(org_state).convert('L').resize((SIZE_W, SIZE_H), Image.BILINEAR)
         # state_for_network = np.array(img)
 
         if DEBUG:
@@ -145,15 +145,15 @@ class AtariPreprocessor(Preprocessor):
             plt.matshow(org_state)
             plt.show()
             # Mode 1
-            img1 = np.array(Image.fromarray(org_state1).convert('L').resize((SIZE_X, SIZE_Y)))
-            # same as np.array(Image.fromarray(org_state2).convert('L').resize((SIZE_X, SIZE_Y), Image.BILINEAR))
-            # same as: np.array(Image.fromarray(org_state5).convert('L').resize((SIZE_X, SIZE_Y), Image.BICUBIC))
+            img1 = np.array(Image.fromarray(org_state1).convert('L').resize((SIZE_W, SIZE_H)))
+            # same as np.array(Image.fromarray(org_state2).convert('L').resize((SIZE_W, SIZE_H), Image.BILINEAR))
+            # same as: np.array(Image.fromarray(org_state5).convert('L').resize((SIZE_W, SIZE_H), Image.BICUBIC))
             plt.matshow(img1)
             plt.show()
 
             # Mode 2
-            img2 = np.array(Image.fromarray(org_state2).convert('P').resize((SIZE_X, SIZE_Y)))
-            # same as np.array(Image.fromarray(org_state4).convert('P').resize((SIZE_X, SIZE_Y), Image.BILINEAR))
+            img2 = np.array(Image.fromarray(org_state2).convert('P').resize((SIZE_W, SIZE_H)))
+            # same as np.array(Image.fromarray(org_state4).convert('P').resize((SIZE_W, SIZE_H), Image.BILINEAR))
             plt.matshow(img2)
             plt.show()
 

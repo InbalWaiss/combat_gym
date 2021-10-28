@@ -286,26 +286,26 @@ class Greedy_player(AbsDecisionMaker):
                 self.add_to_closest_target_dict = False
 
     def calc_all_pairs_data(self, DSM):
-        SIZE_X = 100
-        SIZE_Y = 100
-        G = nx.grid_2d_graph(SIZE_X, SIZE_Y)
+        SIZE_W = 100
+        SIZE_H = 100
+        G = nx.grid_2d_graph(SIZE_W, SIZE_H)
 
         if NUMBER_OF_ACTIONS >= 8:
             Diagonals_Weight = 1
             # add diagonals edges
             G.add_edges_from([
                                  ((x, y), (x + 1, y + 1))
-                                 for x in range(SIZE_Y - 1)
-                                 for y in range(SIZE_Y - 1)
+                                 for x in range(SIZE_H - 1)
+                                 for y in range(SIZE_H - 1)
                              ] + [
                                  ((x + 1, y), (x, y + 1))
-                                 for x in range(SIZE_Y - 1)
-                                 for y in range(SIZE_Y - 1)
+                                 for x in range(SIZE_H - 1)
+                                 for y in range(SIZE_H - 1)
                              ], weight=Diagonals_Weight)
 
         # remove obstacle nodes and edges
-        for x in range(SIZE_X):
-            for y in range(SIZE_Y):
+        for x in range(SIZE_W):
+            for y in range(SIZE_H):
                 if DSM[x][y] == 1.:
                     G.remove_node((x, y))
 

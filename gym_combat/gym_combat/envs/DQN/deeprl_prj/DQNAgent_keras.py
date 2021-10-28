@@ -90,13 +90,13 @@ class decision_maker_DQN_keras:
         parser.add_argument('--num_frames', default=NUM_FRAMES, type=int, help='Number of frames to feed to Q-Network')
 
         if BB_STATE:
-            parser.add_argument('--frame_width', default=SIZE_X_BB, type=int, help='Resized frame width')
-            parser.add_argument('--frame_height', default=SIZE_Y_BB, type=int, help='Resized frame height')
+            parser.add_argument('--frame_width', default=SIZE_W_BB, type=int, help='Resized frame width')
+            parser.add_argument('--frame_height', default=SIZE_H_BB, type=int, help='Resized frame height')
             parser.add_argument('--exploration_steps', default=7000000, type=int,
                                 help='Number of steps over which the initial value of epsilon is linearly annealed to its final value')
         else:
-            parser.add_argument('--frame_width', default=SIZE_X, type=int, help='Resized frame width')
-            parser.add_argument('--frame_height', default=SIZE_Y, type=int, help='Resized frame height')
+            parser.add_argument('--frame_width', default=SIZE_W, type=int, help='Resized frame width')
+            parser.add_argument('--frame_height', default=SIZE_H, type=int, help='Resized frame height')
             parser.add_argument('--exploration_steps', default=7000000, type=int,
                                 help='Number of steps over which the initial value of epsilon is linearly annealed to its final value')
 

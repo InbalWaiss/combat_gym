@@ -1,5 +1,5 @@
-from gym_combat.envs.Common.constants import *
-from gym_combat.envs.DQN.DQN_constants import *
+from gym_combat.gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.DQN.DQN_constants import *
 import os
 import time
 import random
@@ -18,9 +18,9 @@ MIN_REPLAY_MEMORY_SIZE = 100 # minimum number of steps in a memory to start trai
 MINIBATCH_SIZE = 64 # how many samples to use for training
 UPDATE_TARGET_EVERY = 15 # number of terminal states
 if BB_STATE:
-    OBSERVATION_SPACE_VALUES = (SIZE_X_BB, SIZE_Y_BB, 3)
+    OBSERVATION_SPACE_VALUES = (SIZE_W_BB, SIZE_H_BB, 3)
 else:
-    OBSERVATION_SPACE_VALUES = (SIZE_X, SIZE_Y, 3)
+    OBSERVATION_SPACE_VALUES = (SIZE_W, SIZE_H, 3)
 MODEL_NAME = 'red_blue_32(4X4)X64X9'
 
 

@@ -2,8 +2,10 @@ from gym_combat.gym_combat.envs.Common.constants import *
 import pickle
 import os
 
-possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_100x100_Berlin.pkl'
-covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_100x100_Berlin.pkl'
+# possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_100x100_Berlin.pkl'
+# covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_100x100_Berlin.pkl'
+possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_Baqa.pkl'
+covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_Baqa.pkl'
 
 def calc_possible_locs(enemy_loc, depth=10, neighborhood=8):
     queue = []

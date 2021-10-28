@@ -1,40 +1,48 @@
 
-from gym_combat.envs.Common.constants import *
+from gym_combat.gym_combat.envs.Common.constants import *
 import pickle
 import numpy as np
-from gym_combat.envs.Arena.helper_funcs import check_if_LOS
+from gym_combat.gym_combat.envs.Arena.helper_funcs import check_if_LOS
 import matplotlib.pyplot as plt
-from gym_combat.envs.Arena.Environment import Environment
-from gym_combat.envs.Arena.Entity import Entity
+from gym_combat.gym_combat.envs.Arena.Environment import Environment
+from gym_combat.gym_combat.envs.Arena.Entity import Entity
+
 
 def creat_and_save_dictionaries():
-    los_from_pos = {}
+    los_from_pos_FIRE_RANGE = {}
+    los_from_pos_LOS_RANGE = {}
     no_los_from_pos = {}
-    for x1 in range(0, SIZE_X):
-        for y1 in range(0, SIZE_Y):
-            los_from_pos[(x1, y1)] = []
+    for x1 in range(0, SIZE_W):
+        for y1 in range(0, SIZE_H):
+            los_from_pos_FIRE_RANGE[(x1, y1)] = []
+            los_from_pos_LOS_RANGE[(x1, y1)] = []
             no_los_from_pos[(x1, y1)] = []
             if DSM[x1][y1]==1:
                 continue
-            for x2 in range(0, SIZE_X):
-                for y2 in range(0, SIZE_Y):
+            for x2 in range(0, SIZE_W):
+                for y2 in range(0, SIZE_H):
                     dist = np.linalg.norm(np.array([x1, y1]) - np.array([x2, y2]))
-                    if DSM[x2][y2] == 1 or dist>FIRE_RANGE:
+                    if DSM[x2][y2] == 1 or dist>LOS_PENALTY_RANGE:
                         continue
-                    is_los, _ = check_if_LOS(x1, y1, x2, y2)
-                    if is_los and dist<=FIRE_RANGE:
-                        los_from_pos[(x1, y1)].append((x2, y2))
+
+                    is_los_LOS_PENALTY_RANGE, _ = check_if_LOS(x1, y1, x2, y2)
+                    if is_los_LOS_PENALTY_RANGE and dist<=LOS_PENALTY_RANGE: #not obs and in LOS_PENALTY_RANGE
+                        los_from_pos_LOS_RANGE[(x1, y1)].append((x2, y2))
+                        if dist<=FIRE_RANGE:
+                            los_from_pos_FIRE_RANGE[(x1, y1)].append((x2, y2))
                     else:
                         if DSM[x2, y2]!=1:
                             no_los_from_pos[(x1, y1)].append((x2, y2))
 
             print("finished ", x1, y1)
-    save_obj(los_from_pos, "dictionary_position_los_"+DSM_name)
-    save_obj(no_los_from_pos, "dictionary_position_no_los_"+DSM_name)
+
+    save_obj(los_from_pos_FIRE_RANGE, "dictionary_position_los_"+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl')
+    save_obj(los_from_pos_LOS_RANGE, "dictionary_position_los_"+DSM_name+'_'+str(LOS_PENALTY_RANGE)+ '.pkl')
+    save_obj(no_los_from_pos, "dictionary_position_no_los_"+DSM_name+'_'+str(LOS_PENALTY_RANGE)+ '.pkl')
 
 
 def show_LOS_from_point(x1,y1):
-    env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
+    env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
 
     points_in_LOS = DICT_POS_LOS[(x1,y1)]
     for point in points_in_LOS:
@@ -42,8 +50,8 @@ def show_LOS_from_point(x1,y1):
 
     env[x1][y1] = dict_of_colors_for_graphics[RED_N]
 
-    for x in range(SIZE_X):
-        for y in range(SIZE_Y):
+    for x in range(SIZE_W):
+        for y in range(SIZE_H):
             if DSM[x][y] == 1.:
                 env[x][y] = dict_of_colors_for_graphics[GREY_N]
 
@@ -51,7 +59,7 @@ def show_LOS_from_point(x1,y1):
     plt.show()
 
 def show_no_LOS_from_point(x1,y1):
-    env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
+    env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
 
     points_in_LOS = DICT_POS_NO_LOS[(x1,y1)]
     for point in points_in_LOS:
@@ -59,8 +67,8 @@ def show_no_LOS_from_point(x1,y1):
 
     env[x1][y1] = dict_of_colors_for_graphics[BLUE_N]
 
-    for x in range(SIZE_X):
-        for y in range(SIZE_Y):
+    for x in range(SIZE_W):
+        for y in range(SIZE_H):
             if DSM[x][y] == 1.:
                 env[x][y] = dict_of_colors_for_graphics[GREY_N]
 
@@ -71,14 +79,14 @@ def find_closest_point_not_in_los(x1,y1):
     arr = np.asarray(DICT_POS_NO_LOS[(x1, y1)])
     value = np.array([x1, y1])
     closest_point_no_loss = arr[np.linalg.norm(arr - value, axis=1).argmin()]
-    env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
+    env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
     points_in_LOS = DICT_POS_LOS[(x1, y1)]
     for point in points_in_LOS:
         env[point[0]][point[1]] = dict_of_colors_for_graphics[DARK_RED_N]
     env[x1][y1] = dict_of_colors_for_graphics[RED_N]
     env[closest_point_no_loss[0]][closest_point_no_loss[1]] = (200, 200, 200)
-    for x in range(SIZE_X):
-        for y in range(SIZE_Y):
+    for x in range(SIZE_W):
+        for y in range(SIZE_H):
             if DSM[x][y] == 1.:
                 env[x][y] = dict_of_colors_for_graphics[GREY_N]
     plt.matshow(env)
@@ -95,8 +103,8 @@ def load_obj(name):
 
 def calc_and_save_dominating_points():
     dominating_points_dict = {}
-    for x1 in range(0, SIZE_X):
-        for y1 in range(0, SIZE_Y):
+    for x1 in range(0, SIZE_W):
+        for y1 in range(0, SIZE_H):
             goal_points = find_dominating_point(x1, y1)
             dominating_points_dict[(x1,y1)] = goal_points
 
@@ -104,8 +112,8 @@ def calc_and_save_dominating_points():
 
 def calc_and_save_lose_points():
     lose_points_dict = {}
-    for x1 in range(0, SIZE_X):
-        for y1 in range(0, SIZE_Y):
+    for x1 in range(0, SIZE_W):
+        for y1 in range(0, SIZE_H):
             goal_points = find_lose_points(x1, y1)
             lose_points_dict[(x1,y1)] = goal_points
 
@@ -121,13 +129,13 @@ def find_dominating_point(x1, y1):
         if can_escape_by_one_step(point1, p):
             goal_points.append(p)
     if DEBUG:
-        img_env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
+        img_env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
         points_in_LOS = DICT_POS_LOS[(x1, y1)]
         for point in points_in_LOS:
             img_env[point[0]][point[1]] = dict_of_colors_for_graphics[DARK_RED_N]
         img_env[x1][y1] = dict_of_colors_for_graphics[RED_N]
-        for x in range(SIZE_X):
-            for y in range(SIZE_Y):
+        for x in range(SIZE_W):
+            for y in range(SIZE_H):
                 if DSM[x][y] == 1.:
                     img_env[x][y] = dict_of_colors_for_graphics[GREY_N]
         fig, axs = plt.subplots(1, 2)
@@ -150,7 +158,7 @@ def can_escape_by_one_step(point1, point2):
     env.blue_player.x = point2[0]
     env.blue_player.y = point2[1]
 
-    win_stat = env.compute_terminal(number_of_steps=0)
+    win_stat = env.compute_terminal()
 
     if win_stat==WinEnum.Blue:
         return True
@@ -167,13 +175,13 @@ def find_lose_points(x1, y1):
         if can_escape_by_one_step(p, point1):
             goal_points.append(p)
     if DEBUG:
-        img_env = np.zeros((SIZE_X, SIZE_Y, 3), dtype=np.uint8)  # starts an rbg of small world
+        img_env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
         points_in_LOS = DICT_POS_LOS[(x1, y1)]
         for point in points_in_LOS:
             img_env[point[0]][point[1]] = dict_of_colors_for_graphics[DARK_RED_N]
         img_env[x1][y1] = dict_of_colors_for_graphics[RED_N]
-        for x in range(SIZE_X):
-            for y in range(SIZE_Y):
+        for x in range(SIZE_W):
+            for y in range(SIZE_H):
                 if DSM[x][y] == 1.:
                     img_env[x][y] = dict_of_colors_for_graphics[GREY_N]
         fig, axs = plt.subplots(1, 2)
@@ -187,10 +195,11 @@ def find_lose_points(x1, y1):
 
 
 if __name__ == '__main__':
+
     creat_and_save_dictionaries()
     # calc_and_save_dominating_points()
     # calc_and_save_lose_points()
-    # show_LOS_from_point(5, 5)
+    show_LOS_from_point(5, 5)
     # find_closest_point_not_in_los(5, 5)
     # find_dominating_point(5, 5)
-    find_lose_points(5,5) #{red_pos : points that is blus is in blue will lose!}
+    #find_lose_points(5,5) #{red_pos : points that is blus is in blue will lose!}

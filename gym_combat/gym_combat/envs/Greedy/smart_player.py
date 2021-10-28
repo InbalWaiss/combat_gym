@@ -250,24 +250,29 @@ class SmartPlayer(AbsDecisionMaker):
             return player_path[0]
 
 if __name__ == '__main__':
-    #PRINT_FLAG = True
+    # #PRINT_FLAG = True
     from PIL import Image
-    import cv2
-    srcImage = Image.open("../Common/maps/Berlin_1_256.png")
 
-    img1 = np.array(srcImage.convert('L').resize((100, 100)))
-    img2 = cv2.bitwise_not(img1)
-    obsticals = cv2.inRange(img2, 250, 255)
-    c, _ = cv2.findContours(obsticals, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    thicken_obs_and_edges = cv2.drawContours(obsticals, c, -1, (255, 255, 255), 2)
-    thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
-    DSM = thicken_obs_and_edges
+    # import cv2
+    # srcImage = Image.open("../Common/maps/Berlin_1_256.png")
+    # srcImage = Image.open("../Common/maps/Baqa/BaqaObs.txt")
+    #
+    # img1 = np.array(srcImage.convert('L').resize((100, 100)))
+    # img2 = cv2.bitwise_not(img1)
+    # obsticals = cv2.inRange(img2, 250, 255)
+    # c, _ = cv2.findContours(obsticals, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # thicken_obs_and_edges = cv2.drawContours(obsticals, c, -1, (255, 255, 255), 2)
+    # thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
+    # DSM = thicken_obs_and_edges
+
+    #DSM = Image.open("../Common/maps/Baqa/BaqaObs.txt")
 
     if False:
+        import matplotlib.pyplot as plt
         plt.matshow(thicken_obs_and_edges)
         plt.show(DSM)
 
-    GP = smart_player()
+    GP = SmartPlayer()
     #GP.remove_data_obs(DSM)
     #GP.calc_all_pairs_data(DSM)
 

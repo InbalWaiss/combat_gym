@@ -13,8 +13,8 @@ ACTION_SPACE_4 = False
 if not ACTION_SPACE_9:
     ACTION_SPACE_4 = True
 
-#RED_TYPE = 'Greedy'
-RED_TYPE = 'Smart'
+RED_TYPE = 'Greedy'
+#RED_TYPE = 'Smart'
 
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
@@ -35,7 +35,7 @@ STR_FOLDER_NAME = "main_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
 DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name = "100X100_Berlin"
+DSM_name = "Baqa" #"100X100_Berlin"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
@@ -87,7 +87,7 @@ elif DSM_name=="100X100_Berlin":
 
     SIZE_H=100
     SIZE_W=100
-    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", dtype = np.uint8, usecols=range(SIZE_W))
+    DSM = np.loadtxt("../gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", dtype = np.uint8, usecols=range(SIZE_W))
     if False:
         import matplotlib.pyplot as plt
         plt.matshow(DSM)
@@ -133,10 +133,35 @@ elif DSM_name=="100X100_Boston":
     BB_MARGIN = 3
     SIZE_W_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_H_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-if False:
-    import matplotlib.pyplot as plt
-    plt.matshow(DSM)
-    plt.show()
+
+elif DSM_name=="Baqa":
+    SIZE_H = 100
+    SIZE_W = 100
+    DSM = np.loadtxt(path.join(COMMON_PATH, 'maps', 'Baqa','BaqaObs.txt'), dtype=np.uint8, usecols=range(SIZE_W))
+    if False:
+        import matplotlib.pyplot as plt
+
+        plt.matshow(DSM)
+        plt.show()
+
+    FIRE_RANGE = 10
+    LOS_PENALTY_RANGE = 3 * FIRE_RANGE
+    MAX_STEPS_PER_EPISODE = 50
+    MIN_PATH_DIST_FOR_START_POINTS = 2
+    BB_STATE = True
+    if BASELINES_RUN:
+        BB_MARGIN = 16
+    else:
+        BB_MARGIN = 3
+    SIZE_W_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    SIZE_H_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    if path.exists(all_pairs_distances_path):
+        with open(all_pairs_distances_path, 'rb') as f:
+            all_pairs_distances = pickle.load(f)
+            print("all_pairs_distances loaded")
+
+    SAVE_BERLIN_FIXED_STATE = False
 
 
 try:
@@ -152,11 +177,17 @@ except:
                 DICT_POS_FIRE_RANGE = pickle.load(f)
         except:
             pass
-#turning DICT_POS_FIRE_RANGE to hold sets
-for k in DICT_POS_FIRE_RANGE:
-    DICT_POS_FIRE_RANGE[k] = set(DICT_POS_FIRE_RANGE[k])
+
+try:
+    #turning DICT_POS_FIRE_RANGE to hold sets
+    for k in DICT_POS_FIRE_RANGE:
+        DICT_POS_FIRE_RANGE[k] = set(DICT_POS_FIRE_RANGE[k])
+except:
+    print("error in 'turning DICT_POS_FIRE_RANGE to hold sets'")
 
 
+
+#path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_' + DSM_name + )
 try:
     with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '_tuple.pkl', 'rb') as f:
         DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
