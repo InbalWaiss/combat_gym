@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from gym_combat.gym_combat.envs.Arena.Environment import Environment
 from gym_combat.gym_combat.envs.Arena.Entity import Entity
 
+import os
+
 
 def creat_and_save_dictionaries():
     los_from_pos_FIRE_RANGE = {}
@@ -194,12 +196,115 @@ def find_lose_points(x1, y1):
     return goal_points
 
 
+
+
+def list_dict_2_tuple_dict(in_dict):
+    out_dict = {}
+    for k,v in in_dict.items():
+        if v:
+            p = np.array(v)
+            out_dict[k] = (p[:,0],p[:,1])
+        else:
+            out_dict[k] = ([],[])
+    return out_dict
+
+def creat_and_save_dictionaries_tuples():
+    PREPROCESSING_PATH = os.path.dirname(os.path.realpath(__file__)) #should be in the same dir as all the 'position_los' files
+    for filename in os.listdir(PREPROCESSING_PATH):
+        if "position_los" in filename and DSM_name in filename:
+            outfile = filename[:-4] + "_tuple.pkl"
+            print (outfile)
+            with open(os.path.join(PREPROCESSING_PATH, filename), 'rb') as f:
+                in_dict = pickle.load(f)
+            out_dict = list_dict_2_tuple_dict(in_dict)
+            with open(os.path.join(PREPROCESSING_PATH, outfile), 'wb') as f_out:
+                pickle.dump(out_dict,f_out)
+
+
+def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
+    import networkx as nx
+    SIZE_W = 100
+    SIZE_H = 100
+    G = nx.grid_2d_graph(SIZE_W, SIZE_H)
+
+    if NUMBER_OF_ACTIONS >= 8:
+        Diagonals_Weight = 1
+        # add diagonals edges
+        G.add_edges_from([
+                             ((x, y), (x + 1, y + 1))
+                             for x in range(SIZE_H - 1)
+                             for y in range(SIZE_H - 1)
+                         ] + [
+                             ((x + 1, y), (x, y + 1))
+                             for x in range(SIZE_H - 1)
+                             for y in range(SIZE_H - 1)
+                         ], weight=Diagonals_Weight)
+
+    # remove obstacle nodes and edges
+    for x in range(SIZE_W):
+        for y in range(SIZE_H):
+            if DSM[x][y] == 1.:
+                G.remove_node((x, y))
+
+    # nx.write_gpickle(G, 'G_' + DSM_name + '.pkl')
+
+    all_pairs_distances_path = 'all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    if os.path.exists(all_pairs_distances_path):
+        with open(all_pairs_distances_path, 'rb') as f:
+            all_pairs_distances = pickle.load(f)
+            print("all_pairs_distances loaded")
+    else:
+
+        print("starting all_pairs_distances")
+        all_pairs_distances = dict(nx.all_pairs_shortest_path_length(G))
+
+        with open('all_pairs_distances_' + DSM_name + '___' + '.pkl',
+                  'wb') as f:
+            pickle.dump(all_pairs_distances, f, protocol=2)
+            print("finished all_pairs_distances: pickle.dump(all_pairs_distances, f, protocol=2)")
+
+    if CALC_SHORTEST_PATHS:
+        SIZE_W = 100
+        SIZE_H = 100
+        cutoff = 65
+        all_pairs_shortest_path_less_than_65_no_double = {}
+        for x1 in range(0, SIZE_W):
+            for y1 in range(0, SIZE_H):
+                if (x1, y1) not in all_pairs_shortest_path_less_than_65_no_double.keys():
+                    print("starting ", str(x1), " ", str(y1))
+                    all_pairs_shortest_path_less_than_65_no_double[(x1, y1)] = {}
+                else:
+                    print("(x1, y1) IS IN all_pairs_shortest_path_less_than_65_no_double.keys()")
+                if DSM[x1][y1]==1:
+                    continue
+                for x2 in range(0, SIZE_W):
+                    for y2 in range(0, SIZE_H):
+                        if not DSM[x2][y2]==1:
+                            if (x1, y1) in all_pairs_distances.keys() and (x2, y2) in all_pairs_distances[(x1, y1)].keys():
+                                print(x1, y1, x2, y2)
+                                if all_pairs_distances[(x1, y1)][(x2, y2)]<cutoff:
+                                    if (x2, y2) in all_pairs_shortest_path_less_than_65_no_double.keys() and (x1, y1) not in all_pairs_shortest_path_less_than_65_no_double[(x2, y2)]:
+                                        path = nx.astar_path(G, (x1, y1), (x2, y2))
+                                        all_pairs_shortest_path_less_than_65_no_double[(x1, y1)][(x2, y2)] = path
+
+        with open('all_pairs_shortest_path' + DSM_name + '_' + '65'+ '.pkl',
+                  'wb') as f:
+            pickle.dump(all_pairs_shortest_path_less_than_65_no_double, f, protocol=2)
+            print("finished all_pairs_shortest_path_less_than_65_no_double: pickle.dump(all_pairs_shortest_path_less_than_65_no_double, f, protocol=2)")
+
+
+
+
 if __name__ == '__main__':
 
-    creat_and_save_dictionaries()
+    # creat_and_save_dictionaries()
+    # creat_and_save_dictionaries_tuples()
+
+    calc_all_pairs_data(CALC_SHORTEST_PATHS=True)
+
     # calc_and_save_dominating_points()
     # calc_and_save_lose_points()
-    show_LOS_from_point(5, 5)
+    # show_LOS_from_point(5, 5)
     # find_closest_point_not_in_los(5, 5)
     # find_dominating_point(5, 5)
     #find_lose_points(5,5) #{red_pos : points that is blus is in blue will lose!}

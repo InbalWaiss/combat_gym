@@ -66,7 +66,7 @@ class GymCombatEnv(gym.Env):
             ##### Blue takes the action #####
             self.env.take_action(Color.Blue, AgentAction(action_blue))  # take the action!
 
-            if not env.check_if_blue_and_red_same_pos():
+            if not self.env.check_if_blue_and_red_same_pos():
                 ##### Red takes the action #####
                 action_red: AgentAction = self.red_decision_maker.get_action(observation_for_red_s0)
                 self.env.take_action(Color.Red, action_red)  # take the action!

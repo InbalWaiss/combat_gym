@@ -112,28 +112,6 @@ elif DSM_name=="100X100_Berlin":
 
     SAVE_BERLIN_FIXED_STATE = False
 
-elif DSM_name=="100X100_Paris":
-    DSM = get_DSM_Paris()
-    SIZE_W=100
-    SIZE_H=100
-    FIRE_RANGE = 10
-    MAX_STEPS_PER_EPISODE = 250
-    BB_STATE = True
-    BB_MARGIN = 3
-    SIZE_W_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_H_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-
-elif DSM_name=="100X100_Boston":
-    DSM = get_DSM_Boston()
-    SIZE_W=100
-    SIZE_H=100
-    FIRE_RANGE = 10
-    MAX_STEPS_PER_EPISODE = 250
-    BB_STATE = True
-    BB_MARGIN = 3
-    SIZE_W_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_H_BB = 2 * FIRE_RANGE + 2 * BB_MARGIN + 1
-
 elif DSM_name=="Baqa":
     SIZE_H = 100
     SIZE_W = 100
@@ -156,6 +134,7 @@ elif DSM_name=="Baqa":
     SIZE_W_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_H_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
     all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    path.join(COMMON_PATH, 'Preprocessing', 'Baqa', 'BaqaObs.txt')
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
@@ -164,19 +143,20 @@ elif DSM_name=="Baqa":
     SAVE_BERLIN_FIXED_STATE = False
 
 
+
 try:
-    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl', 'rb') as f:
+    DICT_POS_FIRE_RANGE_path = path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_' + DSM_name + '_' + str(FIRE_RANGE) + '.pkl')
+    with open(DICT_POS_FIRE_RANGE_path, 'rb') as f:
         DICT_POS_FIRE_RANGE = pickle.load(f)
 except:
-    try:
-        with open('dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+'.pkl', 'rb') as f:
-            DICT_POS_FIRE_RANGE = pickle.load(f)
-    except:
-        try:
-            with open('/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+'.pkl', 'rb') as f:
-                DICT_POS_FIRE_RANGE = pickle.load(f)
-        except:
-            pass
+    print("did not load DICT_POS_FIRE_RANGE")
+
+try:
+    DICT_POS_FIRE_RANGE_tuple_path = path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '_tuple.pkl')
+    with open(DICT_POS_FIRE_RANGE_tuple_path, 'rb') as f:
+        DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
+except:
+    print("did not load DICT_POS_FIRE_RANGE_tuple")
 
 try:
     #turning DICT_POS_FIRE_RANGE to hold sets
@@ -186,50 +166,20 @@ except:
     print("error in 'turning DICT_POS_FIRE_RANGE to hold sets'")
 
 
-
-#path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_' + DSM_name + )
 try:
-    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+ '_tuple.pkl', 'rb') as f:
-        DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
-except:
-    try:
-        with open('dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+'_tuple.pkl', 'rb') as f:
-            DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
-    except:
-        try:
-            with open('/Common/Preprocessing/dictionary_position_los_'+DSM_name+'_'+str(FIRE_RANGE)+'_tuple.pkl', 'rb') as f:
-                DICT_POS_FIRE_RANGE_TUPLE = pickle.load(f)
-        except:
-            pass
-
-
-try:
-    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
+    DICT_POS_LOS_path = path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_' + DSM_name + '_' + str(
+            LOS_PENALTY_RANGE) + '.pkl')
+    with open(DICT_POS_LOS_path, 'rb') as f:
         DICT_POS_LOS = pickle.load(f)
 except:
-    try:
-        with open('dictionary_position_los_' +DSM_name+'_'+str(LOS_PENALTY_RANGE)+ '.pkl', 'rb') as f:
-            DICT_POS_LOS = pickle.load(f)
-    except:
-        try:
-            with open('../Common/Preprocessing/dictionary_position_los_' +DSM_name+ '_'+str(LOS_PENALTY_RANGE)+'.pkl', 'rb') as f:
-                DICT_POS_LOS = pickle.load(f)
-        except:
-            pass
+    print("did not load DICT_POS_LOS")
 
 try:
-    with open('gym_combat/gym_combat/envs/Common/Preprocessing/dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '_tuple.pkl', 'rb') as f:
+    DICT_POS_LOS_TUPLE_path = path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '_tuple.pkl')
+    with open(DICT_POS_LOS_path, 'rb') as f:
         DICT_POS_LOS_TUPLE = pickle.load(f)
 except:
-    try:
-        with open('dictionary_position_los_' +DSM_name+'_'+str(LOS_PENALTY_RANGE)+ '_tuple.pkl', 'rb') as f:
-            DICT_POS_LOS_TUPLE = pickle.load(f)
-    except:
-        try:
-            with open('../Common/Preprocessing/dictionary_position_los_' +DSM_name+ '_'+str(LOS_PENALTY_RANGE)+'_tuple.pkl', 'rb') as f:
-                DICT_POS_LOS_TUPLE = pickle.load(f)
-        except:
-            pass
+    print("did not load DICT_POS_LOS_TUPLE")
 
 
 if BASELINES_RUN:
@@ -247,7 +197,11 @@ else:
     TIE = 0
 
 
-
+class WinEnum(IntEnum):
+    Blue = 0
+    Red = 1
+    Tie = 2
+    NoWin = 3
 
 NUMBER_OF_ACTIONS = 9
 
@@ -264,14 +218,7 @@ BLACK_N = 9
 BRIGHT_RED = 10
 BRIGHT_BRIGHT_RED = 11
 
-class WinEnum(IntEnum):
 
-    Blue = 0
-    Red = 1
-    Tie = 2
-    NoWin = 3
-
-USE_OLD_COLORS = False
 # for better separation of colors
 dict_of_colors_for_state = {1: (0, 0, 255),  #blue
                   2: (0, 0, 175), #darker blue
@@ -286,7 +233,6 @@ dict_of_colors_for_state = {1: (0, 0, 255),  #blue
                   11: (0, 0, 25), #bright bright red
                   12: (50, 0, 0), #dark dark red
                   }
-
 
 dict_of_colors_for_graphics = {1: (0, 0, 239),  #blue
                                2: (0, 0, 175),  #darker blue
@@ -304,9 +250,6 @@ dict_of_colors_for_graphics = {1: (0, 0, 239),  #blue
 
 OBSTACLE = 1.
 
-if USE_OLD_COLORS:
-    dict_of_colors_for_state = dict_of_colors_for_graphics
-
 
 
 if ACTION_SPACE_9:
@@ -321,15 +264,6 @@ if ACTION_SPACE_9:
         BottomLeft = 7
         Left = 8
         TopLeft = 0
-
-
-else: # ACTION_SPACE = 4
-    NUMBER_OF_ACTIONS = 4
-    class AgentAction(IntEnum):
-        Right = 0
-        Bottom = 1
-        Top = 2
-        Left = 3
 
 
 class AgentType(IntEnum):
@@ -352,7 +286,6 @@ Agent_type_str = {AgentType.Q_table : "Q_table",
 class Color(IntEnum):
     Blue = 1
     Red = 2
-
 
 # params to evaluate trained models
 EVALUATE_SHOW_EVERY = 1
