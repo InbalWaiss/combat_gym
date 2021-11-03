@@ -297,8 +297,8 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
 
 if __name__ == '__main__':
 
-    # creat_and_save_dictionaries()
-    # creat_and_save_dictionaries_tuples()
+    creat_and_save_dictionaries()
+    creat_and_save_dictionaries_tuples()
 
     calc_all_pairs_data(CALC_SHORTEST_PATHS=True)
 
