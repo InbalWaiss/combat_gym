@@ -35,12 +35,12 @@ class SmartPlayer(AbsDecisionMaker):
             with open(all_pairs_shortest_path, 'rb') as f:
                 self.all_pairs_shortest_path = pickle.load(f)
                 print("Smart: all_pairs_shortest_path loaded")
-        covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_100x100_Berlin.pkl'
+        covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_' + DSM_name + '.pkl'
         if os.path.exists(covers_map_path):
             with open(covers_map_path, 'rb') as f:
                 self.maps_map = pickle.load(f)
                 print("Smart: covers map loaded")
-        possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_100x100_Berlin.pkl'
+        possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_' + DSM_name + '.pkl'
         if os.path.exists(possible_locs_path):
             with open(possible_locs_path, 'rb') as f:
                 self.possible_locs_map = pickle.load(f)
