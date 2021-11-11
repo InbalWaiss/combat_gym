@@ -311,10 +311,17 @@ class Greedy_player(AbsDecisionMaker):
 
         # nx.write_gpickle(G, 'G_' + DSM_name + '.pkl')
 
-        import bz2
+
         print("starting all_pairs_distances")
         all_pairs_distances = dict(nx.all_pairs_shortest_path_length(G))
 
+        with open('gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '_' + 'regular_pickle' + '.pkl',
+                  'wb') as f:
+            pickle.dump(all_pairs_distances, f, protocol=2)
+            print("finished all_pairs_distances: pickle.dump(all_pairs_distances, f, protocol=2)")
+
+
+        import bz2
         with bz2.open('all_pairs_distances_' + DSM_name + '___' + '.pkl', "wb") as f:
             f.write(all_pairs_distances)
         # sfile = bz2.BZ2File('all_pairs_distances_' + DSM_name + '___' + '.pkl', 'wb', 'w')
@@ -374,31 +381,122 @@ class Greedy_player(AbsDecisionMaker):
             pickle.dump(short_pathes, f,  protocol=2)
 
 
-if __name__ == '__main__':
-    #PRINT_FLAG = True
-    from PIL import Image
-    import cv2
-    srcImage = Image.open("../Common/maps/Berlin_1_256.png")
+def calc_all_pairs_data():
+    SIZE_W = 100
+    SIZE_H = 100
+    G = nx.grid_2d_graph(SIZE_W, SIZE_H)
 
-    img1 = np.array(srcImage.convert('L').resize((100, 100)))
-    img2 = cv2.bitwise_not(img1)
-    obsticals = cv2.inRange(img2, 250, 255)
-    c, _ = cv2.findContours(obsticals, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    thicken_obs_and_edges = cv2.drawContours(obsticals, c, -1, (255, 255, 255), 2)
-    thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
-    DSM = thicken_obs_and_edges
+    if NUMBER_OF_ACTIONS >= 8:
+        Diagonals_Weight = 1
+        # add diagonals edges
+        G.add_edges_from([
+                             ((x, y), (x + 1, y + 1))
+                             for x in range(SIZE_H - 1)
+                             for y in range(SIZE_H - 1)
+                         ] + [
+                             ((x + 1, y), (x, y + 1))
+                             for x in range(SIZE_H - 1)
+                             for y in range(SIZE_H - 1)
+                         ], weight=Diagonals_Weight)
 
-    if False:
-        plt.matshow(thicken_obs_and_edges)
-        plt.show(DSM)
+    # remove obstacle nodes and edges
+    for x in range(SIZE_W):
+        for y in range(SIZE_H):
+            if DSM[x][y] == 1.:
+                G.remove_node((x, y))
 
-    GP = Greedy_player()
-    #GP.remove_data_obs(DSM)
-    GP.calc_all_pairs_data(DSM)
+    # nx.write_gpickle(G, 'G_' + DSM_name + '.pkl')
 
-    # blue_pos = Position(3, 10)
-    # red_pos = Position(10, 3)
-    # ret_val = State(my_pos=blue_pos, enemy_pos=red_pos)
+    all_pairs_distances_path = 'all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    if os.path.exists(all_pairs_distances_path):
+        with open(all_pairs_distances_path, 'rb') as f:
+            all_pairs_distances = pickle.load(f)
+            print("all_pairs_distances loaded")
+    else:
+
+        print("starting all_pairs_distances")
+        all_pairs_distances = dict(nx.all_pairs_shortest_path_length(G))
+
+        with open('gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '_' + 'pickle'+ '.pkl',
+                  'wb') as f:
+            pickle.dump(all_pairs_distances, f, protocol=2)
+            print("finished all_pairs_distances: pickle.dump(all_pairs_distances, f, protocol=2)")
+
+    # print("starting all_pairs_shortest_path")
+    # all_pairs_shortest_path = dict(nx.all_pairs_shortest_path(G, cutoff=75))
     #
-    # a = GP.get_action(ret_val)
-    # print("The action to take is: ", a)
+    #
+    # with open('gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path' + DSM_name + '_' + '>75'+ '.pkl',
+    #           'wb') as f:
+    #     pickle.dump(all_pairs_shortest_path, f, protocol=2)
+    #     print("finished all_pairs_shortest_path: pickle.dump(all_pairs_shortest_path, f, protocol=2)")
+
+    SIZE_W = 10
+    SIZE_H = 10
+    all_pairs_shortest_path_less_than_5_no_double = {}
+    for x1 in range(0, SIZE_W):
+        for y1 in range(0, SIZE_H):
+            print("starting ", str(x1), " ", str(y1))
+            all_pairs_shortest_path_less_than_5_no_double[(x1, y1)] = {}
+            if DSM[x1][y1]==1:
+                continue
+            for x2 in range(0, SIZE_W):
+                for y2 in range(0, SIZE_H):
+                    if not DSM[x2][y2]==1:
+                        if (x1, y1) in all_pairs_distances.keys() and (x2, y2) in all_pairs_distances[(x1, y1)].keys():
+                            print(x1, y1, x2, y2)
+                            if all_pairs_distances[(x1, y1)][(x2, y2)]<5:
+                                if (x2, y2) in all_pairs_shortest_path_less_than_5_no_double.keys() and (x1, y1) not in all_pairs_shortest_path_less_than_5_no_double[(x2, y2)]:
+                                    path = nx.astar_path(G, (x1, y1), (x2, y2))
+                                    all_pairs_shortest_path_less_than_5_no_double[(x1, y1)][(x2, y2)] = path
+
+    with open('all_pairs_shortest_path' + DSM_name + '_' + '5'+ '.pkl',
+              'wb') as f:
+        pickle.dump(all_pairs_shortest_path_less_than_5_no_double, f, protocol=2)
+        print("finished all_pairs_shortest_path_less_than_75_no_double: pickle.dump(all_pairs_shortest_path_less_than_75_no_double, f, protocol=2)")
+
+
+
+    # import bz2
+    # with bz2.open('all_pairs_distances_' + DSM_name + '___' + '.pkl', "wb") as f:
+    #     f.write(all_pairs_distances)
+    # # sfile = bz2.BZ2File('all_pairs_distances_' + DSM_name + '___' + '.pkl', 'wb', 'w')
+    # # pickle.dump(all_pairs_distances, sfile)
+    # print("finished all_pairs_distances")
+    #
+    # with bz2.open('all_pairs_distances_' + DSM_name + '___' + '.pkl', "rb") as f:
+    #     # Decompress data from file
+    #     content = f.read()
+    # print("dist from (5,5) to (5,6) is: ", content[(5,5)][(5,5)])
+
+
+if __name__ == '__main__':
+    # #PRINT_FLAG = True
+    # from PIL import Image
+    # import cv2
+    # srcImage = Image.open("../Common/maps/Berlin_1_256.png")
+    #
+    # img1 = np.array(srcImage.convert('L').resize((100, 100)))
+    # img2 = cv2.bitwise_not(img1)
+    # obsticals = cv2.inRange(img2, 250, 255)
+    # c, _ = cv2.findContours(obsticals, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # thicken_obs_and_edges = cv2.drawContours(obsticals, c, -1, (255, 255, 255), 2)
+    # thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
+    # DSM = thicken_obs_and_edges
+    #
+    # if False:
+    #     plt.matshow(thicken_obs_and_edges)
+    #     plt.show(DSM)
+    #
+    # GP = Greedy_player()
+    # #GP.remove_data_obs(DSM)
+    # GP.calc_all_pairs_data(DSM)
+    #
+    # # blue_pos = Position(3, 10)
+    # # red_pos = Position(10, 3)
+    # # ret_val = State(my_pos=blue_pos, enemy_pos=red_pos)
+    # #    # a = GP.get_action(ret_val)
+    # # print("The action to take is: ", a)
+
+
+    calc_all_pairs_data()

@@ -110,7 +110,7 @@ ent_coef = 0
 for mp in [-0.01]:
     res = {}
     t0 = time.time()
-    trained_model_name = ppo_train(gamma, lr, vf_coef, ent_coef, mp = mp, train = False)
+    trained_model_name = ppo_train(gamma, lr, vf_coef, ent_coef, mp = mp, train = True)
     t1 = time.time()
     print("starting tests:")
     for x in range(checkpoint_freq, total_timesteps+1000, checkpoint_freq):
