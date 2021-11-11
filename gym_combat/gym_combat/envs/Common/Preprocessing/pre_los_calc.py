@@ -263,6 +263,10 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
             pickle.dump(all_pairs_distances, f, protocol=2)
             print("finished all_pairs_distances: pickle.dump(all_pairs_distances, f, protocol=2)")
 
+    # print("starting all_pairs_shortest_path")
+    # all_pairs_shortest_path = dict(nx.all_pairs_shortest_path(G, cutoff=75))
+
+
     if CALC_SHORTEST_PATHS:
         SIZE_W = 100
         SIZE_H = 100
@@ -287,7 +291,7 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
                                         path = nx.astar_path(G, (x1, y1), (x2, y2))
                                         all_pairs_shortest_path_less_than_65_no_double[(x1, y1)][(x2, y2)] = path
 
-        with open('all_pairs_shortest_path' + DSM_name + '_' + '65'+ '.pkl',
+        with open('all_pairs_shortest_path_' + DSM_name + '_' + '65'+ '.pkl',
                   'wb') as f:
             pickle.dump(all_pairs_shortest_path_less_than_65_no_double, f, protocol=2)
             print("finished all_pairs_shortest_path_less_than_65_no_double: pickle.dump(all_pairs_shortest_path_less_than_65_no_double, f, protocol=2)")
