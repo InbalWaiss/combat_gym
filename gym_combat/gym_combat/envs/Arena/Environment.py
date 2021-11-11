@@ -143,6 +143,8 @@ class Environment(object):
                 dist = all_pairs_distances[(first_player_h, first_player_w)][(self.red_player.h, self.red_player.w)]
                 if dist>MIN_PATH_DIST_FOR_START_POINTS:
                     has_path = True
+        elif (np.abs(first_player_h - self.red_player.h) + np.abs(first_player_w - self.red_player.w) ) > (2*MIN_PATH_DIST_FOR_START_POINTS):
+            has_path = True
         if has_path:
             return True
         return False

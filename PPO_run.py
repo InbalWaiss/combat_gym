@@ -18,7 +18,7 @@ from stable_baselines3 import PPO
 
 
 
-n_envs = 4
+n_envs = 1
 total_timesteps = 100000000
 checkpoint_freq = 5000000
 
@@ -46,7 +46,7 @@ def ppo_train(gamma, lr, vf_coef, ent_coef, train = True, mp = 0.1):
         return model_name
     checkpoint_callback = CheckpointCallback(save_freq=checkpoint_freq/n_envs, save_path=checkpoint_path, name_prefix='ppo')
     env_num = EnvNum()
-    print ("trainng model", model_name)
+    print ("training model", model_name)
     env = make_vec_env('gym-combat-v0', n_envs=n_envs, env_kwargs={"run_name": model_name, "env_num": env_num, "move_penalty": mp}, seed = 0)
     
     #model_path = os.path.join(trained_models_path, model_name)
