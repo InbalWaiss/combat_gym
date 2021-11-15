@@ -4,18 +4,22 @@ from combat_gym.gym_combat.gym_combat.envs.Common.constants import DSM
 
 
 class UTMPosition():
-    easting : float #[m]
-    northing : float #[m]
+    def __init__(self, northing, easting):
+        self.northing = northing
+        self.easting = easting
 
     def to_numpy_array(self) -> np.ndarray:
         return np.ndarray([self.easting, self.northing])
 
 class PixelPosition():
-    north : int #[m]
-    east : int #[m]
+    def __init__(self, north, east):
+        self.north = north
+        self.east = east
+
+
 
     def to_numpy_array(self) -> np.ndarray:
-        return np.ndarray([self.east, self.north])
+        return np.ndarray([self.north, self.east])
 
 
 class DsmHandler():
@@ -32,66 +36,33 @@ class DsmHandler():
 
 
 
-
-
-        # load DSM
-        pass
-
-    def GEO_to_Pixel(self, geo_pos):
-        lat = geo_pos[0]
-        lon = geo_pos[1]
-        pymap3d.geodetic2enu(lat, lon, h, lat0, lon0, h0)
-
-
     def utm_to_pixel(self, utm_pos: UTMPosition):
-        N = UTMPosition.northing - self._top_left_corner_utm[0]
+        N = utm_pos.northing - self._top_left_corner_utm[0]
         W = self._top_left_corner_utm[1]-utm_pos.easting
+
+        pixel_pos = PixelPosition(north=N, east=W)
+
+        return pixel_pos
+
 
     def pixel_to_utm(self, pixel_pos: PixelPosition):
         add_one_north = 000010.00
         add_one_east = -000010.00
 
-import matplotlib.pyplot as plt
+        utm_north = self._top_left_corner_utm[0]+pixel_pos.north*add_one_north
+        utm_east = self._top_left_corner_utm[0]+pixel_pos.north*add_one_east
 
-plt.matshow(DSM)
-plt.show()
+        utm_pos = UTMPosition(northing=utm_north, easting=utm_east)
 
-
-#if __name__ == '__main__':
-
+        return utm_pos
 
 
 
-    # # The local coordinate origin (Zermatt, Switzerland)
-    # lat0 = 46.017 # deg
-    # lon0 = 7.750  # deg
-    # h0 = 1673     # meters
-    #
-    # # The point of interest
-    # lat = 45.976  # deg
-    # lon = 7.658   # deg
-    # h = 4531      # meters
-    #
-    # print(pymap3d.geodetic2enu(lat, lon, h, lat0, lon0, h0))
-    #
-    #
-    #
-    # # create an ellipsoid object
-    # ell_clrk66 = pymap3d.Ellipsoid()#'clrk66')
-    # # print ellipsoid's properties
-    # print(ell_clrk66)
-    #
-    # # output
-    # #(6378206.4, 6356583.8, 0.0033900753039287634)
-    #
-    # lat0, lon0, h0 = 5.0, 48.0, 10.0   # origin of ENU, (h is height above ellipsoid)
-    # e1, n1, u1     =  0.0,  0.0,  0.0  # ENU coordinates of test point, `point_1`
-    # # From ENU to geodetic computation
-    # # lat1, lon1, h1 = pymap3d.enu2geodetic(e1, n1, u1, \
-    # #                                       lat0, lon0, h0, \
-    # #                                       ell=ell_clrk66, deg=True)  # use clark66 ellisoid
-    # lat1, lon1, h1 = pymap3d.enu2geodetic(e1, n1, u1, lat0, lon0, h0)
-    #
-    # print(lat1, lon1, h1)
+# import matplotlib.pyplot as plt
+#
+# plt.matshow(DSM)
+# plt.show()
+
+
 
 
