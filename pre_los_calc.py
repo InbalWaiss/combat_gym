@@ -248,7 +248,7 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
 
     # nx.write_gpickle(G, 'G_' + DSM_name + '.pkl')
 
-    all_pairs_distances_path = 'all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if os.path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
@@ -263,20 +263,16 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
             pickle.dump(all_pairs_distances, f, protocol=2)
             print("finished all_pairs_distances: pickle.dump(all_pairs_distances, f, protocol=2)")
 
-    # print("starting all_pairs_shortest_path")
-    # all_pairs_shortest_path = dict(nx.all_pairs_shortest_path(G, cutoff=75))
-
-
     if CALC_SHORTEST_PATHS:
         SIZE_W = 100
         SIZE_H = 100
-        cutoff = 65
-        all_pairs_shortest_path_less_than_65_no_double = {}
+        cutoff = 10
+        all_pairs_shortest_path_less_than_cutoff_no_double = {}
         for x1 in range(0, SIZE_W):
             for y1 in range(0, SIZE_H):
-                if (x1, y1) not in all_pairs_shortest_path_less_than_65_no_double.keys():
+                if (x1, y1) not in all_pairs_shortest_path_less_than_cutoff_no_double.keys():
                     print("starting ", str(x1), " ", str(y1))
-                    all_pairs_shortest_path_less_than_65_no_double[(x1, y1)] = {}
+                    all_pairs_shortest_path_less_than_cutoff_no_double[(x1, y1)] = {}
                 else:
                     print("(x1, y1) IS IN all_pairs_shortest_path_less_than_65_no_double.keys()")
                 if DSM[x1][y1]==1:
@@ -285,24 +281,23 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
                     for y2 in range(0, SIZE_H):
                         if not DSM[x2][y2]==1:
                             if (x1, y1) in all_pairs_distances.keys() and (x2, y2) in all_pairs_distances[(x1, y1)].keys():
-                                print(x1, y1, x2, y2)
                                 if all_pairs_distances[(x1, y1)][(x2, y2)]<cutoff:
-                                    if (x2, y2) in all_pairs_shortest_path_less_than_65_no_double.keys() and (x1, y1) not in all_pairs_shortest_path_less_than_65_no_double[(x2, y2)]:
+                                    if (x2, y2) in all_pairs_shortest_path_less_than_cutoff_no_double.keys() and (x1, y1) not in all_pairs_shortest_path_less_than_cutoff_no_double[(x2, y2)]:
                                         path = nx.astar_path(G, (x1, y1), (x2, y2))
-                                        all_pairs_shortest_path_less_than_65_no_double[(x1, y1)][(x2, y2)] = path
+                                        all_pairs_shortest_path_less_than_cutoff_no_double[(x1, y1)][(x2, y2)] = path
 
-        with open('all_pairs_shortest_path_' + DSM_name + '_' + '65'+ '.pkl',
+        with open('gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path' + DSM_name + '_' + str(cutoff) + '.pkl',
                   'wb') as f:
-            pickle.dump(all_pairs_shortest_path_less_than_65_no_double, f, protocol=2)
-            print("finished all_pairs_shortest_path_less_than_65_no_double: pickle.dump(all_pairs_shortest_path_less_than_65_no_double, f, protocol=2)")
+            pickle.dump(all_pairs_shortest_path_less_than_cutoff_no_double, f, protocol=2)
+            print("finished all_pairs_shortest_path_less_than:", cutoff)
 
 
 
 
 if __name__ == '__main__':
 
-    creat_and_save_dictionaries()
-    creat_and_save_dictionaries_tuples()
+    #creat_and_save_dictionaries()
+    #creat_and_save_dictionaries_tuples()
 
     calc_all_pairs_data(CALC_SHORTEST_PATHS=True)
 

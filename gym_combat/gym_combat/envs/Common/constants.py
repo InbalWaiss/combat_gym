@@ -13,8 +13,8 @@ ACTION_SPACE_4 = False
 if not ACTION_SPACE_9:
     ACTION_SPACE_4 = True
 
-RED_TYPE = 'Greedy'
-#RED_TYPE = 'Smart'
+#RED_TYPE = 'Greedy'
+RED_TYPE = 'Smart'
 
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
@@ -34,8 +34,9 @@ NUM_FRAMES = 1
 STR_FOLDER_NAME = "main_berlin_cnn" #"NONEDETERMINISTIC_SIMULTANEOUS_15X15"
 
 #1 is an obstacle
-DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston"}
-DSM_name = "Baqa" #"100X100_Berlin"
+DSM_names = {"15X15", "100X100_Berlin", "100X100_Paris", "100X100_Boston", "Baqa"}
+#DSM_name = "100X100_Berlin"
+DSM_name = "Baqa"
 
 
 COMMON_PATH = path.dirname(path.realpath(__file__))
@@ -87,7 +88,7 @@ elif DSM_name=="100X100_Berlin":
 
     SIZE_H=100
     SIZE_W=100
-    DSM = np.loadtxt("../gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", dtype = np.uint8, usecols=range(SIZE_W))
+    DSM = np.loadtxt("gym_combat/gym_combat/envs/Common/maps/Berlin_1_256.txt", dtype = np.uint8, usecols=range(SIZE_W))
     if False:
         import matplotlib.pyplot as plt
         plt.matshow(DSM)
@@ -109,13 +110,17 @@ elif DSM_name=="100X100_Berlin":
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
-
+    all_pairs_shortest_path_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path_100X100_Berlin_10.pkl'
+    if path.exists(all_pairs_shortest_path_path):
+        with open(all_pairs_shortest_path_path, 'rb') as f:
+            all_pairs_shortest_path = pickle.load(f)
+            print("all_pairs_shortest_path loaded")
     SAVE_BERLIN_FIXED_STATE = False
 
 elif DSM_name=="Baqa":
     SIZE_H = 100
     SIZE_W = 100
-    DSM = np.loadtxt(path.join(COMMON_PATH, 'maps', 'Baqa','BaqaObs.txt'), dtype=np.uint8, usecols=range(SIZE_W))
+    DSM = np.loadtxt(path.join(COMMON_PATH, 'maps', 'BaqaObs.txt'), dtype=np.uint8, usecols=range(SIZE_W))
     if False:
         import matplotlib.pyplot as plt
 
@@ -124,7 +129,7 @@ elif DSM_name=="Baqa":
 
     FIRE_RANGE = 10
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
-    MAX_STEPS_PER_EPISODE = 50
+    MAX_STEPS_PER_EPISODE =100
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
     if BASELINES_RUN:
@@ -134,12 +139,22 @@ elif DSM_name=="Baqa":
     SIZE_W_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
     SIZE_H_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
     all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
-    path.join(COMMON_PATH, 'Preprocessing', 'Baqa', 'BaqaObs.txt')
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
 
+    all_pairs_distances_path_np = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + 'np' + '.pkl'
+    if path.exists(all_pairs_distances_path_np):
+        with open(all_pairs_distances_path_np, 'rb') as f:
+            all_pairs_distances_np = pickle.load(f)
+            print("all_pairs_distances_np loaded")
+
+    all_pairs_shortest_path_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_pathBaqa_15.pkl'
+    if path.exists(all_pairs_shortest_path_path):
+        with open(all_pairs_shortest_path_path, 'rb') as f:
+            all_pairs_shortest_path = pickle.load(f)
+            print("all_pairs_shortest_path loaded")
     SAVE_BERLIN_FIXED_STATE = False
 
 
@@ -176,7 +191,7 @@ except:
 
 try:
     DICT_POS_LOS_TUPLE_path = path.join(COMMON_PATH, 'Preprocessing', 'dictionary_position_los_' + DSM_name+ '_'+str(LOS_PENALTY_RANGE)+ '_tuple.pkl')
-    with open(DICT_POS_LOS_path, 'rb') as f:
+    with open(DICT_POS_LOS_TUPLE_path, 'rb') as f:
         DICT_POS_LOS_TUPLE = pickle.load(f)
 except:
     print("did not load DICT_POS_LOS_TUPLE")
@@ -296,7 +311,7 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = True #
+USE_DISPLAY = False #
 SHOW_EVERY = 50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
