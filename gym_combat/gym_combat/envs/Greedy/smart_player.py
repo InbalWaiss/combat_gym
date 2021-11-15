@@ -28,23 +28,23 @@ class SmartPlayer(AbsDecisionMaker):
 
     def load_data(self):
         self.all_pairs_distances = all_pairs_distances
+        self.all_pairs_shortest_path = all_pairs_shortest_path
 
-        all_pairs_shortest_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path_' + DSM_name + '_' + str(
-            FIRE_RANGE) + '.pkl'
-        if os.path.exists(all_pairs_shortest_path):
-            with open(all_pairs_shortest_path, 'rb') as f:
-                self.all_pairs_shortest_path = pickle.load(f)
-                print("Smart: all_pairs_shortest_path loaded")
         covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_' + DSM_name + '.pkl'
         if os.path.exists(covers_map_path):
             with open(covers_map_path, 'rb') as f:
                 self.maps_map = pickle.load(f)
                 print("Smart: covers map loaded")
+        else:
+            print("Smart: Could not find covers map. path is", covers_map_path)
+            
         possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_' + DSM_name + '.pkl'
         if os.path.exists(possible_locs_path):
             with open(possible_locs_path, 'rb') as f:
                 self.possible_locs_map = pickle.load(f)
                 print("Smart: possible locs map loaded")
+        else:
+            print("Smart: Could not find possible locs map. path is", possible_locs_path)
 
 
     def create_graph(self):
@@ -94,6 +94,7 @@ class SmartPlayer(AbsDecisionMaker):
 
 
     def find_distance_to_target(self, my_pos, target):
+        return all_pairs_distances_np[my_pos][target]
         if not (my_pos in self.all_pairs_distances.keys()):
             self.all_pairs_distances[my_pos] = {}
         if not (target in self.all_pairs_distances.keys()):
