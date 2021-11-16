@@ -30,21 +30,25 @@ class SmartPlayer(AbsDecisionMaker):
         self.all_pairs_distances = all_pairs_distances
         self.all_pairs_shortest_path = all_pairs_shortest_path
 
-        covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_' + DSM_name + '.pkl'
-        if os.path.exists(covers_map_path):
-            with open(covers_map_path, 'rb') as f:
+        CURRENT_PATH = path.dirname(path.realpath(__file__))
+
+        COVERS_MAP_PATH = path.join(CURRENT_PATH, 'covers_map_' + DSM_name + '.pkl')
+        #covers_map_path = 'gym_combat/gym_combat/envs/Greedy/covers_map_' + DSM_name + '.pkl'
+        if os.path.exists(COVERS_MAP_PATH):
+            with open(COVERS_MAP_PATH, 'rb') as f:
                 self.maps_map = pickle.load(f)
                 print("Smart: covers map loaded")
         else:
-            print("Smart: Could not find covers map. path is", covers_map_path)
-            
-        possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_' + DSM_name + '.pkl'
-        if os.path.exists(possible_locs_path):
-            with open(possible_locs_path, 'rb') as f:
+            print("Smart: Could not find covers map. path is", COVERS_MAP_PATH)
+
+        POSSIBLE_LOCS_PATH = path.join(CURRENT_PATH, 'possible_locs_' + DSM_name + '.pkl')
+        #possible_locs_path = 'gym_combat/gym_combat/envs/Greedy/possible_locs_' + DSM_name + '.pkl'
+        if os.path.exists(POSSIBLE_LOCS_PATH):
+            with open(POSSIBLE_LOCS_PATH, 'rb') as f:
                 self.possible_locs_map = pickle.load(f)
                 print("Smart: possible locs map loaded")
         else:
-            print("Smart: Could not find possible locs map. path is", possible_locs_path)
+            print("Smart: Could not find possible locs map. path is", POSSIBLE_LOCS_PATH)
 
 
     def create_graph(self):

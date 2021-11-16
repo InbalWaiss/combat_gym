@@ -37,8 +37,17 @@ class DsmHandler():
 
 
     def utm_to_pixel(self, utm_pos: UTMPosition):
-        N = utm_pos.northing - self._top_left_corner_utm[0]
-        W = self._top_left_corner_utm[1]-utm_pos.easting
+        N = int(np.round(self._top_left_corner_utm[1] - utm_pos.northing))
+        if N<0:
+            N = np.max([0, N])
+        if N>99:
+            N = np.min([99, N])
+
+        W = int(np.round(utm_pos.easting - self._top_left_corner_utm[0]))
+        if W<0:
+            W = np.max([0, W])
+        if W>99:
+            W = np.min([99, W])
 
         pixel_pos = PixelPosition(north=N, east=W)
 
@@ -49,10 +58,11 @@ class DsmHandler():
         add_one_north = 000010.00
         add_one_east = -000010.00
 
-        utm_north = self._top_left_corner_utm[0]+pixel_pos.north*add_one_north
-        utm_east = self._top_left_corner_utm[0]+pixel_pos.north*add_one_east
 
-        utm_pos = UTMPosition(northing=utm_north, easting=utm_east)
+        utm_east = self._top_left_corner_utm[0]+pixel_pos.east*add_one_east
+        utm_north = self._top_left_corner_utm[1]+pixel_pos.north*add_one_north
+
+        utm_pos = UTMPosition(easting=utm_east, northing=utm_north)
 
         return utm_pos
 
