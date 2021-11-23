@@ -55,8 +55,8 @@ class DsmHandler():
 
 
     def pixel_to_utm(self, pixel_pos: PixelPosition):
-        add_one_north = 000010.00
-        add_one_east = -000010.00
+        add_one_north = 0000001.00
+        add_one_east = -000001.00
 
 
         utm_east = self._top_left_corner_utm[0]+pixel_pos.east*add_one_east
@@ -73,6 +73,16 @@ class DsmHandler():
 # plt.matshow(DSM)
 # plt.show()
 
+
+if __name__ == '__main__':
+    dsmHandler = DsmHandler()
+    blue_position_utm = UTMPosition(easting=694295.00, northing=3588025.00)
+    #blue_position_utm = UTMPosition(easting=694294.00, northing=3588100.00)
+    blue_position_pixel = dsmHandler.utm_to_pixel(blue_position_utm)
+    print(blue_position_pixel.east, blue_position_pixel.north)
+
+    blue_position_utm = dsmHandler.pixel_to_utm(blue_position_pixel)
+    print(blue_position_utm.easting, blue_position_utm.northing)
 
 
 
