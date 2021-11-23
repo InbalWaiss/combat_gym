@@ -198,6 +198,10 @@ class SmartPlayer(AbsDecisionMaker):
         my_pos = state.my_pos.get_tuple()
         enemy_pos = state.enemy_pos.get_tuple()
         neighbors = np.asarray([[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1], [0,0]])
+        action = AgentAction.Stay
+
+        if DSM[my_pos]==1:
+            return action
 
         # maybe fire is near and we can win:
         fire = DICT_POS_FIRE_RANGE[enemy_pos]
@@ -218,8 +222,11 @@ class SmartPlayer(AbsDecisionMaker):
             for d in neighbors:
                 neighbors_dist[tuple(d)] = np.linalg.norm(np.array(my_pos) + d - np.array(enemy_pos), 1)
             for direc, dist in sorted(neighbors_dist.items(), key=lambda item: item[1], reverse=True):
-                if DSM[tuple(np.array(my_pos) + direc)] == 0:
-                    break
+                after_action = tuple(np.array(my_pos) + direc)
+                if after_action[0]>0 and after_action[0]<SIZE_W:
+                    if after_action[1] > 0 and after_action[1] < SIZE_H:
+                        if DSM[tuple(np.array(my_pos) + direc)] == 0:
+                            break
 
         action = self.get_action_9_actions(direc[0], direc[1])
         return action
