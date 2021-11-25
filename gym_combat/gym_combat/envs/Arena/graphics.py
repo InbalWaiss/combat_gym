@@ -410,6 +410,7 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
             color = points_dom_points_color
             if NONEDETERMINISTIC_TERMINAL_STATE:
                 dist = np.linalg.norm(np.array(point) - np.array([red.h, red.w]))
+                dist = np.max([0, dist- env.num_steps_red_stay])
                 dist_floor = np.floor(dist)
                 enemy_color = red_player_color
                 #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]) )))

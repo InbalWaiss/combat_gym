@@ -46,6 +46,9 @@ class Environment(object):
             self.collect_stats = False
         self.end_game_flag = False
 
+        self.num_steps_blue_stay = 0
+        self.num_steps_red_stay = 0
+
         # data for statistics
         self.episodes_rewards_blue_temp = []
         self.episodes_rewards_blue = []
@@ -70,6 +73,7 @@ class Environment(object):
         self.evaluation__win_array_tie = []
         self.evaluation__rewards_for_blue = []
         self.evaluation__epsilon_value = []
+
 
     def create_path_for_statistics(self, run_name):
 
@@ -244,7 +248,7 @@ class Environment(object):
         if NONEDETERMINISTIC_TERMINAL_STATE:
             dist = np.max([dist, 1])
             # p = 1/dist
-            p = np.min([(1 / dist) * 3, 1])
+            p = np.min([(1 / dist) * 3 + (1 / FIRE_RANGE)*self.num_steps_red_stay, 1])
             r = np.random.rand()
             if r <= p:  # blue takes a shoot
                 return True
@@ -259,10 +263,11 @@ class Environment(object):
             np.array([self.blue_player.h, self.blue_player.w]) - np.array([self.red_player.h, self.red_player.w]))
 
         if NONEDETERMINISTIC_TERMINAL_STATE:
-            p = 0.5
+            dist = np.max([dist, 1])
+            # p = 1/dist
+            p = np.min([(1 / dist) * 3 + (1 / FIRE_RANGE)*self.num_steps_blue_stay, 1])
             r = np.random.rand()
-            if r <= p:
-                # Red won!
+            if r <= p:  # blue takes a shoot
                 return True
         else:
             if dist<=FIRE_RANGE:
@@ -278,24 +283,37 @@ class Environment(object):
         elif self.win_status == WinEnum.Red:
             ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, Red_won=True)
         else:
-            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos)
+            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, number_of_steps_blue_stay=self.num_steps_blue_stay, number_of_steps_red_stay=self.num_steps_red_stay, whos_turn=Color.Blue)
 
         return ret_val
 
     def get_observation_for_red(self)-> State:
-        if not RED_PLAYER_MOVES:
-            return
         blue_pos = Position(self.blue_player.h, self.blue_player.w)
         red_pos = Position(self.red_player.h, self.red_player.w)
-        return State(my_pos=red_pos, enemy_pos=blue_pos)
+        if self.win_status == WinEnum.Blue:
+            ret_val = State(my_pos=blue_pos, enemy_pos=None)
+        elif self.win_status == WinEnum.Red:
+            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, Red_won=True)
+        else:
+            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, number_of_steps_blue_stay=self.num_steps_blue_stay, number_of_steps_red_stay=self.num_steps_red_stay,  whos_turn=Color.Red)
+
+        return ret_val
 
     def take_action(self, player_color, action):
         if self.end_game_flag:
+            self.num_steps_blue_stay = 0
+            self.num_steps_red_stay = 0
             return action
 
         if player_color==Color.Red:
             if RED_PLAYER_MOVES:
                 self.red_player.action(action)
+                if action==AgentAction.Stay:
+                    self.num_steps_red_stay +=1
+                else:
+                    self.num_steps_red_stay = 0
+            else:
+                self.num_steps_red_stay += 1
 
         else: #player_color==Color.Blue
             if TAKE_WINNING_STEP_BLUE and not NONEDETERMINISTIC_TERMINAL_STATE:
@@ -303,6 +321,10 @@ class Environment(object):
                 if ret_val:
                     action = winning_action
             self.blue_player.action(action)
+            if action == AgentAction.Stay:
+                self.num_steps_blue_stay += 1
+            else:
+                self.num_steps_blue_stay = 0
             return action
 
     def check_if_blue_and_red_same_pos(self):

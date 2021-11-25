@@ -102,7 +102,7 @@ def ppo_check_model(model_path, model_name, n_games, save_video = False, mp = -0
     return blue_win_counter/n_games, red_win_counter/n_games, steps/n_games
 
 
-gamma = 0.95
+gamma = 0.97
 lr = 0.0001
 vf_coef = 0.1
 ent_coef = 0

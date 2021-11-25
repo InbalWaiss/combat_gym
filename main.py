@@ -9,6 +9,7 @@ from gym_combat.gym_combat.envs.Common.constants import *
 #from gym_combat.gym_combat.envs.Qtable import Qtable_DecisionMaker
 from gym_combat.gym_combat.envs.DQN import DQNAgent_keras
 from gym_combat.gym_combat.envs.Greedy import Greedy_player
+from gym_combat.gym_combat.envs.Greedy import smart_player
 import matplotlib.pyplot as plt
 
 def print_start_of_game_info(blue_decision_maker, red_decision_maker):
@@ -60,8 +61,10 @@ if __name__ == '__main__':
 
     print("Starting red player")
     ### Red Decision Maker
-    red_decision_maker = Greedy_player.Greedy_player()
-
+    if RED_TYPE == 'Greedy':
+        red_decision_maker = Greedy_player.Greedy_player()
+    else:
+        red_decision_maker =smart_player.SmartPlayer()
 
     env.blue_player = Entity(blue_decision_maker)
     env.red_player = Entity(red_decision_maker)
