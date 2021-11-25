@@ -55,12 +55,17 @@ class DsmHandler():
 
 
     def pixel_to_utm(self, pixel_pos: PixelPosition):
-        add_one_north = 0000001.00
-        add_one_east = -000001.00
+        add_one_north = -0000001.00
+        add_one_east = +000001.00
 
 
         utm_east = self._top_left_corner_utm[0]+pixel_pos.east*add_one_east
         utm_north = self._top_left_corner_utm[1]+pixel_pos.north*add_one_north
+
+        if utm_east < 694293.00 or utm_east> 694393.00:
+            print("illegal east cord!!!")
+        if utm_north<3587950.00 or utm_north > 3588050:
+            print("illegal north cord!!!")
 
         utm_pos = UTMPosition(easting=utm_east, northing=utm_north)
 

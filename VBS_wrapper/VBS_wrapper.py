@@ -135,7 +135,7 @@ class FPSWrapper():
             return False
         return True
 
-    def choose_start_points(self):
+    def new_start_positions(self):
         self.Env.reset_players_positions(episode_number=0)
         blue_pos_pixel = PixelPosition(north=self.Env.blue_player.h, east=self.Env.blue_player.w)
         blue_pos_utm = self.dsmHandler.pixel_to_utm(blue_pos_pixel)
@@ -158,7 +158,7 @@ class FPSWrapper():
 if __name__ == '__main__':
     fpswrapper = FPSWrapper()
     fpswrapper.init()
-    print("new start positions: ", fpswrapper.choose_start_points())
+    print("new start positions: ", fpswrapper.new_start_positions())
     print("blue step: ", fpswrapper.blue_step(694303.00, 3588040.00, -1, 0, 694383.00, 3587960.00, -1, 0))
     print("red step: ", fpswrapper.red_step(694303.00, 3588040.00, -1, 0, 694383.00, 3587960.00, -1, 0))
 
