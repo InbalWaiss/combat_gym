@@ -6,11 +6,15 @@ import matplotlib.pyplot as plt
 
 class State(object):
 
-    def __init__(self, my_pos: Position, enemy_pos: Position, Red_won= False):
+    def __init__(self, my_pos: Position, enemy_pos: Position, Red_won= False, number_of_steps_blue_stay = 0, number_of_steps_red_stay = 0, whos_turn = None):
         self.Red_won = Red_won
         self.my_pos = my_pos
         self.enemy_pos = enemy_pos
         self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8)  # starts an rbg of small world
+        self.number_of_steps_blue_stay = number_of_steps_blue_stay
+        self.number_of_steps_red_stay = number_of_steps_red_stay
+        self.whos_turn = whos_turn
+
         self.img = self.get_image()
 
     def get_image(self):
@@ -23,11 +27,38 @@ class State(object):
             if NONEDETERMINISTIC_TERMINAL_STATE:
                 points_in_enemy_fire_range = DICT_POS_FIRE_RANGE[(self.enemy_pos._x, self.enemy_pos._y)]
                 enemy_color = dict_of_colors_for_state[RED_N]
-                for point in points_in_enemy_fire_range:
-                    dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
-                    dist_floor = np.floor(dist)
-                    color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
-                    self.env[point[0]][point[1]] = color
+                if self.whos_turn is Color.Blue:
+                    for point in points_in_enemy_fire_range:
+                        dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
+                        dist = np.max([0, dist - self.number_of_steps_red_stay])
+                        dist_floor = np.floor(dist)
+                        color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
+                        self.env[point[0]][point[1]] = color
+
+                elif self.whos_turn is Color.Red:
+                    for point in points_in_enemy_fire_range:
+                        dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
+                        dist = np.max([0, dist - self.number_of_steps_blue_stay])
+                        dist_floor = np.floor(dist)
+                        color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
+                        self.env[point[0]][point[1]] = color
+
+                else:
+                    for point in points_in_enemy_fire_range:
+                        dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
+                        dist_floor = np.floor(dist)
+                        color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
+                        self.env[point[0]][point[1]] = color
+
+                # for point in points_in_enemy_fire_range:
+                #     dist = np.linalg.norm(np.array(point) - np.array([self.enemy_pos._x, self.enemy_pos._y]))
+                #     if self.whos_turn is Color.Blue:
+                #         dist = np.max([0, dist - self.number_of_steps_red_stay])
+                #     elif self.whos_turn is Color.Red:
+                #         dist = np.max([0, dist - self.number_of_steps_blue_stay])
+                #     dist_floor = np.floor(dist)
+                #     color = tuple(map(lambda i, j: int(i - j), enemy_color, (15 * dist_floor, 0, 0)))
+                #     self.env[point[0]][point[1]] = color
             else:
                 points_in_enemy_fire_range_tuple = DICT_POS_FIRE_RANGE_TUPLE[(self.enemy_pos._x, self.enemy_pos._y)]
                 self.env[points_in_enemy_fire_range_tuple] = dict_of_colors_for_state[DARK_RED_N]

@@ -406,15 +406,35 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
             informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
             (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = points_in_enemy_los_color
         points_in_enemy_fire_range = DICT_POS_FIRE_RANGE[(red.h, red.w)]
-        for point in points_in_enemy_fire_range:
-            color = points_dom_points_color
-            if NONEDETERMINISTIC_TERMINAL_STATE:
+
+        color = points_dom_points_color
+        if NONEDETERMINISTIC_TERMINAL_STATE:
+            for point in points_in_enemy_fire_range:
                 dist = np.linalg.norm(np.array(point) - np.array([red.h, red.w]))
+                dist = np.max([0, dist - env.num_steps_red_stay])
                 dist_floor = np.floor(dist)
                 enemy_color = red_player_color
                 #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]) )))
                 color = tuple(map(lambda i, j: int(i - j), enemy_color,
                                   (0, 0, np.max([10,  14 * dist_floor]))))
+                informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
+                (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = color
+        else:
+            for point in points_in_enemy_fire_range:
+                informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
+                (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = color
+
+
+        for point in points_in_enemy_fire_range:
+            color = points_dom_points_color
+            if NONEDETERMINISTIC_TERMINAL_STATE:
+                dist = np.linalg.norm(np.array(point) - np.array([red.h, red.w]))
+                dist = np.max([0, dist - env.num_steps_red_stay])
+                dist_floor = np.floor(dist)
+                enemy_color = red_player_color
+                #color = tuple(map(lambda i, j: int(i - j), enemy_color, (0, 0, np.max([10,np.min([points_dom_points_color[2],15 * dist_floor])]) )))
+                color = tuple(map(lambda i, j: int(i - j), enemy_color,
+                                  (0, 0, np.max([10,  13 * dist_floor]))))
             informative_env[(point[0] + margin_h) * const: (point[0] + margin_h) * const + const,
             (point[1] + margin_w) * const: (point[1] + margin_w) * const + const] = color
         # center_cord_red_x = (red.x + margin_x) * const + radius

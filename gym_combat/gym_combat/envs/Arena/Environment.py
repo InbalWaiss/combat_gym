@@ -60,6 +60,9 @@ class Environment(object):
         self.blue_epsilon_values = []
         self.blue_epsilon_values.append(1)
 
+        self.num_steps_blue_stay = 0
+        self.num_steps_red_stay = 0
+
         # data for evaluation
         self.evaluation__number_of_steps_batch = []
         self.evaluation__win_array_batch = []
@@ -237,16 +240,21 @@ class Environment(object):
         self.win_status = win_status
         return win_status
 
-    def blue_player_shoots_and_hits(self):
+    def blue_player_shoots_and_hits(self, number_of_time=1):
+        blue_win_counter = 0
         dist = np.linalg.norm(
             np.array([self.blue_player.h, self.blue_player.w]) - np.array([self.red_player.h, self.red_player.w]))
 
         if NONEDETERMINISTIC_TERMINAL_STATE:
             dist = np.max([dist, 1])
-            # p = 1/dist
-            p = np.min([(1 / dist) * 3, 1])
-            r = np.random.rand()
-            if r <= p:  # blue takes a shoot
+            #p = 1/dist
+            p = np.min([(1 / dist) * 3 + (1 / FIRE_RANGE)*self.num_steps_red_stay, 1])
+            for i in range(number_of_time):
+
+                r = np.random.rand()
+                if r <= p:  # blue takes a shoot
+                    blue_win_counter+=1
+            if blue_win_counter == number_of_time:
                 return True
         else:
             if dist<=FIRE_RANGE:
@@ -254,16 +262,22 @@ class Environment(object):
 
         return False
 
-    def red_player_shoots_and_hits(self):
+    def red_player_shoots_and_hits(self, number_of_time=1):
+        red_win_counter = 0
         dist = np.linalg.norm(
             np.array([self.blue_player.h, self.blue_player.w]) - np.array([self.red_player.h, self.red_player.w]))
 
         if NONEDETERMINISTIC_TERMINAL_STATE:
             p = 0.5
-            r = np.random.rand()
-            if r <= p:
-                # Red won!
+            #p = np.min([(1 / dist) * 3 + (1 / FIRE_RANGE)*self.num_steps_blue_stay, 1])
+            for i in range(number_of_time):
+                r = np.random.rand()
+                if r <= p:
+                    # Red won!
+                    red_win_counter+=1
+            if red_win_counter==number_of_time:
                 return True
+
         else:
             if dist<=FIRE_RANGE:
                 return True
@@ -276,18 +290,23 @@ class Environment(object):
         if self.win_status == WinEnum.Blue:
             ret_val = State(my_pos=blue_pos, enemy_pos=None)
         elif self.win_status == WinEnum.Red:
-            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, Red_won=True)
+            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, number_of_steps_blue_stay=self.num_steps_blue_stay, number_of_steps_red_stay=self.num_steps_red_stay, whos_turn=Color.Blue)
         else:
             ret_val = State(my_pos=blue_pos, enemy_pos=red_pos)
 
         return ret_val
 
     def get_observation_for_red(self)-> State:
-        if not RED_PLAYER_MOVES:
-            return
         blue_pos = Position(self.blue_player.h, self.blue_player.w)
         red_pos = Position(self.red_player.h, self.red_player.w)
-        return State(my_pos=red_pos, enemy_pos=blue_pos)
+        if self.win_status == WinEnum.Blue:
+            ret_val = State(my_pos=blue_pos, enemy_pos=None)
+        elif self.win_status == WinEnum.Red:
+            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, Red_won=True)
+        else:
+            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, number_of_steps_blue_stay=self.num_steps_blue_stay, number_of_steps_red_stay=self.num_steps_red_stay,  whos_turn=Color.Red)
+
+        return ret_val
 
     def take_action(self, player_color, action):
         if self.end_game_flag:
@@ -296,6 +315,12 @@ class Environment(object):
         if player_color==Color.Red:
             if RED_PLAYER_MOVES:
                 self.red_player.action(action)
+                if action == AgentAction.Stay:
+                    self.num_steps_red_stay += 1
+                else:
+                    self.num_steps_red_stay = 0
+            else:
+                self.num_steps_red_stay += 1
 
         else: #player_color==Color.Blue
             if TAKE_WINNING_STEP_BLUE and not NONEDETERMINISTIC_TERMINAL_STATE:
@@ -303,6 +328,10 @@ class Environment(object):
                 if ret_val:
                     action = winning_action
             self.blue_player.action(action)
+            if action == AgentAction.Stay:
+                self.num_steps_blue_stay += 1
+            else:
+                self.num_steps_blue_stay = 0
             return action
 
     def check_if_blue_and_red_same_pos(self):
@@ -339,15 +368,20 @@ class Environment(object):
 
 
             if is_los:
-                dist = np.linalg.norm(np.array([blue_player.h, blue_player.w]) - np.array([red_player.h, red_player.w]))
-
-                number_of_wins = 0
-                for i in range(3):
-                    red_won = self.red_player_shoots_and_hits()
-                    if red_won:
-                        number_of_wins+=1
-                if number_of_wins==3:
+                red_won = self.red_player_shoots_and_hits(3)
+                if red_won:
                     ret_val = True
+
+
+                # #dist = np.linalg.norm(np.array([blue_player.h, blue_player.w]) - np.array([red_player.h, red_player.w]))
+                #
+                # number_of_wins = 0
+                # for i in range(3):
+                #     red_won = self.red_player_shoots_and_hits()
+                #     if red_won:
+                #         number_of_wins+=1
+                # if number_of_wins==3:
+                #     ret_val = True
 
                     winning_point_for_red = (red_player.h, red_player.w)
                     blue_pos = Position(blue_player.h, blue_player.w)
@@ -398,13 +432,18 @@ class Environment(object):
 
 
             if is_los:
-                number_of_wins = 0
-                for i in range(3):
-                    blue_won = self.blue_player_shoots_and_hits()
-                    if blue_won:
-                        number_of_wins+=1
-                if number_of_wins==3:
+
+                blue_won = self.blue_player_shoots_and_hits(number_of_time=3)
+                if blue_won:
                     ret_val = True
+
+                # number_of_wins = 0
+                # for i in range(3):
+                #     blue_won = self.blue_player_shoots_and_hits()
+                #     if blue_won:
+                #         number_of_wins+=1
+                # if number_of_wins==3:
+                #     ret_val = True
 
                     #winning_point_for_blue = (blue_player.x, blue_player.y)
                     #red_pos = Position(red_player.x, red_player.y)
