@@ -187,6 +187,10 @@ class Environment(object):
 
         # Game has ended!
         if self.win_status == WinEnum.Red:
+            #print ("LOST_PENALTY",LOST_PENALTY)
+            #print ("WIN_REWARD",WIN_REWARD)
+            #print ("self.move_penalty", self.move_penalty)
+            #print ("self.enemy_los_penealty", self.enemy_los_penealty)
             reward_step_blue = LOST_PENALTY
             reward_step_red = WIN_REWARD
 

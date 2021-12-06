@@ -129,34 +129,29 @@ elif DSM_name=="Baqa":
 
     FIRE_RANGE = 10
     LOS_PENALTY_RANGE = 3 * FIRE_RANGE
-    MAX_STEPS_PER_EPISODE =100
+    MAX_STEPS_PER_EPISODE =150
     MIN_PATH_DIST_FOR_START_POINTS = 2
     BB_STATE = True
     if BASELINES_RUN:
         BB_MARGIN = 16
     else:
         BB_MARGIN = 3
-    SIZE_W_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    SIZE_H_BB = 4 * FIRE_RANGE + 2 * BB_MARGIN + 1
-    all_pairs_distances_path = path.join(COMMON_PATH, '..', 'Greedy',
-                                         'all_pairs_distances_' + DSM_name + '___' + '.pkl')
-    #all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
+    BB_EXTENSION = 4 * FIRE_RANGE + BB_MARGIN
+    SIZE_W_BB = 2 * BB_EXTENSION + 1
+    SIZE_H_BB = 2 * BB_EXTENSION + 1
+    all_pairs_distances_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + '___' + '.pkl'
     if path.exists(all_pairs_distances_path):
         with open(all_pairs_distances_path, 'rb') as f:
             all_pairs_distances = pickle.load(f)
             print("all_pairs_distances loaded")
 
-    all_pairs_distances_path_np = path.join(COMMON_PATH, '..', 'Greedy',
-                                         'all_pairs_distances_' + DSM_name + 'np' + '.pkl')
-    #all_pairs_distances_path_np = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + 'np' + '.pkl'
+    all_pairs_distances_path_np = 'gym_combat/gym_combat/envs/Greedy/all_pairs_distances_' + DSM_name + 'np' + '.pkl'
     if path.exists(all_pairs_distances_path_np):
         with open(all_pairs_distances_path_np, 'rb') as f:
             all_pairs_distances_np = pickle.load(f)
             print("all_pairs_distances_np loaded")
 
-    all_pairs_shortest_path_path = path.join(COMMON_PATH, '..', 'Greedy',
-                                         'all_pairs_shortest_pathBaqa_15.pkl')
-    #all_pairs_shortest_path_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_pathBaqa_15.pkl'
+    all_pairs_shortest_path_path = 'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_pathBaqa_15.pkl'
     if path.exists(all_pairs_shortest_path_path):
         with open(all_pairs_shortest_path_path, 'rb') as f:
             all_pairs_shortest_path = pickle.load(f)
@@ -205,8 +200,8 @@ except:
 
 if BASELINES_RUN:
     MOVE_PENALTY = -0.2
-    WIN_REWARD = 3
-    LOST_PENALTY = -3
+    WIN_REWARD = 1
+    LOST_PENALTY = 0.5
     ENEMY_LOS_PENALTY = MOVE_PENALTY * 2
     TIE = 0
 
@@ -317,7 +312,7 @@ EVALUATE_PLAYERS_EVERY = 1000
 EVALUATE_BATCH_SIZE=100
 
 #save information
-USE_DISPLAY = True #
+USE_DISPLAY = False #
 SHOW_EVERY = 50
 NUM_OF_EPISODES = 3_000_000+EVALUATE_BATCH_SIZE
 SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
