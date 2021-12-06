@@ -6,6 +6,8 @@
 .pytest_cache
 .DS_Store
 .idea
+*.bak
+videos/*
 
 # Setuptools distribution and build folders.
 /dist/
