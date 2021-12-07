@@ -10,11 +10,11 @@ class State(object):
         self.Red_won = Red_won
         self.my_pos = my_pos
         self.enemy_pos = enemy_pos
-        self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8)  # starts an rbg of small world
         self.number_of_steps_blue_stay = number_of_steps_blue_stay
         self.number_of_steps_red_stay = number_of_steps_red_stay
         self.whos_turn = whos_turn
 
+        self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8)  # starts an rbg of small world
         self.img = self.get_image()
 
 
@@ -52,14 +52,14 @@ class State(object):
         self.env[np.where(DSM == 1)] = dict_of_colors_for_graphics[GREY_N]
 
         if (BB_STATE):
-            extension = 2 * FIRE_RANGE + BB_MARGIN
-            extended_env = np.zeros((SIZE_H + 2 * extension, SIZE_W + 2 * extension, 3), dtype=np.uint8)
-            extended_env[extension:-extension, extension: - extension] = self.env
-            BB_env = extended_env[self.my_pos._x: self.my_pos._x + 2 * extension + 1,
-                                  self.my_pos._y: self.my_pos._y + 2 * extension + 1]
+            extended_env = np.zeros((SIZE_H + 2 * BB_EXTENSION, SIZE_W + 2 * BB_EXTENSION, 3), dtype=np.uint8)
+            extended_env[BB_EXTENSION:-BB_EXTENSION, BB_EXTENSION: - BB_EXTENSION] = self.env
+            BB_env = extended_env[self.my_pos._x: self.my_pos._x + 2 * BB_EXTENSION + 1,
+                                  self.my_pos._y: self.my_pos._y + 2 * BB_EXTENSION + 1]
+
 
             if False:
-                plt.matshow(env)
+                plt.matshow(self.env)
                 plt.show()
                 plt.matshow(BB_env)
                 plt.show()

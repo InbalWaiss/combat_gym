@@ -241,6 +241,8 @@ class Greedy_player(AbsDecisionMaker):
             a = AgentAction.BottomRight
         elif delta_w == 0 and delta_h == -1:
             a = AgentAction.Top
+        elif delta_w == 0 and delta_h == 0:
+            a = AgentAction.Stay
         elif delta_w == 0 and delta_h == 1:
             a = AgentAction.Bottom
         elif delta_w == -1 and delta_h == -1:
@@ -249,8 +251,7 @@ class Greedy_player(AbsDecisionMaker):
             a = AgentAction.Left
         elif delta_w == -1 and delta_h == 1:
             a = AgentAction.BottomLeft
-        else:  ## delta_w == 0 and delta_h == 0:
-            a = AgentAction.Stay
+
         return a
 
     def get_action_4_actions(self, delta_h, delta_w):

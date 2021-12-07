@@ -18,8 +18,8 @@ from stable_baselines3 import PPO
 
 
 
-n_envs = 1
-total_timesteps = 100000000
+n_envs = 64
+total_timesteps = 200000000
 checkpoint_freq = 5000000
 
 n_games = 1000
@@ -51,8 +51,9 @@ def ppo_train(gamma, lr, vf_coef, ent_coef, train = True, mp = 0.1):
     
     #model_path = os.path.join(trained_models_path, model_name)
     #model = PPO.load(model_path, env = env)
-    model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path, n_steps=32, n_epochs=4, clip_range=0.25, ent_coef=ent_coef, vf_coef=vf_coef, clip_range_vf=None)
-    model.learn(total_timesteps=total_timesteps+1000, log_interval = 100, callback=checkpoint_callback, tb_log_name = model_name)
+    model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path, n_steps=128, batch_size = 2048, n_epochs=4, clip_range=0.25, ent_coef=ent_coef, vf_coef=vf_coef, clip_range_vf=None)
+   # model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path, n_steps=32, n_epochs=4, clip_range=0.25, ent_coef=ent_coef, vf_coef=vf_coef, clip_range_vf=None)
+    model.learn(total_timesteps=total_timesteps+1000, log_interval = 20, callback=checkpoint_callback, tb_log_name = model_name)
     model.save(os.path.join(trained_models_path, model_name + ".zip"))
     return model_name
 
@@ -99,11 +100,11 @@ def ppo_check_model(model_path, model_name, n_games, save_video = False, mp = -0
                 for _ in range(10):
                     images.append(img) 
     print ("{}: success rate:{} Blue:{} Red:{} No win:{} out of {} games".format(model_name, blue_win_counter/n_games, blue_win_counter, red_win_counter, nowin_win_counter, n_games))
-    return blue_win_counter/n_games, red_win_counter/n_games, steps/n_games
+    return blue_win_counter/n_games, red_win_counter/n_games, nowin_win_counter/n_games, steps/n_games
 
 
-gamma = 0.97
-lr = 0.0001
+gamma = 0.985
+lr = 0.0002
 vf_coef = 0.1
 ent_coef = 0
 

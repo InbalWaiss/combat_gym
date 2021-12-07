@@ -291,11 +291,11 @@ class Environment(object):
         blue_pos = Position(self.blue_player.h, self.blue_player.w)
         red_pos = Position(self.red_player.h, self.red_player.w)
         if self.win_status == WinEnum.Blue:
-            ret_val = State(my_pos=blue_pos, enemy_pos=None)
+            ret_val = State(my_pos=red_pos, enemy_pos=None)
         elif self.win_status == WinEnum.Red:
-            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, Red_won=True)
+            ret_val = State(my_pos=red_pos, enemy_pos=blue_pos, Red_won=True)
         else:
-            ret_val = State(my_pos=blue_pos, enemy_pos=red_pos, number_of_steps_blue_stay=self.num_steps_blue_stay, number_of_steps_red_stay=self.num_steps_red_stay,  whos_turn=Color.Red)
+            ret_val = State(my_pos=red_pos, enemy_pos=blue_pos, number_of_steps_blue_stay=self.num_steps_blue_stay, number_of_steps_red_stay=self.num_steps_red_stay,  whos_turn=Color.Red)
 
         return ret_val
 

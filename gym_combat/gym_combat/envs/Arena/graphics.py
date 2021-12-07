@@ -423,7 +423,7 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
         # red_color = dict_of_colors_for_graphics[RED_N]
         # cv2.circle(informative_env, (center_cord_red_y, center_cord_red_x), radius, red_color, thickness)
         informative_env[(start_h + margin_h) * const: (end_h + margin_h) * const + const,
-        (start_w + margin_w) * const: (end_w + margin_w) * const + const] += 15
+        (start_w + margin_w) * const: (end_w + margin_w) * const + const] += 10
         # plot the Red player
         center_cord_red_h = (red.h + margin_h) * const + radius
         center_cord_red_w = (red.w + margin_w) * const + radius
@@ -450,4 +450,3 @@ def print_episode_graphics(env: Environment, episode, last_step_number, write_fi
         sleep(1.2)
     # else:
     #     sleep(0.02)
-        
