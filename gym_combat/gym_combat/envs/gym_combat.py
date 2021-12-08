@@ -27,9 +27,9 @@ class GymCombatEnv(gym.Env):
         self.env = Environment(IS_TRAINING, run_name, combat_env_num=self.env_num, move_penalty = move_penalty)
 
 
-        if RED_TYPE == 'Smart':
+        if RED_TYPE == AgentType.Smart:
             self.red_decision_maker = smart_player.SmartPlayer()
-        else: # 'Greedy'
+        else: # AgentType.Greedy
             self.red_decision_maker = Greedy_player.Greedy_player()
 
         self.env.red_player = Entity(self.red_decision_maker)

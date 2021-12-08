@@ -16,8 +16,6 @@ from stable_baselines3 import PPO
 # model.learn(total_timesteps=10000000)
 # model.save("ppo_GymCombatEnv_MlpPolicy_10000000")
 
-
-
 n_envs = 64
 total_timesteps = 200000000
 checkpoint_freq = 5000000

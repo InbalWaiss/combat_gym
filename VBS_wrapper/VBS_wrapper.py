@@ -1,4 +1,4 @@
-from gym_combat.gym_combat.envs.Common.constants import RED_TYPE, Color, WinEnum, AgentAction, DSM
+from gym_combat.gym_combat.envs.Common.constants import RED_TYPE, Color, WinEnum, AgentAction, AgentType, DSM
 
 from gym_combat.gym_combat.envs.Greedy import smart_player
 from gym_combat.gym_combat.envs.Greedy import Greedy_player
@@ -24,13 +24,12 @@ class FPSWrapper():
         # PPO_model = PPO.load(os.path.join(model_path, model_name))
 
         self.blue_decision_maker = Greedy_player.Greedy_player()
-        if RED_TYPE == 'Smart':
+        if RED_TYPE == AgentType.Smart:
             self.red_decision_maker = smart_player.SmartPlayer()
-        else:  # 'Greedy'
+        else:  # AgentType.Greedy
             self.red_decision_maker = Greedy_player.Greedy_player()
         self.Env.blue_player = Entity(self.blue_decision_maker)
         self.Env.red_player = Entity(self.red_decision_maker)
-
 
     def blue_step(self, blue_east_utm, blue_north_utm, blue_up_utm, blue_azimute_utm, red_east_utm, red_north_utm, red_up_utm, red_azimute_utm):
         blue_pos_utm = UTMPosition(easting=blue_east_utm, northing=blue_north_utm)

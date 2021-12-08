@@ -5,7 +5,7 @@ from os import path
 import pickle
 from gym_combat.gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import get_DSM_berlin, get_DSM_Boston, get_DSM_Paris
 
-BASELINES_RUN = False
+BASELINES_RUN = True
 SAVE_BERLIN_FIXED_STATE = False
 
 ACTION_SPACE_9 = True
@@ -13,8 +13,6 @@ ACTION_SPACE_4 = False
 if not ACTION_SPACE_9:
     ACTION_SPACE_4 = True
 
-#RED_TYPE = 'Greedy'
-RED_TYPE = 'Smart'
 
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
@@ -320,4 +318,6 @@ SAVE_STATS_EVERY = 10000+EVALUATE_BATCH_SIZE
 
 # training mode
 IS_TRAINING = True
+
+RED_TYPE = AgentType.Smart # AgentType.Greedy
 
