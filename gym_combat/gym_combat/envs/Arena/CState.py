@@ -57,7 +57,6 @@ class State(object):
             BB_env = extended_env[self.my_pos._x: self.my_pos._x + 2 * BB_EXTENSION + 1,
                                   self.my_pos._y: self.my_pos._y + 2 * BB_EXTENSION + 1]
 
-
             if False:
                 plt.matshow(self.env)
                 plt.show()

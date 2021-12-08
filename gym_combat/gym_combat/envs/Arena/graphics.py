@@ -370,10 +370,10 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
                 cv2.LINE_AA)
 
     if BB_STATE:
-        start_h = np.max([0, blue.h - FIRE_RANGE - BB_MARGIN])
-        end_h = np.min([blue.h + FIRE_RANGE + BB_MARGIN + 1, SIZE_H])
-        start_w = np.max([0, blue.w - FIRE_RANGE - BB_MARGIN])
-        end_w = np.min([blue.w + FIRE_RANGE + BB_MARGIN + 1, SIZE_W])
+        start_h = np.max([0, blue.h - BB_EXTENSION])
+        end_h = np.min([blue.h + BB_EXTENSION + 1, SIZE_H])
+        start_w = np.max([0, blue.w - BB_EXTENSION])
+        end_w = np.min([blue.w + BB_EXTENSION + 1, SIZE_W])
         informative_env[(start_h + margin_h) * const: (end_h + margin_h) * const + const,
         (start_w + margin_w) * const: (end_w + margin_w) * const + const] += 85
         # set the players as circles
@@ -436,7 +436,6 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
         if cover and ((cover[0] != red.h) or (cover[1] != red.w)):
             informative_env[(cover[0] + margin_h) * const: (cover[0] + margin_h) * const + const,
             (cover[1] + margin_w) * const: (cover[1] + margin_w) * const + const] = dict_of_colors_for_graphics[GREEN_N]
-
     return np.array(informative_env)
 
 def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False, cover = None):

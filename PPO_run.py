@@ -16,6 +16,7 @@ from stable_baselines3 import PPO
 # model.learn(total_timesteps=10000000)
 # model.save("ppo_GymCombatEnv_MlpPolicy_10000000")
 
+
 n_envs = 64
 total_timesteps = 200000000
 checkpoint_freq = 5000000
@@ -47,7 +48,7 @@ def ppo_train(gamma, lr, vf_coef, ent_coef, train = True, mp = 0.1):
     print ("training model", model_name)
     env = make_vec_env('gym-combat-v0', n_envs=n_envs, env_kwargs={"run_name": model_name, "env_num": env_num, "move_penalty": mp}, seed = 0)
     
-    #model_path = os.path.join(trained_models_path, model_name)
+    model_path = os.path.join(trained_models_path, model_name)
     #model = PPO.load(model_path, env = env)
     model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path, n_steps=128, batch_size = 2048, n_epochs=4, clip_range=0.25, ent_coef=ent_coef, vf_coef=vf_coef, clip_range_vf=None)
    # model = PPO(network_arc, env, verbose=1,gamma=gamma,learning_rate=lr,tensorboard_log=tensorboard_path, n_steps=32, n_epochs=4, clip_range=0.25, ent_coef=ent_coef, vf_coef=vf_coef, clip_range_vf=None)
@@ -101,8 +102,8 @@ def ppo_check_model(model_path, model_name, n_games, save_video = False, mp = -0
     return blue_win_counter/n_games, red_win_counter/n_games, nowin_win_counter/n_games, steps/n_games
 
 
-gamma = 0.985
-lr = 0.0002
+gamma = 0.99
+lr = 0.0004
 vf_coef = 0.1
 ent_coef = 0
 
