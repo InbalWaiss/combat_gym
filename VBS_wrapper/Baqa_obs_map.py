@@ -19,14 +19,20 @@ obsticals = cv2.inRange(img2, 163, 255)
 
 thicken_obs_and_edges = cv2.bitwise_not(obsticals)
 thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
-thicken_obs_and_edges[0, :] = 1
-thicken_obs_and_edges[99, :] = 1
-thicken_obs_and_edges[:, 0] = 1
-thicken_obs_and_edges[:, 99] = 1
 
-fig, axs = plt.subplots(1,2)
+thicken = cv2.blur(thicken_obs_and_edges, ksize=(2,2))
+
+thicken[0, :] = 1
+thicken[99, :] = 1
+thicken[:, 0] = 1
+thicken[:, 99] = 1
+
+
+fig, axs = plt.subplots(1,3)
 axs[0].imshow(img_org)
 axs[1].imshow(thicken_obs_and_edges)
+axs[2].imshow(thicken)
 plt.show()
 
-np.savetxt("BaqaObs.txt", thicken_obs_and_edges, fmt="%d")
+#np.savetxt("BaqaObs.txt", thicken_obs_and_edges, fmt="%d")
+np.savetxt("BaqaObs_thicken.txt", thicken, fmt="%d")

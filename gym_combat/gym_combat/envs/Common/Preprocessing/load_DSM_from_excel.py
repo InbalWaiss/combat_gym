@@ -103,5 +103,19 @@ def get_DSM_Boston():
     thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
     return thicken_obs_and_edges
 
+def get_DSM_Baqa():
+    import os
+    COMMON_PATH = os.path.dirname(os.path.realpath(__file__))
+    srcImage = np.loadtxt('../maps/BaqaObs.txt', dtype=np.uint8, usecols=range(100))
+    plt.matshow(srcImage)
+    plt.show()
+    obsticals = srcImage
+    c, _ = cv2.findContours(obsticals, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    thicken_obs_and_edges = cv2.drawContours(obsticals, c, -1, (255, 255, 255), 1)
+    thicken_obs_and_edges[thicken_obs_and_edges > 0] = 1
+    blur = cv2.blur(thicken_obs_and_edges, ksize=(2, 2))
+    plt.matshow(blur)
+    plt.show()
+
 if __name__ == '__main__':
-    temp()
+    get_DSM_Baqa()

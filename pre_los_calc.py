@@ -36,7 +36,11 @@ def creat_and_save_dictionaries():
                         if DSM[x2, y2]!=1:
                             no_los_from_pos[(x1, y1)].append((x2, y2))
 
+
             print("finished ", x1, y1)
+        save_obj(los_from_pos_FIRE_RANGE, "dictionary_position_los_" + DSM_name + '_' + str(FIRE_RANGE) + '.pkl')
+        save_obj(los_from_pos_LOS_RANGE, "dictionary_position_los_" + DSM_name + '_' + str(LOS_PENALTY_RANGE) + '.pkl')
+        save_obj(no_los_from_pos, "dictionary_position_no_los_" + DSM_name + '_' + str(LOS_PENALTY_RANGE) + '.pkl')
 
     save_obj(los_from_pos_FIRE_RANGE, "dictionary_position_los_"+DSM_name+'_'+str(FIRE_RANGE)+ '.pkl')
     save_obj(los_from_pos_LOS_RANGE, "dictionary_position_los_"+DSM_name+'_'+str(LOS_PENALTY_RANGE)+ '.pkl')
@@ -266,7 +270,7 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
     if CALC_SHORTEST_PATHS:
         SIZE_W = 100
         SIZE_H = 100
-        cutoff = 10
+        cutoff = 15
         all_pairs_shortest_path_less_than_cutoff_no_double = {}
         for x1 in range(0, SIZE_W):
             for y1 in range(0, SIZE_H):
@@ -285,6 +289,11 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
                                     if (x2, y2) in all_pairs_shortest_path_less_than_cutoff_no_double.keys() and (x1, y1) not in all_pairs_shortest_path_less_than_cutoff_no_double[(x2, y2)]:
                                         path = nx.astar_path(G, (x1, y1), (x2, y2))
                                         all_pairs_shortest_path_less_than_cutoff_no_double[(x1, y1)][(x2, y2)] = path
+            with open(
+                    'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path' + DSM_name + '_' + str(cutoff) + '.pkl',
+                    'wb') as f:
+                pickle.dump(all_pairs_shortest_path_less_than_cutoff_no_double, f, protocol=2)
+                print("saved ", str(x1), " ", str(y1) )
 
         with open('gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path' + DSM_name + '_' + str(cutoff) + '.pkl',
                   'wb') as f:
@@ -293,13 +302,39 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
 
 
 
+def all_pairs_distances__np():
+    COMMON_PATH = path.dirname(path.realpath(__file__))
+    MAIN_PATH = path.dirname(COMMON_PATH)
+    all_pairs_distances_path = os.path.join(MAIN_PATH, 'combat_gym', 'gym_combat', 'gym_combat', 'envs' ,'Greedy', 'all_pairs_distances_' + DSM_name + '___' + '.pkl')
+    if os.path.exists(all_pairs_distances_path):
+        with open(all_pairs_distances_path, 'rb') as f:
+            all_pairs_distances = pickle.load(f)
+            print("all_pairs_distances loaded")
+
+    all_pairs_distances_np = (np.zeros((100, 100, 100, 100)) + 255).astype(np.uint8)
+    for x in range(100):
+        print(x)
+        for y in range(100):
+            if (x, y) in all_pairs_distances.keys():
+                for z in range(100):
+                    for w in range(100):
+                        if (z, w) in all_pairs_distances[(x, y)].keys():
+                            all_pairs_distances_np[(x, y)][(z, w)] = all_pairs_distances[(x, y)][(z, w)]
+
+    all_pairs_distances_path_np = os.path.join(MAIN_PATH, 'combat_gym', 'gym_combat', 'gym_combat', 'envs', 'Greedy',
+                 'all_pairs_distances_' + DSM_name + 'np' + '.pkl')
+    #all_pairs_distances_path_np = os.path.join(MAIN_PATH, 'Greedy', 'all_pairs_distances_' + DSM_name + 'np' + '.pkl')
+    with open(all_pairs_distances_path_np, 'wb') as f:
+        pickle.dump(all_pairs_distances_np, f)
+
 
 if __name__ == '__main__':
 
-    #creat_and_save_dictionaries()
-    #creat_and_save_dictionaries_tuples()
+    creat_and_save_dictionaries()
+    creat_and_save_dictionaries_tuples()
 
     calc_all_pairs_data(CALC_SHORTEST_PATHS=True)
+    all_pairs_distances__np()
 
     # calc_and_save_dominating_points()
     # calc_and_save_lose_points()
