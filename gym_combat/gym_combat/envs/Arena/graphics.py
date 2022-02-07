@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from gym_combat.gym_combat.envs.Arena import Environment
 from gym_combat.gym_combat.envs.Arena.helper_funcs import *
 from time import sleep
+#from gym_combat.gym_combat.envs.Common.constants import dict_of_colors_for_graphics
 
 buffer_for_win_reward = 5
 
@@ -205,8 +206,12 @@ def print_stats_humna_player(array_of_results, save_folder_path, number_of_episo
 
     plt.show()
 
-def create_image(env: Environment, episode, last_step_number, cover = None):
 
+PLT_USING_CV2 = False
+if PLT_USING_CV2:
+    dict_of_colors_for_graphics = dict_of_colors_for_graphics_cv2
+
+def create_image(env: Environment, episode, last_step_number, cover = None):
 
     blue = env.blue_player
     red = env.red_player
@@ -440,11 +445,13 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
 
 def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False, cover = None):
     image = create_image(env, episode, last_step_number, cover)
-    cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
-    cv2.waitKey(2)
-    # plt.title("informative_env_"+str(env.combat_env_num))
-    # plt.imshow(image)
-    plt.pause(.01)
+    if PLT_USING_CV2:
+        cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
+        cv2.waitKey(2)
+    else:
+        plt.title("informative_env_"+str(env.combat_env_num))
+        plt.imshow(image)
+        plt.pause(.01)
     if episode.is_terminal:
         sleep(1.2)
     # else:
