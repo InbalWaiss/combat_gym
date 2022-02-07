@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 
 class State(object):
 
-    def __init__(self, my_pos: Position, enemy_pos: Position, Red_won= False, number_of_steps_blue_stay = 0, number_of_steps_red_stay = 0, whos_turn = None):
+    def __init__(self, my_pos: Position, enemy_pos, Red_won=False, number_of_steps_blue_stay=0,
+                 number_of_steps_red_stay=0, whos_turn=None):
         self.Red_won = Red_won
         self.my_pos = my_pos
         self.enemy_pos = enemy_pos
@@ -17,10 +18,8 @@ class State(object):
         self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8)  # starts an rbg of small world
         self.img = self.get_image()
 
-
-
     def get_image(self):
-        self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8) # starts an rbg of small world
+        self.env = np.zeros((SIZE_H, SIZE_W, 3), dtype=np.uint8)  # starts an rbg of small world
         if self.enemy_pos is not None:
             points_in_enemy_los_as_tuple = DICT_POS_LOS_TUPLE[(self.enemy_pos._x, self.enemy_pos._y)]
             self.env[points_in_enemy_los_as_tuple] = dict_of_colors_for_state[DARK_DARK_RED_N]
@@ -41,14 +40,14 @@ class State(object):
             else:
                 points_in_enemy_fire_range_tuple = DICT_POS_FIRE_RANGE_TUPLE[(self.enemy_pos._x, self.enemy_pos._y)]
                 self.env[points_in_enemy_fire_range_tuple] = dict_of_colors_for_state[DARK_RED_N]
-            #set enemy (red player)
-            self.env[self.enemy_pos._x,self.enemy_pos._y] = dict_of_colors_for_state[RED_N]
+            # set enemy (red player)
+            self.env[self.enemy_pos._x, self.enemy_pos._y] = dict_of_colors_for_state[RED_N]
 
         if not self.Red_won:
-            #set blue player
-            self.env[self.my_pos._x,self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
+            # set blue player
+            self.env[self.my_pos._x, self.my_pos._y] = dict_of_colors_for_state[BLUE_N]
 
-        #set obstacles
+        # set obstacles
         self.env[np.where(DSM == 1)] = dict_of_colors_for_graphics[GREY_N]
 
         if (BB_STATE):

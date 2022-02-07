@@ -21,7 +21,6 @@ from gym_combat.gym_combat.envs.DQN.deeprl_prj.objectives import *
 from gym_combat.gym_combat.envs.DQN.deeprl_prj.preprocessors import *
 from gym_combat.gym_combat.envs.DQN.deeprl_prj.utils import *
 from gym_combat.gym_combat.envs.DQN.deeprl_prj.core import  *
-from gym_combat.gym_combat.envs.DQN.fixed_state_berlin import fixed_state_berlin
 
 def save_scalar(step, name, value, writer):
     """Save a scalar value to tensorboard.
@@ -65,7 +64,6 @@ class decision_maker_DQN_keras:
 
         self.MODEL_NAME = self.set_model_name()
 
-        self.Berlin_fixed_state = fixed_state_berlin()
 
 
     def get_args(self):
@@ -81,7 +79,7 @@ class decision_maker_DQN_keras:
         parser.add_argument('--final_epsilon', default=0.05, type=float, help='Final exploration probability in epsilon-greedy')
 
         parser.add_argument('--num_samples', default=100000000, type=int, help='Number of training samples from the environment in training')
-        parser.add_argument('--num_frames', default=NUM_FRAMES, type=int, help='Number of frames to feed to Q-Network')
+        parser.add_argument('--num_frames', default=1, type=int, help='Number of frames to feed to Q-Network')
 
         if BB_STATE:
             parser.add_argument('--frame_width', default=SIZE_W_BB, type=int, help='Resized frame width')
@@ -105,6 +103,7 @@ class decision_maker_DQN_keras:
         parser.add_argument('--load_network', default=False, action='store_true', help='Load trained mode')
         parser.add_argument('--load_network_path', default='', help='the path to the trained mode file')
 
+        FULLY_CONNECTED = False
         if FULLY_CONNECTED:
             parser.add_argument('--net_mode', default='linear', help='choose the mode of net, can be linear, dqn, duel')
         else:
@@ -353,8 +352,6 @@ class decision_maker_DQN_keras:
                 # here we use hard target update as default
                 self.target_network.set_weights(self.q_network.get_weights())
 
-                #####
-                self.save_fixed_berlin_state(SAVE=False)
 
 
 
@@ -486,16 +483,6 @@ class decision_maker_DQN_keras:
         return action
 
 
-    def save_fixed_berlin_state(self, SAVE=False, save_folder_path=None):
-        if DSM_name is not "100X100_Berlin" or not SAVE_BERLIN_FIXED_STATE:
-            return
-        s_a_s = np.stack([self.Berlin_fixed_state.fixed_state])
-
-        qss = self.q_network.predict(s_a_s)
-
-        self.Berlin_fixed_state.fllow_states(qss, SAVE=False, save_folder_path=save_folder_path)
-
-
     def print_model(self, state, episode_number, path_to_dir):
         from keras import backend as K
         path = os.path.join(path_to_dir, str(episode_number))
@@ -621,5 +608,4 @@ class DQNAgent_keras:
         self._decision_maker.q_network.save(
             f'{path_to_model+os.sep+self._decision_maker.MODEL_NAME}_{color_str}_{episode}_{max_reward: >7.2f}max_{avg_reward: >7.2f}avg_{min_reward: >7.2f}min__{int(time.time())}.model')
 
-        self._decision_maker.save_fixed_berlin_state(SAVE=True, save_folder_path=path_to_model)
         return self.min_reward

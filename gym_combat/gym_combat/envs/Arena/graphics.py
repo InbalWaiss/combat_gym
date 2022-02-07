@@ -440,10 +440,10 @@ def create_image(env: Environment, episode, last_step_number, cover = None):
 
 def print_episode_graphics(env: Environment, episode, last_step_number, write_file=False, cover = None):
     image = create_image(env, episode, last_step_number, cover)
-    #cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
-    #cv2.waitKey(2)
-    plt.title("informative_env_"+str(env.combat_env_num))
-    plt.imshow(image)
+    cv2.imshow("informative_env_"+str(env.combat_env_num), image)  # show it!
+    cv2.waitKey(2)
+    # plt.title("informative_env_"+str(env.combat_env_num))
+    # plt.imshow(image)
     plt.pause(.01)
     if episode.is_terminal:
         sleep(1.2)

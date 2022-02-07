@@ -14,7 +14,7 @@ class CPoint:
 class Entity:
     def __init__(self, decision_maker: AbsDecisionMaker = None):
 
-        self._decision_maker = decision_maker
+        self._decision_maker = decision_maker #not in use due to training with stable_baselines3
         self.h = -1
         self.w = -1
 

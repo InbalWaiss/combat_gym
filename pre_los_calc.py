@@ -10,7 +10,7 @@ from gym_combat.gym_combat.envs.Arena.Entity import Entity
 import os
 
 
-def creat_and_save_dictionaries():
+def creat_and_save_LOS_dictionaries():
     los_from_pos_FIRE_RANGE = {}
     los_from_pos_LOS_RANGE = {}
     no_los_from_pos = {}
@@ -64,40 +64,6 @@ def show_LOS_from_point(x1,y1):
     plt.matshow(env)
     plt.show()
 
-def show_no_LOS_from_point(x1,y1):
-    env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
-
-    points_in_LOS = DICT_POS_NO_LOS[(x1,y1)]
-    for point in points_in_LOS:
-        env[point[0]][point[1]] = (100, 0, 0)
-
-    env[x1][y1] = dict_of_colors_for_graphics[BLUE_N]
-
-    for x in range(SIZE_W):
-        for y in range(SIZE_H):
-            if DSM[x][y] == 1.:
-                env[x][y] = dict_of_colors_for_graphics[GREY_N]
-
-    plt.matshow(env)
-    plt.show()
-
-def find_closest_point_not_in_los(x1,y1):
-    arr = np.asarray(DICT_POS_NO_LOS[(x1, y1)])
-    value = np.array([x1, y1])
-    closest_point_no_loss = arr[np.linalg.norm(arr - value, axis=1).argmin()]
-    env = np.zeros((SIZE_W, SIZE_H, 3), dtype=np.uint8)  # starts an rbg of small world
-    points_in_LOS = DICT_POS_LOS[(x1, y1)]
-    for point in points_in_LOS:
-        env[point[0]][point[1]] = dict_of_colors_for_graphics[DARK_RED_N]
-    env[x1][y1] = dict_of_colors_for_graphics[RED_N]
-    env[closest_point_no_loss[0]][closest_point_no_loss[1]] = (200, 200, 200)
-    for x in range(SIZE_W):
-        for y in range(SIZE_H):
-            if DSM[x][y] == 1.:
-                env[x][y] = dict_of_colors_for_graphics[GREY_N]
-    plt.matshow(env)
-    plt.show()
-    return closest_point_no_loss
 
 def save_obj(obj, name):
     with open(name + '.pkl', 'wb') as f:
@@ -200,9 +166,8 @@ def find_lose_points(x1, y1):
     return goal_points
 
 
-
-
 def list_dict_2_tuple_dict(in_dict):
+    # creates a list of tuples instead of a list of lists for faster access
     out_dict = {}
     for k,v in in_dict.items():
         if v:
@@ -212,7 +177,7 @@ def list_dict_2_tuple_dict(in_dict):
             out_dict[k] = ([],[])
     return out_dict
 
-def creat_and_save_dictionaries_tuples():
+def creat_and_save_LOS_dictionaries_tuples():
     PREPROCESSING_PATH = os.path.dirname(os.path.realpath(__file__)) #should be in the same dir as all the 'position_los' files
     for filename in os.listdir(PREPROCESSING_PATH):
         if "position_los" in filename and DSM_name in filename:
@@ -293,7 +258,7 @@ def calc_all_pairs_data(CALC_SHORTEST_PATHS = True):
                     'gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path' + DSM_name + '_' + str(cutoff) + '.pkl',
                     'wb') as f:
                 pickle.dump(all_pairs_shortest_path_less_than_cutoff_no_double, f, protocol=2)
-                print("saved ", str(x1), " ", str(y1) )
+                print("saved ", str(x1), " ", str(y1))
 
         with open('gym_combat/gym_combat/envs/Greedy/all_pairs_shortest_path' + DSM_name + '_' + str(cutoff) + '.pkl',
                   'wb') as f:
@@ -330,15 +295,17 @@ def all_pairs_distances__np():
 
 if __name__ == '__main__':
 
-    creat_and_save_dictionaries()
-    creat_and_save_dictionaries_tuples()
+    creat_and_save_LOS_dictionaries()
+    creat_and_save_LOS_dictionaries_tuples()
 
     calc_all_pairs_data(CALC_SHORTEST_PATHS=True)
     all_pairs_distances__np()
 
-    # calc_and_save_dominating_points()
-    # calc_and_save_lose_points()
-    # show_LOS_from_point(5, 5)
-    # find_closest_point_not_in_los(5, 5)
-    # find_dominating_point(5, 5)
-    #find_lose_points(5,5) #{red_pos : points that is blus is in blue will lose!}
+    #calc_and_save_dominating_points()
+    #calc_and_save_lose_points()
+
+    # sanity:
+    #point_x, point_y = 5, 5
+    #show_LOS_from_point(point_x, point_y)
+    #find_dominating_point(point_x, point_y)
+    #find_lose_points(point_x, point_y) #{red_pos : points that is blus is in blue will lose!}

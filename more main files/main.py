@@ -61,10 +61,13 @@ if __name__ == '__main__':
 
     print("Starting red player")
     ### Red Decision Maker
-    if RED_TYPE == 'Greedy':
+    if RED_TYPE == AgentType.Greedy:
         red_decision_maker = Greedy_player.Greedy_player()
     else:
         red_decision_maker =smart_player.SmartPlayer()
+
+    blue_decision_maker = Greedy_player.Greedy_player()
+    red_decision_maker = smart_player.SmartPlayer()
 
     env.blue_player = Entity(blue_decision_maker)
     env.red_player = Entity(red_decision_maker)
