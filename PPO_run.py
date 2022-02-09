@@ -20,23 +20,33 @@ def check_environment_creation():
     model.learn(total_timesteps=10000000)
     model.save("ppo_GymCombatEnv_MlpPolicy_10000000")
 
+def create_folder(folder_name):
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+
 #PPO model params
 n_envs =4
 batch_size = 2048
 n_steps=128
 n_epochs=4
 clip_range=0.25
+n_games = 1000
 
 prev_timesteps =  0 #100000000 # if we want to keep training an old model
 total_timesteps = 200000000
 checkpoint_freq = 5000000
 
-n_games = 1000
+# folders
 tensorboard_path = "tensorboard_log"
+create_folder(tensorboard_path)
 checkpoint_path = "checkpoints"
+create_folder(checkpoint_path)
 trained_models_path = "trained_models"
+create_folder(trained_models_path)
 res_path = "res"
+create_folder(res_path)
 video_path = "videos"
+create_folder(video_path)
 
 
 class EnvNum():
@@ -48,7 +58,7 @@ class EnvNum():
 
 
 def ppo_train(gamma, lr, vf_coef, ent_coef, train = True, mp = 0.01):
-
+    # trine PPO model
     network_arc = 'CnnPolicy' #conv1: 32, conv2: 64, conv3: 64, fc: 512
     model_name = "smart_vs_ppo_{}_{}M_g_{}_lr_{}_vfc_{}_entc_{}_mp_{}_lost0.5".format(network_arc[:3], total_timesteps/1000000, gamma, lr, vf_coef, ent_coef, mp)
     if prev_timesteps > 0:
