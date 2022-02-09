@@ -276,7 +276,6 @@ if __name__ == '__main__':
     from PIL import Image
 
     # import cv2
-    # srcImage = Image.open("../Common/maps/Berlin_1_256.png")
     # srcImage = Image.open("../Common/maps/Baqa/BaqaObs.txt")
     #
     # img1 = np.array(srcImage.convert('L').resize((100, 100)))
