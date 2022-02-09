@@ -2,7 +2,7 @@
 from gym_combat.gym_combat.envs.Arena.AbsDecisionMaker import AbsDecisionMaker
 from gym_combat.gym_combat.envs.Common.constants import np, SIZE_H, SIZE_W, DSM, AgentAction, NUMBER_OF_ACTIONS, FIRE_RANGE, BB_MARGIN, ACTION_SPACE_6
 
-possible_azimuth = [0,45,90,135,180,225,270,315]
+
 
 class CPoint:
 
@@ -15,23 +15,14 @@ class Entity:
     def __init__(self, decision_maker: AbsDecisionMaker = None):
 
         self._decision_maker = decision_maker #not in use due to training with stable_baselines3
-
-        self.azimuth = 0
-        self.head = CPoint(-1, -1)
-        self.tail = CPoint(-1, -1)
-
-    def set_tail(self):
-        pass #TODO: fill
+        self.h = -1
+        self.w = -1
 
     def _choose_random_position(self):
         is_obs = True
         while is_obs:
-            self.head.h = np.random.randint(0, SIZE_H)
-            self.head.w = np.random.randint(0, SIZE_W)
-            self.azimuth = np.random.randint(0, len(possible_azimuth))
-
-            # TODO: make function: input: (head, azimuth) output: tail
-
+            self.h = np.random.randint(0, SIZE_H)
+            self.w = np.random.randint(0, SIZE_W)
             is_obs = self.is_obs(self.h, self.w)
 
 
@@ -86,7 +77,7 @@ class Entity:
 
         return not(is_obs), h, w
 
-    def is_obs(self, h=-1, w=-1): #TODO: change input: head, azimuth\tail
+    def is_obs(self, h=-1, w=-1):
         # if first draw of start point
         if h == -1 and w == -1:
             return True
@@ -118,55 +109,14 @@ class Entity:
             elif a == AgentAction.BottomLeft: #0
                 self.move(h=1, w=-1)
 
-        else: #ACTION_SPACE_6
-            """6 possible moves!"""
-            azimuth = self.azimuth
-            if a == AgentAction.Stay:  # 0
-                self.move(h=0, w=0)
-            if a == AgentAction.rotate_45_right:  # 1
-                azimuth = (azimuth+45)%360
-            if a == AgentAction.rotate_90_right:  # 2
-                azimuth = (azimuth+90)%360
-            if a == AgentAction.rotate_45_left:  # 3
-                azimuth = (azimuth-45)%360
-            if a == AgentAction.rotate_90_left:  # 4
-                azimuth = (azimuth-90)%360
-            if a == AgentAction.reverse:  # 5
-                # TODO: add revers case
-                pass
+        else:
+            """4 possible moves!"""
+            if a == AgentAction.Right: #0
+                self.move(h=0, w=1)
+            elif a == AgentAction.Top: #1
+                self.move(h=-1, w=0)
+            elif a == AgentAction.Bottom: #2
+                self.move(h=1, w=0)
+            elif a == AgentAction.Left: #3
+                self.move(h=0, w=-1)
 
-            Stay = 0
-            rotate_45_right = 1
-            rotate_90_right = 2
-            rotate_45_left = 3
-            rotate_90_left = 4
-            reverse = 5
-
-
-if __name__ == '__main__':
-    DSM = np.array([
-        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-        [0., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 1., 1., 0., 0., 0., 0., 1., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 1., 0., 0.],
-        [0., 0., 0., 0., 1., 1., 1., 0., 0., 0., 0., 0., 1., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 1., 1., 1., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0., 0.],
-        [0., 1., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-    ])
-
-    entity = Entity()
-    entity.head.h = 9
-    entity.head.w = 1
-
-    import matplotlib.pyplot as plt
-    #DSM[entity.head.h, entity.head.w]=
-    plt.matshow(DSM)
-    plt.show()
