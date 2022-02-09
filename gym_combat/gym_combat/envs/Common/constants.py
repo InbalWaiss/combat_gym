@@ -8,11 +8,7 @@ from gym_combat.gym_combat.envs.Common.Preprocessing.load_DSM_from_excel import 
 BASELINES_RUN = True
 SAVE_BERLIN_FIXED_STATE = False
 
-ACTION_SPACE_9 = False
-ACTION_SPACE_6 = True
-if not ACTION_SPACE_9:
-    ACTION_SPACE_6 = True
-
+ACTION_SPACE_9 = True
 
 RED_PLAYER_MOVES = True
 FIXED_START_POINT_RED = False
@@ -323,16 +319,6 @@ if ACTION_SPACE_9:
         BottomLeft = 7
         Left = 8
         TopLeft = 0
-
-if ACTION_SPACE_6:
-    NUMBER_OF_ACTIONS = 6
-    class AgentAction(IntEnum):
-        Stay = 0
-        rotate_45_right = 1
-        rotate_90_right = 2
-        rotate_45_left = 3
-        rotate_90_left = 4
-        reverse = 5
 
 
 class AgentType(IntEnum):

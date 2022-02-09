@@ -46,10 +46,6 @@ class Environment(object):
         self.num_steps_blue_stay = 0
         self.num_steps_red_stay = 0
 
-        # for agents dynamics
-        self.last_action_blue = AgentAction.Top
-        self.last_action_red = AgentAction.Top
-
         # data for statistics
         self.episodes_rewards_blue_temp = []
         self.episodes_rewards_blue = []
